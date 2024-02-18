@@ -1,0 +1,93 @@
+/* ---------- LOADER ---------- */
+
+.loader {
+    display: inline-block;
+    font-size: 2em;
+    margin: 0 0.5em;
+    position: relative;
+    height: 0.5em;
+    width: 1em;
+}
+
+.loader:before,
+.loader:after {
+    content: "";
+    display: block;
+    height: 0.5em;
+    position: absolute;
+    width: 0.5em;
+}
+
+.loader:before {
+    border-radius: 50%;
+    animation: load-before 2s ease-in-out infinite,
+        zoom-before 0.66s ease-in-out infinite;
+    background: #ffaa2b;
+}
+
+.loader:after {
+    border-radius: 50%;
+    animation: load-after 2s ease-in-out infinite,
+        zoom-after 0.66s ease-in-out infinite;
+    background: #ff4196;
+}
+
+/* ---------- ANIMATION ---------- */
+
+@keyframes load-before {
+    0% {
+        left: 0;
+        transform: scale(1.1);
+    }
+
+    50% {
+        left: 100%;
+        transform: scale(1);
+    }
+
+    100% {
+        left: 0;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes load-after {
+    0% {
+        left: 100%;
+        transform: scale(1.1);
+    }
+
+    50% {
+        left: 0;
+        transform: scale(1);
+    }
+
+    100% {
+        left: 100%;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes zoom-before {
+    0% {
+        z-index: 0;
+    }
+    50% {
+        z-index: 1;
+    }
+    100% {
+        z-index: 0;
+    }
+}
+
+@keyframes zoom-after {
+    0% {
+        z-index: 1;
+    }
+    50% {
+        z-index: 0;
+    }
+    100% {
+        z-index: 1;
+    }
+}
