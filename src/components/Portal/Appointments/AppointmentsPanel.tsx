@@ -1,23 +1,16 @@
-import {
-    Card,
-    CardHeader,
-    HStack,
-    Heading,
-    Button,
-    Divider,
-    CardBody,
-    Stack,
-    StackDivider,
-    Flex,
-} from "@chakra-ui/react";
+import { HStack, Heading, Button, Grid, Box, Text } from "@chakra-ui/react";
 import moment from "moment";
-import React, { useContext } from "react";
-import { BiCalendarAlt, BiPlus, BiCalendarX } from "react-icons/bi";
+import {
+    BiCalendarAlt,
+    BiCalendarX,
+    BiCalendarPlus,
+    BiCalendarEvent,
+} from "react-icons/bi";
 import { IoMdCalendar } from "react-icons/io";
-import { VscDebugBreakpointDataUnverified } from "react-icons/vsc";
 import { Link } from "react-router-dom";
-import { ColourPaletteContext } from "../../../contexts/colourPaletteContext";
 import { Appointment } from "../../../models/appointment";
+import colourPalette from "../../../utilities/colour-palette";
+import { partition } from "lodash";
 
 interface Props {
     appointments: Appointment[];
@@ -25,87 +18,161 @@ interface Props {
 }
 
 const AppointmentsPanel = ({ appointments, error }: Props) => {
-    const { primaryColour } = useContext(ColourPaletteContext);
-
+    const [upcomingAppointments, pastAppointments] = partition(
+        appointments,
+        (a) => {
+            return new Date(a.timeSlot) > new Date() && !a.cancelled;
+        }
+    );
     return (
-        <Card
-            boxShadow={"0px 0px 10px #b3b3b3"}
-            marginRight={"20px"}
-            marginBottom={"1rem"}
-        >
-            <CardHeader color={primaryColour}>
-                <HStack justifyContent={"space-between"} paddingX={"20px"}>
-                    <HStack>
-                        <BiCalendarAlt size="20px" />
-                        <Heading size="md">Appointments</Heading>
-                    </HStack>
-                    <Button
-                        as={Link}
-                        to="/portal/user/appointments/book"
-                        size="sm"
-                        colorScheme="pink"
-                        backgroundColor={primaryColour}
-                        leftIcon={<BiPlus />}
-                    >
-                        Book Appointment
-                    </Button>
-                </HStack>
-            </CardHeader>
-            <Divider color={"gray.300"} />
+        <>
+            <HStack
+                justifyContent={"space-between"}
+                alignItems={"flex-start"}
+                paddingX={"20px"}
+            >
+                <Box>
+                    <Box marginBottom={"20px"}>
+                        <HStack>
+                            <BiCalendarEvent
+                                size="20px"
+                                color={colourPalette.primary}
+                            />
+                            <Heading size="md">Upcoming Appointments</Heading>
+                        </HStack>
 
-            <CardBody>
-                <Stack divider={<StackDivider />} spacing="4" paddingX={"20px"}>
-                    {appointments.map((a) => (
-                        <Flex justifyContent="space-between">
-                            <HStack>
-                                <VscDebugBreakpointDataUnverified />
-                                <Heading size="xs" textTransform="uppercase">
-                                    {moment(a.timeSlot).format(
-                                        "MMMM Do YYYY, h:mm a"
-                                    )}
-                                </Heading>
-                                {/* {typeof a.doctor != "string" && (
-                                <>
-                                    <Heading>{a.doctor.name}</Heading>
-                                    {typeof a.doctor.hospital !=
-                                        "string" && (
-                                        <Heading>
-                                            {a.doctor.hospital.name}
-                                        </Heading>
-                                    )}
-                                </>
-                            )} */}
-                            </HStack>
-                            {a.cancelled ? (
-                                <div>Cancelled</div>
-                            ) : (
-                                new Date(a.timeSlot) > new Date() && (
-                                    <HStack>
-                                        <Button
-                                            size="xs"
-                                            leftIcon={<IoMdCalendar />}
-                                            colorScheme="orange"
-                                            variant={"outline"}
-                                        >
-                                            Reschedule
-                                        </Button>
-
-                                        <Button
-                                            size="xs"
-                                            leftIcon={<BiCalendarX />}
-                                            colorScheme="red"
-                                            variant={"outline"}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </HStack>
-                                )
+                        <Grid
+                            templateColumns={"auto auto auto"}
+                            columnGap={"50px"}
+                            padding={"20px"}
+                        >
+                            {upcomingAppointments.length == 0 && (
+                                <Text>There are no upcoming appointments</Text>
                             )}
-                        </Flex>
-                    ))}
-                </Stack>
-            </CardBody>
-        </Card>
+                            {upcomingAppointments.map((a) => (
+                                <Box
+                                    background={colourPalette.primaryBg}
+                                    padding={"20px 60px 20px 40px"}
+                                >
+                                    <Heading size="xs">
+                                        {moment(a.timeSlot).format(
+                                            "dddd, MMMM Do YYYY"
+                                        )}
+                                    </Heading>
+                                    <Text fontSize="x-large">
+                                        {moment(a.timeSlot).format("h:mm a")}
+                                    </Text>
+
+                                    {a.cancelled ? (
+                                        <div>Cancelled</div>
+                                    ) : (
+                                        new Date(a.timeSlot) > new Date() && (
+                                            <HStack>
+                                                <Button
+                                                    size="xs"
+                                                    leftIcon={<IoMdCalendar />}
+                                                    colorScheme="orange"
+                                                    variant={"outline"}
+                                                >
+                                                    Reschedule
+                                                </Button>
+
+                                                <Button
+                                                    size="xs"
+                                                    leftIcon={<BiCalendarX />}
+                                                    colorScheme="red"
+                                                    variant={"outline"}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </HStack>
+                                        )
+                                    )}
+                                </Box>
+                            ))}
+                        </Grid>
+                    </Box>
+                    <Box marginBottom={"30px"}>
+                        <HStack>
+                            <BiCalendarAlt
+                                size="20px"
+                                color={colourPalette.secondary}
+                            />
+                            <Heading size="md">Past Appointments</Heading>
+                        </HStack>
+
+                        <Grid
+                            templateColumns={"auto auto auto"}
+                            columnGap={"50px"}
+                            padding={"20px"}
+                        >
+                            {pastAppointments.length == 0 && (
+                                <Text>There are no past appointments</Text>
+                            )}
+                            {pastAppointments.map((a) => (
+                                <Box
+                                    background={colourPalette.secondaryBg}
+                                    padding={"20px 60px 20px 40px"}
+                                >
+                                    <Heading size="xs">
+                                        {moment(a.timeSlot).format(
+                                            "dddd, MMMM Do YYYY"
+                                        )}
+                                    </Heading>
+                                    <Text fontSize="x-large">
+                                        {moment(a.timeSlot).format("h:mm a")}
+                                    </Text>
+                                    {a.cancelled ? (
+                                        <div>Cancelled</div>
+                                    ) : (
+                                        new Date(a.timeSlot) > new Date() && (
+                                            <HStack>
+                                                <Button
+                                                    size="xs"
+                                                    leftIcon={<IoMdCalendar />}
+                                                    colorScheme="orange"
+                                                    variant={"outline"}
+                                                >
+                                                    Reschedule
+                                                </Button>
+
+                                                <Button
+                                                    size="xs"
+                                                    leftIcon={<BiCalendarX />}
+                                                    colorScheme="red"
+                                                    variant={"outline"}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </HStack>
+                                        )
+                                    )}
+                                </Box>
+                            ))}
+                        </Grid>
+                    </Box>
+                </Box>
+                <Button
+                    as={Link}
+                    to="/portal/appointments/book"
+                    size="sm"
+                    colorScheme="pink"
+                    variant={"outline"}
+                    leftIcon={<BiCalendarPlus />}
+                    disabled={upcomingAppointments.length >= 2}
+                    onClick={(e) => {
+                        if (upcomingAppointments.length >= 2) {
+                            e.preventDefault();
+                            alert(
+                                "You cannot have more than 2 appointments booked"
+                            );
+                        }
+                    }}
+                >
+                    Book Appointment
+                </Button>
+            </HStack>
+        </>
     );
 };
 

@@ -5,6 +5,7 @@ import theme from "./theme";
 import App from "./App";
 import "./normalise.css";
 import "./loader.css";
+import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 

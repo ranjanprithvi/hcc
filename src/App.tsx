@@ -1,10 +1,8 @@
-import "./App.css";
 import { useState } from "react";
 import { LoginContext } from "./contexts/loginContext";
 import { useBreakpointValue } from "@chakra-ui/react";
 import Routes from "./Routes";
-import { ColourPaletteContext } from "./contexts/colourPaletteContext";
-import { getAccessLevel, getToken } from "./services/helper-service";
+import { getAccessLevel, getToken } from "./utilities/helper-service";
 
 export const roles = {
     user: 1,
@@ -31,24 +29,16 @@ function App() {
     );
 
     return (
-        <ColourPaletteContext.Provider
+        <LoginContext.Provider
             value={{
-                primaryColour: "#ff4196",
-                secondaryColour: "#f19b1a",
-                secondaryBgColour: "#fef4ea",
+                isLoggedIn,
+                setLoggedIn: setLoggedIn,
+                accessLevel,
+                setAccessLevel,
             }}
         >
-            <LoginContext.Provider
-                value={{
-                    isLoggedIn,
-                    setLoggedIn: setLoggedIn,
-                    accessLevel,
-                    setAccessLevel,
-                }}
-            >
-                <Routes />
-            </LoginContext.Provider>
-        </ColourPaletteContext.Provider>
+            <Routes />
+        </LoginContext.Provider>
     );
 }
 

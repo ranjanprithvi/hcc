@@ -1,17 +1,21 @@
 import { Heading, Text, Image, VStack, Flex, Button } from "@chakra-ui/react";
+import colourPalette from "../../utilities/colour-palette";
 
 function Home() {
     return (
         <Flex flexDirection="column" width={"100vw"}>
             <Flex
                 flexDirection={{ base: "column", md: "row" }}
-                background="#fef4ea"
+                background={colourPalette.secondaryBg}
                 padding="20px"
                 alignItems="center"
             >
                 <Image src="/doc.jpeg" width="500px" />
                 <VStack paddingLeft={{ base: 0, md: "20px" }}>
-                    <Heading alignSelf="flex-start" color="#ff4196">
+                    <Heading
+                        alignSelf="flex-start"
+                        color={colourPalette.primary}
+                    >
                         Dr. Roopa Ravi
                     </Heading>
                     <Text>
@@ -34,7 +38,10 @@ function Home() {
                         paddingRight={{ base: 0, md: "20px" }}
                         alignItems="start"
                     >
-                        <Heading color="#ff4196" alignSelf="flex-start">
+                        <Heading
+                            color={colourPalette.primary}
+                            alignSelf="flex-start"
+                        >
                             Location
                         </Heading>
                         <Text>
@@ -49,7 +56,7 @@ function Home() {
                             <Button
                                 size="sm"
                                 borderRadius={"2px"}
-                                backgroundColor={"#ff4196"}
+                                backgroundColor={colourPalette.primary}
                                 color={"white"}
                             >
                                 Open in Maps

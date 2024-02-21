@@ -6,6 +6,7 @@ export default axios.create({
     },
     headers: { "x-auth-token": localStorage.getItem("token") },
     baseURL: import.meta.env.VITE_BACKEND_URL,
+    // withCredentials: true,
 });
 
 export { CanceledError };

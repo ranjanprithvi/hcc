@@ -1,12 +1,6 @@
-import { Box, Button, HStack, VStack, Text, Flex } from "@chakra-ui/react";
+import { Button, HStack, VStack, Text } from "@chakra-ui/react";
 import moment from "moment";
-import { useContext } from "react";
-import ReactDatePicker, {
-    CalendarContainer,
-    CalendarContainerProps,
-} from "react-datepicker";
-import { BsCalendar } from "react-icons/bs";
-import { ColourPaletteContext } from "../../contexts/colourPaletteContext";
+import colourPalette from "../../utilities/colour-palette";
 
 interface Props {
     selectedDate: Date;
@@ -17,7 +11,6 @@ export const HorizontalCalendar = ({
     selectedDate,
     setSelectedDate,
 }: Props) => {
-    const { primaryColour } = useContext(ColourPaletteContext);
     const dates = [
         moment().subtract(6, "days"),
         moment().subtract(5, "days"),
@@ -58,7 +51,7 @@ export const HorizontalCalendar = ({
                         }
                         background={
                             moment(selectedDate).isSame(date, "day")
-                                ? primaryColour
+                                ? colourPalette.primary
                                 : "gray.100"
                         }
                         onClick={() => setSelectedDate(date.toDate())}

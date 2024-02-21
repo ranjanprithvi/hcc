@@ -15,21 +15,19 @@ import {
     Td,
 } from "@chakra-ui/react";
 import moment from "moment";
-import React, { useContext } from "react";
-import { BiPlusMedical } from "react-icons/bi";
+import { BiPlusMedical, BiUpload } from "react-icons/bi";
 import { FaEdit, FaDownload } from "react-icons/fa";
 import { PiNoteBlank } from "react-icons/pi";
 import { Link } from "react-router-dom";
-import { ColourPaletteContext } from "../../../contexts/colourPaletteContext";
 import { ExternalPrescription } from "../../../models/externalPrescription";
+import colourPalette from "../../../utilities/colour-palette";
+import ProtectedComponent from "../../common/ProtectedComponent";
 
 interface Props {
     externalPrescriptions: ExternalPrescription[];
 }
 
 const ExternalPrescriptionsPanel = ({ externalPrescriptions }: Props) => {
-    const { primaryColour, secondaryColour } = useContext(ColourPaletteContext);
-
     return (
         <Card
             boxShadow={"0px 0px 10px #b3b3b3"}
@@ -38,20 +36,25 @@ const ExternalPrescriptionsPanel = ({ externalPrescriptions }: Props) => {
         >
             <CardHeader>
                 <HStack justifyContent={"space-between"} paddingX={"20px"}>
-                    <HStack color={secondaryColour}>
+                    <HStack color={colourPalette.secondary}>
                         <PiNoteBlank size="20px" />
                         <Heading size="md">External Prescriptions</Heading>
                     </HStack>
-                    <Button
-                        as={Link}
-                        to="/portal/user/appointments/new"
-                        size="sm"
-                        colorScheme="orange"
-                        backgroundColor={secondaryColour}
-                        leftIcon={<BiPlusMedical />}
-                    >
-                        Add Prescription
-                    </Button>
+                    <ProtectedComponent
+                        hospital={<></>}
+                        user={
+                            <Button
+                                as={Link}
+                                to="/portal/appointments/new"
+                                size="sm"
+                                colorScheme="orange"
+                                variant={"outline"}
+                                leftIcon={<BiUpload />}
+                            >
+                                Upload Prescription
+                            </Button>
+                        }
+                    ></ProtectedComponent>
                 </HStack>
             </CardHeader>
             <Divider color={"gray.300"} />

@@ -82,7 +82,7 @@ const ProfileForm = () => {
 
         promise
             .then((res) => {
-                navigate(`/portal/hospital/profiles`, {
+                navigate(`/portal/profiles`, {
                     replace: true,
                 });
             })

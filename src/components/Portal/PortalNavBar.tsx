@@ -1,14 +1,7 @@
 import {
     Button,
     HStack,
-    Image,
-    Link as ChakraLink,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
     useDisclosure,
-    Show,
     Drawer,
     DrawerBody,
     DrawerCloseButton,
@@ -17,26 +10,15 @@ import {
     DrawerHeader,
     DrawerOverlay,
     Input,
-    Tabs,
-    Tab,
-    TabList,
-    VStack,
-    Text,
     Box,
-    Heading,
 } from "@chakra-ui/react";
-import { Link, useLocation } from "react-router-dom";
-import { useContext, useRef } from "react";
-import { LoginContext } from "../../contexts/loginContext";
-import { TbLogout } from "react-icons/tb";
-import { BsChevronDown } from "react-icons/bs";
-import { BiSolidUserCircle } from "react-icons/bi";
-import { FaUser } from "react-icons/fa";
+import { NavLink, useLocation } from "react-router-dom";
+import { useRef } from "react";
 import Modal from "../common/Modal";
-import { RxHamburgerMenu } from "react-icons/rx";
-import logo from "/Logo.png";
-import { ColourPaletteContext } from "../../contexts/colourPaletteContext";
 import AccountDropdown from "../Account/AccountDropdown";
+import ProtectedComponent from "../common/ProtectedComponent";
+import { handleLogout } from "../../utilities/helper-service";
+import colourPalette from "../../utilities/colour-palette";
 
 interface NavItem {
     label: string;
@@ -48,8 +30,6 @@ interface Props {
 }
 
 const PortalNavBar = ({ heading }: Props) => {
-    const { primaryColour } = useContext(ColourPaletteContext);
-
     const { pathname } = useLocation();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
@@ -59,18 +39,14 @@ const PortalNavBar = ({ heading }: Props) => {
     } = useDisclosure();
     const btnRef = useRef(null);
 
-    const { isLoggedIn, setLoggedIn, accessLevel, setAccessLevel } =
-        useContext(LoginContext);
-
-    const logout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("accessLevel");
-        setLoggedIn(false);
-        setAccessLevel(0);
-    };
-
     return (
-        <HStack borderBottom={"1px solid #cecece"} justifyContent={"flex-end"}>
+        <HStack
+            justifyContent={"flex-end"}
+            alignItems={"center"}
+            height={"100%"}
+            paddingX={"20px"}
+            borderBottom={"1px solid #cecece"}
+        >
             <Modal
                 header="Logout"
                 body="Are you sure you want to logout?"
@@ -80,12 +56,9 @@ const PortalNavBar = ({ heading }: Props) => {
                     <>
                         <Button
                             colorScheme="pink"
-                            backgroundColor={primaryColour}
+                            backgroundColor={colourPalette.primary}
                             mr={3}
-                            onClick={() => {
-                                logout();
-                                window.location.assign("/");
-                            }}
+                            onClick={handleLogout}
                         >
                             Yes
                         </Button>
@@ -120,9 +93,20 @@ const PortalNavBar = ({ heading }: Props) => {
                     </DrawerFooter>
                 </DrawerContent>
             </Drawer>
-            <Box padding={"10px"}>
-                <AccountDropdown />
-            </Box>
+            <ProtectedComponent
+                user={<AccountDropdown />}
+                defaultComponent={
+                    <Button
+                        as={NavLink}
+                        to="/login"
+                        colorScheme="pink"
+                        variant="outline"
+                        size={"sm"}
+                    >
+                        Login
+                    </Button>
+                }
+            />
         </HStack>
     );
 };

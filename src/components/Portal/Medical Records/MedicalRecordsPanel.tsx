@@ -14,30 +14,46 @@ import {
     Thead,
     Tr,
 } from "@chakra-ui/react";
-import { BiFolder } from "react-icons/bi";
+import { BiFolder, BiPlusCircle, BiUpload } from "react-icons/bi";
 import { MedicalRecord } from "../../../models/medicalRecord";
 import { BsDownload } from "react-icons/bs";
+import { GoPencil } from "react-icons/go";
 import moment from "moment";
-import { useContext } from "react";
-import { ColourPaletteContext } from "../../../contexts/colourPaletteContext";
+import colourPalette from "../../../utilities/colour-palette";
+import ProtectedComponent from "../../common/ProtectedComponent";
+import { Link } from "react-router-dom";
 
 interface Props {
     medicalRecords: MedicalRecord[];
 }
 
 const MedicalRecords = ({ medicalRecords }: Props) => {
-    const { primaryColour } = useContext(ColourPaletteContext);
-
     return (
         <Card
             boxShadow={"0px 0px 10px #b3b3b3"}
             maxWidth={"75vw"}
             marginBottom={"1rem"}
         >
-            <CardHeader color={primaryColour}>
-                <HStack marginX={"20px"}>
-                    <BiFolder size="20px" />
-                    <Heading size="md">Medical Records</Heading>
+            <CardHeader color={colourPalette.primary}>
+                <HStack justifyContent={"space-between"} marginX={"20px"}>
+                    <HStack>
+                        <BiFolder size="20px" />
+                        <Heading size="md">Medical Records</Heading>
+                    </HStack>
+                    <ProtectedComponent
+                        hospital={
+                            <Button
+                                as={Link}
+                                to="/portal/medicalRecords/new"
+                                size="sm"
+                                colorScheme="pink"
+                                variant={"outline"}
+                                leftIcon={<BiUpload />}
+                            >
+                                Upload Record
+                            </Button>
+                        }
+                    ></ProtectedComponent>
                 </HStack>
             </CardHeader>
             <Divider color={"gray.300"} />
@@ -65,6 +81,21 @@ const MedicalRecords = ({ medicalRecords }: Props) => {
                                     </Td>
 
                                     <Td isNumeric>
+                                        <ProtectedComponent
+                                            hospital={
+                                                <Button
+                                                    as={Link}
+                                                    to={`/portal/medicalRecords/${record._id}`}
+                                                    leftIcon={<GoPencil />}
+                                                    size={"xs"}
+                                                    colorScheme="pink"
+                                                    variant={"outline"}
+                                                    marginRight={"5px"}
+                                                >
+                                                    Edit
+                                                </Button>
+                                            }
+                                        ></ProtectedComponent>
                                         <Button
                                             leftIcon={<BsDownload />}
                                             size={"xs"}

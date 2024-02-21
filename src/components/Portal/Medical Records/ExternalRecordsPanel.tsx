@@ -14,27 +14,19 @@ import {
     Thead,
     Tr,
 } from "@chakra-ui/react";
-import {
-    BiDownload,
-    BiEdit,
-    BiFolderOpen,
-    BiPlusMedical,
-} from "react-icons/bi";
+import { BiFolderOpen, BiPlusMedical, BiUpload } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { ExternalRecord } from "../../../models/externalRecord";
-import { BsDownload } from "react-icons/bs";
 import moment from "moment";
 import { FaDownload, FaEdit } from "react-icons/fa";
-import { useContext } from "react";
-import { ColourPaletteContext } from "../../../contexts/colourPaletteContext";
+import colourPalette from "../../../utilities/colour-palette";
+import ProtectedComponent from "../../common/ProtectedComponent";
 
 interface Props {
     externalRecords: ExternalRecord[];
 }
 
 const ExternalRecordsPanel = ({ externalRecords }: Props) => {
-    const { secondaryColour } = useContext(ColourPaletteContext);
-
     return (
         <Card
             boxShadow={"0px 0px 10px #b3b3b3"}
@@ -43,20 +35,25 @@ const ExternalRecordsPanel = ({ externalRecords }: Props) => {
         >
             <CardHeader>
                 <HStack justifyContent={"space-between"} paddingX={"20px"}>
-                    <HStack color={secondaryColour}>
+                    <HStack color={colourPalette.secondary}>
                         <BiFolderOpen size="20px" />
                         <Heading size="md">External Records</Heading>
                     </HStack>
-                    <Button
-                        as={Link}
-                        to="/portal/user/appointments/new"
-                        size="sm"
-                        colorScheme="orange"
-                        backgroundColor={secondaryColour}
-                        leftIcon={<BiPlusMedical />}
-                    >
-                        Add Record
-                    </Button>
+                    <ProtectedComponent
+                        hospital={<></>}
+                        user={
+                            <Button
+                                as={Link}
+                                to="/portal/externalRecords/new"
+                                size="sm"
+                                colorScheme="orange"
+                                variant={"outline"}
+                                leftIcon={<BiUpload />}
+                            >
+                                Upload Record
+                            </Button>
+                        }
+                    ></ProtectedComponent>
                 </HStack>
             </CardHeader>
             <Divider color={"gray.300"} />
@@ -87,14 +84,20 @@ const ExternalRecordsPanel = ({ externalRecords }: Props) => {
                                     <Td>{record.doctor}</Td>
                                     <Td>{record.hospital}</Td>
                                     <Td isNumeric>
-                                        <Button
-                                            size={"xs"}
-                                            colorScheme="orange"
-                                            variant={"outline"}
-                                            marginRight={"5px"}
-                                        >
-                                            <FaEdit />
-                                        </Button>
+                                        <ProtectedComponent
+                                            user={
+                                                <Button
+                                                    as={Link}
+                                                    to={`/portal/externalRecords/${record._id}`}
+                                                    size={"xs"}
+                                                    colorScheme="orange"
+                                                    variant={"outline"}
+                                                    marginRight={"5px"}
+                                                >
+                                                    <FaEdit />
+                                                </Button>
+                                            }
+                                        ></ProtectedComponent>
 
                                         <Button
                                             size={"xs"}

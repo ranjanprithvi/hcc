@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import { jwtDecode } from "jwt-decode";
 
 type User = {
     _id: string;
@@ -24,7 +24,7 @@ export const getUser = () => {
 };
 
 export const setUser = () => {
-    localStorage.setItem("user", JSON.stringify(jwt.decode(getToken() || "")));
+    localStorage.setItem("user", JSON.stringify(jwtDecode(getToken() || "")));
 };
 
 export const removeUser = () => {
@@ -61,7 +61,7 @@ export const removeCurrentDoctorId = () => {
     localStorage.removeItem("currentDoctorId");
 };
 
-export const logout = () => {
+export const handleLogout = () => {
     removeToken();
     removeUser();
     removeCurrentProfileId();

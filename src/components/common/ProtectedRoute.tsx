@@ -4,23 +4,23 @@ import { LoginContext } from "../../contexts/loginContext";
 import { roles } from "../../App";
 
 interface Props {
-    adminRoute?: JSX.Element;
-    hospitalRoute?: JSX.Element;
-    userRoute?: JSX.Element;
+    admin?: JSX.Element;
+    hospital?: JSX.Element;
+    user?: JSX.Element;
 }
 
-const ProtectedRoute = ({ adminRoute, hospitalRoute, userRoute }: Props) => {
+const ProtectedRoute = ({ admin, hospital, user }: Props) => {
     const { isLoggedIn, accessLevel } = useContext(LoginContext);
 
     if (!isLoggedIn) return <Navigate to="/login" replace />;
 
     switch (accessLevel) {
         case roles.admin:
-            return adminRoute || null;
+            if (admin) return admin;
         case roles.hospital:
-            return hospitalRoute || null;
+            if (hospital) return hospital;
         default:
-            return userRoute || null;
+            return user || null;
     }
 };
 

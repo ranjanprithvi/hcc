@@ -7,6 +7,7 @@ import {
     Box,
 } from "@chakra-ui/react";
 import { ReactNode } from "react";
+import colourPalette from "../../utilities/colour-palette";
 
 export interface AccordionRowData {
     mainContent?: string | ReactNode;
@@ -25,7 +26,10 @@ const AccordionTable = ({ data, ...rest }: Props) => {
                 <AccordionItem>
                     <h2>
                         <AccordionButton
-                            _expanded={{ bg: "pink.500", color: "white" }}
+                            _expanded={{
+                                bg: colourPalette.primaryBg,
+                                color: "white",
+                            }}
                         >
                             <Box as="span" flex="1" textAlign="left">
                                 {item.mainContent}

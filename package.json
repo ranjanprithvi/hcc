@@ -16,10 +16,11 @@
         "@hookform/resolvers": "^2.9.11",
         "@types/jsonwebtoken": "^9.0.5",
         "@types/react-datepicker": "^4.19.6",
+        "aws-sdk": "^2.1561.0",
         "axios": "^1.5.0",
         "framer-motion": "^10.16.4",
         "jest-environment-jsdom": "^29.7.0",
-        "jsonwebtoken": "^9.0.2",
+        "jwt-decode": "^4.0.0",
         "lodash": "^4.17.21",
         "moment": "^2.29.4",
         "path": "^0.12.7",
@@ -40,6 +41,7 @@
         "@testing-library/react": "^14.1.2",
         "@testing-library/user-event": "^14.5.1",
         "@types/jest": "^29.5.11",
+        "@types/node": "^20.11.19",
         "@types/react": "^18.2.43",
         "@types/react-dom": "^18.2.17",
         "@types/react-test-renderer": "^18.0.7",
@@ -59,5 +61,9 @@
         "ts-node": "^10.9.2",
         "typescript": "^5.2.2",
         "vite": "^5.0.8"
+    },
+    "browser": {
+        "crypto": false,
+        "path": false
     }
 }

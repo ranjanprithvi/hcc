@@ -4,9 +4,8 @@ import { BiUserCircle, BiUserPlus } from "react-icons/bi";
 import moment from "moment";
 import { FaPen } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { ColourPaletteContext } from "../../../contexts/colourPaletteContext";
-import { useContext } from "react";
 import useProfiles from "../../../hooks/useProfiles";
+import colourPalette from "../../../utilities/colour-palette";
 
 const mockProfiles: Profile[] = [
     {
@@ -38,7 +37,6 @@ const mockProfiles: Profile[] = [
 ];
 
 const Profiles = () => {
-    const { primaryColour } = useContext(ColourPaletteContext);
     const { profiles, error, isLoading } = useProfiles();
 
     if (isLoading) {
@@ -50,7 +48,7 @@ const Profiles = () => {
             <HStack
                 alignItems={"center"}
                 marginBottom={"25px"}
-                color={primaryColour}
+                color={colourPalette.primary}
                 justifyContent={"space-between"}
             >
                 <HStack>
@@ -97,7 +95,7 @@ const Profiles = () => {
                                 as={Link}
                                 to={`/portal/profiles/${profile._id}`}
                                 colorScheme="pink"
-                                borderColor={primaryColour}
+                                borderColor={colourPalette.primary}
                                 borderRadius={"2px"}
                                 size={"sm"}
                                 variant={"outline"}

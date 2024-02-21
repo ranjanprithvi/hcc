@@ -17,12 +17,14 @@ import {
     TabList,
     Text,
 } from "@chakra-ui/react";
-import { Link, useLocation } from "react-router-dom";
-import { useContext, useRef } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { useRef } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import logo from "/Logo.png";
-import { ColourPaletteContext } from "../../contexts/colourPaletteContext";
 import AccountDropdown from "../Account/AccountDropdown";
+import ProtectedComponent from "../common/ProtectedComponent";
+import { getValueByRole } from "../../utilities/getValueByRole";
+import colourPalette from "../../utilities/colour-palette";
 
 interface NavItem {
     label: string;
@@ -30,8 +32,6 @@ interface NavItem {
 }
 
 const NavBar = () => {
-    const { primaryColour } = useContext(ColourPaletteContext);
-
     const { pathname } = useLocation();
     const {
         isOpen: isDrawerOpen,
@@ -75,7 +75,13 @@ const NavBar = () => {
                     </DrawerFooter>
                 </DrawerContent>
             </Drawer>
-            <HStack justifyContent="space-between" padding={"4"}>
+            <HStack
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                height={"100%"}
+                paddingX={"20px"}
+                borderBottom={"1px solid #cecece"}
+            >
                 <HStack>
                     <Show below="sm">
                         <Button
@@ -103,7 +109,7 @@ const NavBar = () => {
                                         <Tab
                                             color={
                                                 pathname == link.path
-                                                    ? primaryColour
+                                                    ? colourPalette.primary
                                                     : "gray"
                                             }
                                             borderBottom={
@@ -121,12 +127,40 @@ const NavBar = () => {
                         </Tabs>
                     </Show>
                 </HStack>
-                <HStack marginRight={"15px"}>
-                    {/* <ColourModeSwitch marginRight="3" /> */}
-                    <Show above="md">
-                        <AccountDropdown />
-                    </Show>
-                </HStack>
+                {/* <ColourModeSwitch marginRight="3" /> */}
+                <Show above="md">
+                    <ProtectedComponent
+                        user={
+                            <HStack marginRight={"15px"}>
+                                <Button
+                                    as={Link}
+                                    to={"/portal/appointments"}
+                                    size={"sm"}
+                                    colorScheme="pink"
+                                    backgroundColor={colourPalette.primary}
+                                    borderRadius={"50px"}
+                                >
+                                    {getValueByRole({
+                                        user: "User Portal",
+                                        hospital: "Admin Dashboard",
+                                    })}
+                                </Button>
+                                <AccountDropdown />
+                            </HStack>
+                        }
+                        defaultComponent={
+                            <Button
+                                as={NavLink}
+                                to="/login"
+                                colorScheme="pink"
+                                variant="outline"
+                                size={"sm"}
+                            >
+                                Login
+                            </Button>
+                        }
+                    />
+                </Show>
             </HStack>
         </>
     );

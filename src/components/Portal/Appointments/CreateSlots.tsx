@@ -47,7 +47,7 @@ const CreateSlotsForm = () => {
         createSlotsService
             .post<AppointmentData, Appointment[]>(data)
             .then((res) => {
-                navigate("/portal/hospital/appointments", {
+                navigate("/portal/appointments", {
                     replace: true,
                 });
             })

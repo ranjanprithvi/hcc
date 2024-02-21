@@ -1,14 +1,12 @@
-import { Box, Menu, MenuItem } from "@chakra-ui/react";
-import { useContext } from "react";
+import { Menu, MenuItem } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-import { ColourPaletteContext } from "../../contexts/colourPaletteContext";
+import colourPalette from "../../utilities/colour-palette";
 
 interface Props {
     items: { name: string; path: string; icon: JSX.Element }[];
 }
 
 const SideBar = ({ items }: Props) => {
-    const { primaryColour } = useContext(ColourPaletteContext);
     return (
         <Menu>
             {items.map((item) => (
@@ -18,9 +16,9 @@ const SideBar = ({ items }: Props) => {
                     as={NavLink}
                     to={item.path}
                     _activeLink={{
-                        backgroundColor: "pink.100",
+                        backgroundColor: colourPalette.primaryBg,
                         fontWeight: "bold",
-                        color: primaryColour,
+                        color: colourPalette.primary,
                     }}
                     borderRadius={5}
                 >

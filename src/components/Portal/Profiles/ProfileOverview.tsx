@@ -1,7 +1,6 @@
-import { Heading, VStack } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import useProfileOverview from "../../../hooks/useProfileOverview";
 import { useParams } from "react-router-dom";
-import MedicalRecords from "../Medical Records/MedicalRecords";
 import AppointmentsPanel from "../Appointments/AppointmentsPanel";
 import { Appointment } from "../../../models/appointment";
 import PrescriptionsPanel from "../Prescriptions/PrescriptionsPanel";
@@ -13,7 +12,7 @@ import { ExternalRecord } from "../../../models/externalRecord";
 import MedicalRecordsPanel from "../Medical Records/MedicalRecordsPanel";
 import { MedicalRecord } from "../../../models/medicalRecord";
 
-export const HospitalProfileOverview = () => {
+export const ProfileOverview = () => {
     const { id } = useParams();
     const {
         appointments,

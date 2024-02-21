@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { TbLogout } from "react-icons/tb";
 import { BsChevronDown } from "react-icons/bs";
 import { BiSolidUserCircle } from "react-icons/bi";
-import { FaUser } from "react-icons/fa";
 import {
     Menu,
     MenuButton,
@@ -13,20 +12,21 @@ import {
     MenuDivider,
     MenuGroup,
 } from "@chakra-ui/react";
-import { Link, NavLink } from "react-router-dom";
-import { LoginContext } from "../../contexts/loginContext";
+import { NavLink } from "react-router-dom";
 import Modal from "../common/Modal";
 import useProfiles from "../../hooks/useProfiles";
-import { roles } from "../../App";
 import { RiUser3Fill } from "react-icons/ri";
-import { ColourPaletteContext } from "../../contexts/colourPaletteContext";
 import useDoctors from "../../hooks/useDoctors";
-import { getCurrentDoctorId, logout } from "../../services/helper-service";
-import RenderByRole from "../common/RenderByRole";
+import {
+    getCurrentDoctorId,
+    getCurrentProfileId,
+    handleLogout,
+    setCurrentProfileId,
+} from "../../utilities/helper-service";
+import ProtectedComponent from "../common/ProtectedComponent";
+import colourPalette from "../../utilities/colour-palette";
 
-const UserProfiles = () => {
-    const { primaryColour } = useContext(ColourPaletteContext);
-
+const ProfilesMenuGroup = () => {
     const { profiles, error, isLoading } = useProfiles();
 
     return (
@@ -35,11 +35,20 @@ const UserProfiles = () => {
                 {profiles.map((profile) => (
                     <MenuItem
                         color={
-                            profile._id == getCurrentDoctorId()
-                                ? primaryColour
+                            profile._id == getCurrentProfileId()
+                                ? colourPalette.primary
                                 : "gray.800"
                         }
+                        backgroundColor={
+                            profile._id == getCurrentProfileId()
+                                ? colourPalette.primaryBg
+                                : ""
+                        }
                         icon={<RiUser3Fill />}
+                        onClick={() => {
+                            setCurrentProfileId(profile._id);
+                            window.location.reload();
+                        }}
                     >
                         {profile.name}
                     </MenuItem>
@@ -51,9 +60,7 @@ const UserProfiles = () => {
     );
 };
 
-const HospitalDoctors = () => {
-    const { primaryColour } = useContext(ColourPaletteContext);
-
+const DoctorsMenuGroup = () => {
     const { doctors, error, isLoading } = useDoctors();
 
     return (
@@ -63,7 +70,7 @@ const HospitalDoctors = () => {
                     <MenuItem
                         color={
                             d._id == getCurrentDoctorId()
-                                ? primaryColour
+                                ? colourPalette.primary
                                 : "gray.800"
                         }
                         icon={<RiUser3Fill />}
@@ -79,11 +86,9 @@ const HospitalDoctors = () => {
 };
 
 const AccountDropdown = () => {
-    const { isLoggedIn, setLoggedIn, accessLevel, setAccessLevel } =
-        useContext(LoginContext);
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    return isLoggedIn ? (
+    return (
         <>
             <Modal
                 header="Logout"
@@ -92,7 +97,11 @@ const AccountDropdown = () => {
                 isOpen={isOpen}
                 renderFooter={() => (
                     <>
-                        <Button colorScheme="pink" mr={3} onClick={logout}>
+                        <Button
+                            colorScheme="pink"
+                            mr={3}
+                            onClick={handleLogout}
+                        >
                             Yes
                         </Button>
                         <Button onClick={onClose}>Cancel</Button>
@@ -109,18 +118,10 @@ const AccountDropdown = () => {
                     Account
                 </MenuButton>
                 <MenuList>
-                    <RenderByRole
-                        items={[
-                            {
-                                accessLevel: roles.user,
-                                component: <UserProfiles />,
-                            },
-                            {
-                                accessLevel: roles.hospital,
-                                component: <></>,
-                            },
-                        ]}
-                    ></RenderByRole>
+                    <ProtectedComponent
+                        hospital={<></>}
+                        user={<ProfilesMenuGroup />}
+                    ></ProtectedComponent>
 
                     <MenuItem icon={<TbLogout />} onClick={onOpen}>
                         Logout
@@ -128,16 +129,6 @@ const AccountDropdown = () => {
                 </MenuList>
             </Menu>
         </>
-    ) : (
-        <Button
-            as={NavLink}
-            to="/login"
-            colorScheme="pink"
-            variant="outline"
-            size={"sm"}
-        >
-            Login
-        </Button>
     );
 };
 

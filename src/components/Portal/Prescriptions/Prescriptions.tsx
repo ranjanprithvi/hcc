@@ -1,29 +1,8 @@
-import {
-    Card,
-    CardHeader,
-    Heading,
-    CardBody,
-    HStack,
-    Button,
-    Divider,
-    Table,
-    TableContainer,
-    Tbody,
-    Td,
-    Th,
-    Thead,
-    Tr,
-} from "@chakra-ui/react";
-import { BiFolder, BiNotepad } from "react-icons/bi";
-import { BsDownload } from "react-icons/bs";
-import moment from "moment";
+import { VStack } from "@chakra-ui/react";
 import { Prescription } from "../../../models/prescription";
-import { Doctor } from "../../../models/doctor";
-import { Hospital } from "../../../models/hospital";
-import { PiNote } from "react-icons/pi";
-import { useContext } from "react";
-import { ColourPaletteContext } from "../../../contexts/colourPaletteContext";
 import PrescriptionsPanel from "./PrescriptionsPanel";
+import ExternalPrescriptionsPanel from "./ExternalPrescriptionsPanel";
+import { ExternalPrescription } from "../../../models/externalPrescription";
 
 const mockPrescriptions: Prescription[] = [
     {
@@ -85,8 +64,47 @@ const mockPrescriptions: Prescription[] = [
     },
 ];
 
+const mockExternalPrescriptions: ExternalPrescription[] = [
+    {
+        _id: "1",
+        profile: "123",
+        doctor: "Dr Suess",
+        hospital: "Suess Hospital",
+        specialization: { _id: "1", name: "Cardiology" },
+        dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
+        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
+        folderPath: "123",
+    },
+    {
+        _id: "2",
+        profile: "123",
+        doctor: "Dr. Shashi Tharoor",
+        hospital: "Shashi Tharoor Hospital",
+        specialization: { _id: "1", name: "Cardiology" },
+        dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
+        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
+        folderPath: "123",
+    },
+    {
+        _id: "3",
+        profile: "123",
+        doctor: "Dr. APJ Abdul Kalam",
+        hospital: "APJ Abdul Kalam Hospital",
+        specialization: { _id: "1", name: "Cardiology" },
+        dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
+        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
+        folderPath: "123",
+    },
+];
 const Prescriptions = () => {
-    return <PrescriptionsPanel prescriptions={mockPrescriptions} />;
+    return (
+        <>
+            <PrescriptionsPanel prescriptions={mockPrescriptions} />
+            <ExternalPrescriptionsPanel
+                externalPrescriptions={mockExternalPrescriptions}
+            />
+        </>
+    );
 };
 
 export default Prescriptions;

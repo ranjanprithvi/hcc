@@ -13,6 +13,7 @@ export const Landing = () => {
             templateAreas={`"nav" 
               "main"`}
             templateColumns={"100vw"}
+            templateRows={"8vh 92vh"}
         >
             <GridItem area="nav">
                 <NavBar />

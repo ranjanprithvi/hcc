@@ -11,7 +11,8 @@ import {
     getUser,
     setCurrentProfileId,
     setToken,
-} from "../../services/helper-service";
+    setUser,
+} from "../../utilities/helper-service";
 import { roles } from "../../App";
 // import useToast from "../hooks/generic/useToast";
 
@@ -58,6 +59,7 @@ const LoginForm = () => {
                 console.log(response.data);
 
                 setToken(response.data.token);
+                setUser();
                 if (getAccessLevel() === roles.user) {
                     const profiles = getUser().profiles;
                     profiles && profiles[0] && setCurrentProfileId(profiles[0]);
@@ -66,7 +68,7 @@ const LoginForm = () => {
                 //     setCurrentProfileId(getUser().hospital.doctors[0] || "");
                 // }
                 setLoggedIn(true);
-                window.location.replace("/portal/hospital/appointments");
+                window.location.replace("/portal/appointments");
                 // navigate("/books");
             })
             .catch((err) => {

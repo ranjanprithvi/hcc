@@ -3,20 +3,20 @@ import NotFound from "./components/common/NotFound";
 import LoginForm from "./components/Account/LoginForm";
 import Home from "./components/Landing/Home";
 import Facilities from "./components/Landing/Facilities";
-import UserAppointments from "./components/Portal/Appointments/UserAppointments";
-import ExternalRecords from "./components/Portal/Medical Records/ExternalRecords";
+import UserAppointments from "./components/Portal/Appointments/Appointments";
 import Profiles from "./components/Portal/Profiles/Profiles";
-import UserPrescriptions from "./components/Portal/Prescriptions/UserPrescriptions";
-import HospitalProfiles from "./components/Portal/Profiles/HospitalProfiles";
-import { HospitalAppointments } from "./components/Portal/Appointments/HospitalAppointments";
+import Prescriptions from "./components/Portal/Prescriptions/Prescriptions";
+import AllProfiles from "./components/Portal/Profiles/AllProfiles";
+import { AppointmentsDashboard } from "./components/Portal/Appointments/AppointmentsDashboard";
 import { Landing } from "./components/Landing/Landing";
 import { PortalLanding } from "./components/Portal/PortalLanding";
-import Records from "./components/Portal/Medical Records/UserRecords";
+import Records from "./components/Portal/Medical Records/MedicalRecords";
 import CreateSlots from "./components/Portal/Appointments/CreateSlots";
-import ProtectedHospitalComponent from "./components/common/ProtectedHospitalComponent";
-import UserBookAppointment from "./components/Portal/Appointments/UserBookAppointment";
+import UserBookAppointment from "./components/Portal/Appointments/BookAppointment";
 import ProfileForm from "./components/Portal/Profiles/ProfileForm";
-import { HospitalProfileOverview } from "./components/Portal/Profiles/HospitalProfileOverview";
+import { ProfileOverview } from "./components/Portal/Profiles/ProfileOverview";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import MedicalRecordForm from "./components/Portal/Medical Records/MedicalRecordForm";
 
 const Routes = () => {
     return (
@@ -25,50 +25,63 @@ const Routes = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/facilities" element={<Facilities />} />
             </Route>
-            <Route path="/portal" element={<PortalLanding />}>
+            <Route
+                path="/portal"
+                element={<ProtectedRoute user={<PortalLanding />} />}
+            >
                 <Route path="profiles/:id" element={<ProfileForm />} />
+                <Route
+                    path="profileOverview/:id"
+                    element={<ProfileOverview />}
+                />
 
                 <Route
-                    path="user/appointments"
-                    element={<UserAppointments />}
-                />
-                <Route
-                    path="user/appointments/book"
-                    element={<UserBookAppointment />}
-                />
-                <Route path="user/records" element={<Records />} />
-                <Route
-                    path="user/externalRecords"
-                    element={<ExternalRecords />}
-                />
-                <Route path="user/profiles" element={<Profiles />} />
-                <Route
-                    path="user/prescriptions"
-                    element={<UserPrescriptions />}
-                />
-                <Route
-                    path="hospital/appointments"
+                    path="appointments"
                     element={
-                        <ProtectedHospitalComponent nonHospitalRedirect="/portal/user/appointments">
-                            <HospitalAppointments />
-                        </ProtectedHospitalComponent>
+                        <ProtectedRoute
+                            hospital={<AppointmentsDashboard />}
+                            user={<UserAppointments />}
+                        ></ProtectedRoute>
                     }
                 />
                 <Route
-                    path="hospital/appointments/create"
-                    element={<CreateSlots />}
+                    path="appointments/book"
+                    element={
+                        <ProtectedRoute
+                            user={<UserBookAppointment />}
+                        ></ProtectedRoute>
+                    }
                 />
                 <Route
-                    path="hospital/profiles"
-                    element={<HospitalProfiles />}
+                    path="records"
+                    element={<ProtectedRoute user={<Records />} />}
                 />
                 <Route
-                    path="hospital/profiles/:id"
-                    element={<HospitalProfileOverview />}
+                    path="medicalRecords/:id"
+                    element={<ProtectedRoute user={<MedicalRecordForm />} />}
+                />
+                <Route
+                    path="profiles"
+                    element={
+                        <ProtectedRoute
+                            user={<Profiles />}
+                            hospital={<AllProfiles />}
+                        />
+                    }
+                />
+                <Route
+                    path="prescriptions"
+                    element={<ProtectedRoute user={<Prescriptions />} />}
+                />
+                <Route
+                    path="appointments/create"
+                    element={
+                        <ProtectedRoute
+                            hospital={<CreateSlots />}
+                        ></ProtectedRoute>
+                    }
                 />
             </Route>
-            <Route path="/users" element={<></>} />
-
             <Route path="/login" element={<LoginForm />} />
             <Route path="/not-found" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/not-found" replace />} />

@@ -4,16 +4,16 @@ import { LoginContext } from "../../contexts/loginContext";
 import { roles } from "../../App";
 
 interface Props {
-    adminComponent?: JSX.Element;
-    hospitalComponent?: JSX.Element;
-    userComponent?: JSX.Element;
+    admin?: JSX.Element;
+    hospital?: JSX.Element;
+    user?: JSX.Element;
     defaultComponent?: JSX.Element;
 }
 
 const ProtectedComponent = ({
-    adminComponent,
-    hospitalComponent,
-    userComponent,
+    admin,
+    hospital,
+    user,
     defaultComponent,
 }: Props) => {
     const { isLoggedIn, accessLevel } = useContext(LoginContext);
@@ -22,11 +22,13 @@ const ProtectedComponent = ({
 
     switch (accessLevel) {
         case roles.admin:
-            return adminComponent || null;
+            if (admin) return admin;
+
         case roles.hospital:
-            return hospitalComponent || null;
+            if (hospital) return hospital;
+
         default:
-            return userComponent || null;
+            return user || null;
     }
 };
 

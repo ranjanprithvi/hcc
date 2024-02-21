@@ -21,41 +21,41 @@ import {
     BiUserCircle,
 } from "react-icons/bi";
 import { Box } from "@chakra-ui/react";
-import { roles } from "../../App";
+import { getValueByRole } from "../../utilities/getValueByRole";
 
 const userSidebarList = [
     {
         name: "Appointments",
-        path: "/portal/user/appointments",
+        path: "/portal/appointments",
         icon: <BiCalendar />,
     },
     {
         name: "Medical Records",
-        path: "/portal/user/records",
+        path: "/portal/records",
         icon: <BiFolder />,
     },
     // {
     //     name: "External Records",
-    //     path: "/portal/user/externalRecords",
+    //     path: "/portal/externalRecords",
     //     icon: <BiFolderOpen />,
     // },
     {
         name: "Prescriptions",
-        path: "/portal/user/prescriptions",
+        path: "/portal/prescriptions",
         icon: <BiNote />,
     },
-    { name: "Profiles", path: "/portal/user/profiles", icon: <BiUserCircle /> },
+    { name: "Profiles", path: "/portal/profiles", icon: <BiUserCircle /> },
 ];
 const hospitalSidebarList = [
     {
         name: "Appointments",
-        path: "/portal/hospital/appointments",
+        path: "/portal/appointments",
         icon: <BiCalendar />,
     },
     {
         name: "Patients",
-        path: "/portal/hospital/profiles",
-        icon: <BiCalendar />,
+        path: "/portal/profiles",
+        icon: <BiUserCircle />,
     },
 ];
 export const PortalLanding = () => {
@@ -63,11 +63,11 @@ export const PortalLanding = () => {
     const bgColor = useColorModeValue("white", "gray.700");
 
     const { pathname } = useLocation();
-    console.log(pathname);
 
-    const { accessLevel } = useContext(LoginContext);
-    const sidebarList =
-        accessLevel >= roles.hospital ? hospitalSidebarList : userSidebarList;
+    const sideBarList = getValueByRole({
+        user: userSidebarList,
+        hospital: hospitalSidebarList,
+    });
 
     return (
         <Grid
@@ -83,7 +83,7 @@ export const PortalLanding = () => {
                 base: "100vw",
                 md: "240px 1fr",
             }}
-            templateRows={"8vh auto"}
+            templateRows={"8vh 92vh"}
         >
             <GridItem
                 area="asidenav"
@@ -99,36 +99,35 @@ export const PortalLanding = () => {
                         <Text fontWeight={"bold"} fontSize={"medium"}>
                             Heart Care Clinic
                         </Text>
-                        {accessLevel >= roles.hospital ? (
-                            <Text fontSize={"sm"} marginTop={"-10px"}>
-                                Admin
-                            </Text>
-                        ) : (
-                            <Text fontSize={"sm"} marginTop={"-10px"}>
-                                User Portal
-                            </Text>
-                        )}
+                        <Text fontSize={"sm"} marginTop={"-10px"}>
+                            {getValueByRole({
+                                hospital: "Admin Dashboard",
+                                user: "User Portal",
+                            })}
+                        </Text>
                     </VStack>
                 </HStack>
             </GridItem>
             <GridItem area={"aside"} paddingY={"20px"}>
                 <Box marginX={"10px"}>
-                    <SideBar items={sidebarList}></SideBar>
+                    <SideBar items={sideBarList} />
                 </Box>
             </GridItem>
 
-            <GridItem area="nav">
+            <GridItem area="nav" overflow={"hidden"}>
                 <PortalNavBar
                     heading={
-                        sidebarList.find((l) => l.path == pathname)?.name || ""
+                        getValueByRole({
+                            user: userSidebarList,
+                            hospital: hospitalSidebarList,
+                        }).find((l) => l.path == pathname)?.name || ""
                     }
                 />
             </GridItem>
             <GridItem
                 area="main"
                 padding={"2rem 3rem"}
-                // background={"gray.50"}
-                height={"100%"}
+                background={"gray.50"}
                 overflow={"scroll"}
             >
                 <Outlet />

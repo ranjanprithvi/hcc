@@ -5,12 +5,10 @@ import {
     CardBody,
     Stack,
     StackDivider,
-    HStack,
     Button,
     Divider,
     Grid,
     Box,
-    VStack,
     Flex,
     useDisclosure,
     useToast,
@@ -18,17 +16,16 @@ import {
 import { Appointment, BookAppointmentData } from "../../../models/appointment";
 import moment from "moment";
 import { BiPlus } from "react-icons/bi";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Form from "../../common/Form";
 import { BsCalendar } from "react-icons/bs";
 import useAppointments from "../../../hooks/useAppointments";
 import { doctorId } from "../../../App";
-import { ColourPaletteContext } from "../../../contexts/colourPaletteContext";
 import Modal from "../../common/Modal";
 import { httpService } from "../../../services/http-service";
 import { useNavigate } from "react-router-dom";
+import colourPalette from "../../../utilities/colour-palette";
 
 interface Props {
     appointments?: Appointment[];
@@ -60,7 +57,6 @@ const mockAppointments: Appointment[] = [
 
 const UserBookAppointment = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { primaryColour } = useContext(ColourPaletteContext);
     const [date, setDate] = useState(new Date());
 
     const navigate = useNavigate();
@@ -71,7 +67,7 @@ const UserBookAppointment = () => {
         bookAppointmentService
             .patch<BookAppointmentData, Appointment>(data, id)
             .then((res) => {
-                navigate("/portal/hospital/appointments", {
+                navigate("/portal/appointments", {
                     replace: true,
                 });
             })
@@ -107,7 +103,7 @@ const UserBookAppointment = () => {
                     <>
                         <Button
                             colorScheme="pink"
-                            backgroundColor={primaryColour}
+                            backgroundColor={colourPalette.primary}
                             mr={3}
                             onClick={() => {
                                 handleConfirm(
@@ -166,10 +162,7 @@ const UserBookAppointment = () => {
                                         justifyContent={"center"}
                                         alignItems={"center"}
                                     >
-                                        <Heading
-                                            size="xs"
-                                            textTransform="uppercase"
-                                        >
+                                        <Heading size="xs">
                                             {moment(a.timeSlot).format(
                                                 "h:mm a"
                                             )}
@@ -178,14 +171,9 @@ const UserBookAppointment = () => {
                                             <Button
                                                 size="xs"
                                                 leftIcon={<BiPlus />}
-                                                color={"orange.500"}
+                                                colorScheme="orange"
+                                                variant={"outline"}
                                                 border={"1px"}
-                                                borderColor={"orange.200"}
-                                                backgroundColor={"white"}
-                                                _hover={{
-                                                    backgroundColor:
-                                                        "orange.100",
-                                                }}
                                                 marginX={"10px"}
                                                 onClick={() => {
                                                     setSelectedAppointmentId(

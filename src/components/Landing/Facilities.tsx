@@ -1,15 +1,12 @@
 import { Heading, Text, Image, VStack, HStack, Flex } from "@chakra-ui/react";
-import { useContext } from "react";
-import { ColourPaletteContext } from "../../contexts/colourPaletteContext";
+import colourPalette from "../../utilities/colour-palette";
 
 function Facilities() {
-    const { primaryColour, secondaryBgColour } =
-        useContext(ColourPaletteContext);
     return (
         <Flex flexDirection="column" width={"100vw"}>
             <HStack
                 flexDirection={{ base: "column", md: "row" }}
-                background={secondaryBgColour}
+                background={colourPalette.secondaryBg}
                 padding="20px"
             >
                 <Image
@@ -18,7 +15,10 @@ function Facilities() {
                     width="500px"
                 />
                 <VStack paddingLeft={{ base: 0, md: "20px" }}>
-                    <Heading alignSelf="flex-start" color={primaryColour}>
+                    <Heading
+                        alignSelf="flex-start"
+                        color={colourPalette.secondary}
+                    >
                         Diagnostics
                     </Heading>
                     <Text>
@@ -40,7 +40,10 @@ function Facilities() {
                 />
 
                 <VStack paddingRight={{ base: 0, md: "20px" }}>
-                    <Heading alignSelf="flex-start" color={primaryColour}>
+                    <Heading
+                        alignSelf="flex-start"
+                        color={colourPalette.secondary}
+                    >
                         Pathology
                     </Heading>
                     <Text>
@@ -52,14 +55,17 @@ function Facilities() {
 
             <HStack
                 flexDirection={{ base: "column", md: "row" }}
-                background={secondaryBgColour}
+                background={colourPalette.secondaryBg}
                 padding="20px"
                 alignItems="center"
             >
                 <Image src="/preventive.jpg" width="500px" />
                 <VStack paddingLeft={{ base: 0, md: "20px" }}>
                     {" "}
-                    <Heading alignSelf="flex-start" color={primaryColour}>
+                    <Heading
+                        alignSelf="flex-start"
+                        color={colourPalette.secondary}
+                    >
                         Preventive Medicine
                     </Heading>
                     <Text>
@@ -76,7 +82,10 @@ function Facilities() {
             >
                 <Image src="/risk.png" width="500px" />
                 <VStack paddingRight={{ base: 0, md: "20px" }}>
-                    <Heading alignSelf="flex-start" color={primaryColour}>
+                    <Heading
+                        alignSelf="flex-start"
+                        color={colourPalette.secondary}
+                    >
                         Risk Assessment
                     </Heading>
                     <Text>

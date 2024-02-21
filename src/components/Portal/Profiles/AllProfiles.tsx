@@ -3,12 +3,8 @@ import {
     CardHeader,
     Heading,
     CardBody,
-    Stack,
-    StackDivider,
-    Box,
     HStack,
     Button,
-    Flex,
     Divider,
     Table,
     TableContainer,
@@ -20,21 +16,12 @@ import {
 } from "@chakra-ui/react";
 import { Profile } from "../../../models/profile";
 import moment from "moment";
-import { IoMdCalendar } from "react-icons/io";
-import { VscDebugBreakpointDataUnverified } from "react-icons/vsc";
-import {
-    BiCalendarAlt,
-    BiCalendarX,
-    BiFolderOpen,
-    BiPlus,
-    BiPlusMedical,
-} from "react-icons/bi";
+import { BiFolderOpen, BiPlus, BiPlusMedical } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { useContext } from "react";
-import { ColourPaletteContext } from "../../../contexts/colourPaletteContext";
 import useProfiles from "../../../hooks/useProfiles";
-import { FaEdit, FaDownload, FaPen } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 import { LuUser } from "react-icons/lu";
+import colourPalette from "../../../utilities/colour-palette";
 
 const mockProfiles: Profile[] = [
     {
@@ -65,8 +52,7 @@ const mockProfiles: Profile[] = [
     },
 ];
 
-const HospitalProfiles = () => {
-    const { primaryColour } = useContext(ColourPaletteContext);
+const AllProfiles = () => {
     const { profiles, error, isLoading } = useProfiles({
         profileId: localStorage.getItem("currentProfileId") || "",
     });
@@ -76,19 +62,19 @@ const HospitalProfiles = () => {
             <Card boxShadow={"0px 0px 10px #b3b3b3"} maxWidth={"75vw"}>
                 <CardHeader>
                     <HStack justifyContent={"space-between"} paddingX={"20px"}>
-                        <HStack color={primaryColour}>
+                        <HStack color={colourPalette.primary}>
                             <BiFolderOpen size="20px" />
                             <Heading size="md">Patients</Heading>
                         </HStack>
                         <Button
                             as={Link}
-                            to="/portal/user/appointments/new"
+                            to="/portal/appointments/new"
                             size="sm"
-                            colorScheme="orange"
-                            backgroundColor={primaryColour}
-                            leftIcon={<BiPlusMedical />}
+                            colorScheme="pink"
+                            variant={"outline"}
+                            leftIcon={<BiPlus />}
                         >
-                            Add Record
+                            Add Patient
                         </Button>
                     </HStack>
                 </CardHeader>
@@ -117,7 +103,7 @@ const HospitalProfiles = () => {
                                             <Button
                                                 size={"sm"}
                                                 as={Link}
-                                                to={`/portal/hospital/profiles/${profile._id}`}
+                                                to={`/portal/profileOverview/${profile._id}`}
                                                 variant={"link"}
                                                 color={"gray.800"}
                                             >
@@ -155,4 +141,4 @@ const HospitalProfiles = () => {
     );
 };
 
-export default HospitalProfiles;
+export default AllProfiles;

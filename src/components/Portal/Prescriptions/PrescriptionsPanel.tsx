@@ -15,30 +15,47 @@ import {
     Tr,
 } from "@chakra-ui/react";
 import moment from "moment";
-import React, { useContext } from "react";
 import { BsDownload } from "react-icons/bs";
 import { PiNote } from "react-icons/pi";
 import { Doctor } from "../../../models/doctor";
 import { Hospital } from "../../../models/hospital";
-import { ColourPaletteContext } from "../../../contexts/colourPaletteContext";
 import { Prescription } from "../../../models/prescription";
+import colourPalette from "../../../utilities/colour-palette";
+import { BiUpload } from "react-icons/bi";
+import ProtectedComponent from "../../common/ProtectedComponent";
+import { Link } from "react-router-dom";
 
 interface Props {
     prescriptions: Prescription[];
 }
 
 const PrescriptionsPanel = ({ prescriptions }: Props) => {
-    const { primaryColour } = useContext(ColourPaletteContext);
     return (
         <Card
             boxShadow={"0px 0px 10px #b3b3b3"}
             maxWidth={"75vw"}
             marginBottom={"1rem"}
         >
-            <CardHeader color={primaryColour}>
-                <HStack marginX={"20px"}>
-                    <PiNote size="20px" />
-                    <Heading size="md">Prescriptions</Heading>
+            <CardHeader color={colourPalette.primary}>
+                <HStack marginX={"20px"} justifyContent={"space-between"}>
+                    <HStack>
+                        <PiNote size="20px" />
+                        <Heading size="md">Prescriptions</Heading>
+                    </HStack>
+                    <ProtectedComponent
+                        hospital={
+                            <Button
+                                as={Link}
+                                to="/portal/externalRecords/new"
+                                size="sm"
+                                colorScheme="pink"
+                                variant={"outline"}
+                                leftIcon={<BiUpload />}
+                            >
+                                Upload Prescription
+                            </Button>
+                        }
+                    ></ProtectedComponent>
                 </HStack>
             </CardHeader>
             <Divider color={"gray.300"} />
