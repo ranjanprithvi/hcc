@@ -46,4 +46,4 @@ function App(props: WithAuthenticatorProps) {
     );
 }
 
-export default withAuthenticator(App);
+export default App;

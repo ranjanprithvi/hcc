@@ -153,12 +153,11 @@ const NavBar = () => {
                         }
                         defaultComponent={
                             <Button
-                                // as={NavLink}
-                                // to="/login"
+                                as={NavLink}
+                                to="/login"
                                 colorScheme="pink"
                                 variant="outline"
                                 size={"sm"}
-                                onClick={props.signOut}
                             >
                                 Login
                             </Button>
