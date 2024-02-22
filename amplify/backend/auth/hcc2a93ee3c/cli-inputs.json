@@ -45,10 +45,41 @@
         "verification-link"
       ]
     },
-    "userPoolGroupList": [],
+    "userPoolGroupList": [
+      "HCCUsers"
+    ],
     "serviceName": "Cognito",
     "verificationBucketName": "hcc2a93ee3cverificationbucket",
     "usernameCaseSensitive": false,
-    "useEnabledMfas": true
+    "useEnabledMfas": true,
+    "authRoleArn": {
+      "Fn::GetAtt": [
+        "AuthRole",
+        "Arn"
+      ]
+    },
+    "unauthRoleArn": {
+      "Fn::GetAtt": [
+        "UnauthRole",
+        "Arn"
+      ]
+    },
+    "breakCircularDependency": true,
+    "dependsOn": [
+      {
+        "category": "function",
+        "resourceName": "hcc2a93ee3cCustomMessage",
+        "triggerProvider": "Cognito",
+        "attributes": [
+          "Arn",
+          "Name"
+        ]
+      }
+    ],
+    "permissions": [],
+    "authTriggerConnections": "[\n  {\n    \"triggerType\": \"CustomMessage\",\n    \"lambdaFunctionName\": \"hcc2a93ee3cCustomMessage\"\n  }\n]",
+    "parentStack": {
+      "Ref": "AWS::StackId"
+    }
   }
 }

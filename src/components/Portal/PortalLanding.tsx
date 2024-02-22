@@ -13,9 +13,6 @@ import { useContext } from "react";
 import { LoginContext } from "../../contexts/loginContext";
 import PortalNavBar from "./PortalNavBar";
 import SideBar from "../common/SideBar";
-import type { WithAuthenticatorProps } from "@aws-amplify/ui-react";
-import { withAuthenticator } from "@aws-amplify/ui-react";
-import "@aws-amplify/ui-react/styles.css";
 
 import {
     BiCalendar,

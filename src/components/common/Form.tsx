@@ -8,11 +8,6 @@ import {
     Heading,
     Input,
     Select,
-    Slider,
-    SliderFilledTrack,
-    SliderMark,
-    SliderThumb,
-    SliderTrack,
     Textarea,
     VStack,
 } from "@chakra-ui/react";
@@ -23,11 +18,6 @@ export interface Option {
     value: string | number;
     label: string;
     disabled?: boolean;
-}
-
-interface SliderMarks {
-    value: number;
-    label: string;
 }
 
 export interface Field<T> {
@@ -68,7 +58,7 @@ const Form = <T extends FieldValues>({
     const {
         register,
         handleSubmit,
-        formState: { errors, isValid },
+        formState: { errors },
         reset,
     } = useForm<T>({
         resolver,

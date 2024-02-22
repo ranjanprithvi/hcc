@@ -25,6 +25,7 @@ import {
 } from "../../utilities/helper-service";
 import ProtectedComponent from "../common/ProtectedComponent";
 import colourPalette from "../../utilities/colour-palette";
+import { LoginContext } from "../../contexts/loginContext";
 
 const ProfilesMenuGroup = () => {
     const { profiles, error, isLoading } = useProfiles();
@@ -87,6 +88,7 @@ const DoctorsMenuGroup = () => {
 
 const AccountDropdown = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { props } = useContext(LoginContext);
 
     return (
         <>
@@ -123,7 +125,7 @@ const AccountDropdown = () => {
                         user={<ProfilesMenuGroup />}
                     ></ProtectedComponent>
 
-                    <MenuItem icon={<TbLogout />} onClick={onOpen}>
+                    <MenuItem icon={<TbLogout />} onClick={props.signOut}>
                         Logout
                     </MenuItem>
                 </MenuList>

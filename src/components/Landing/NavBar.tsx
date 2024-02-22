@@ -18,13 +18,14 @@ import {
     Text,
 } from "@chakra-ui/react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { useRef } from "react";
+import { useContext, useRef } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import logo from "/Logo.png";
 import AccountDropdown from "../Account/AccountDropdown";
 import ProtectedComponent from "../common/ProtectedComponent";
 import { getValueByRole } from "../../utilities/getValueByRole";
 import colourPalette from "../../utilities/colour-palette";
+import { LoginContext } from "../../contexts/loginContext";
 
 interface NavItem {
     label: string;
@@ -45,6 +46,8 @@ const NavBar = () => {
         { label: "Home", path: "/" },
         { label: "Services", path: "/facilities" },
     ];
+
+    const { props } = useContext(LoginContext);
 
     return (
         <>
@@ -150,11 +153,12 @@ const NavBar = () => {
                         }
                         defaultComponent={
                             <Button
-                                as={NavLink}
-                                to="/login"
+                                // as={NavLink}
+                                // to="/login"
                                 colorScheme="pink"
                                 variant="outline"
                                 size={"sm"}
+                                onClick={props.signOut}
                             >
                                 Login
                             </Button>

@@ -3,6 +3,9 @@ import { LoginContext } from "./contexts/loginContext";
 import { useBreakpointValue } from "@chakra-ui/react";
 import Routes from "./Routes";
 import { getAccessLevel, getToken } from "./utilities/helper-service";
+import type { WithAuthenticatorProps } from "@aws-amplify/ui-react";
+import { withAuthenticator } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
 
 export const roles = {
     user: 1,
@@ -12,7 +15,7 @@ export const roles = {
 
 export const doctorId = "65c8d613c5a2abf941ae6c57";
 
-function App() {
+function App(props: WithAuthenticatorProps) {
     const [isLoggedIn, setLoggedIn] = useState<boolean>(getToken() !== null);
     const [accessLevel, setAccessLevel] = useState(getAccessLevel());
 
@@ -35,6 +38,7 @@ function App() {
                 setLoggedIn: setLoggedIn,
                 accessLevel,
                 setAccessLevel,
+                props: props,
             }}
         >
             <Routes />
@@ -42,4 +46,4 @@ function App() {
     );
 }
 
-export default App;
+export default withAuthenticator(App);
