@@ -1,0 +1,33 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-hcc-dev-21502-authRole",
+      "UnauthRoleArn": "arn:aws:iam::198427895279:role/amplify-hcc-dev-21502-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::198427895279:role/amplify-hcc-dev-21502-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-hcc-dev-21502-deployment",
+      "UnauthRoleName": "amplify-hcc-dev-21502-unauthRole",
+      "StackName": "amplify-hcc-dev-21502",
+      "StackId": "arn:aws:cloudformation:ap-south-1:198427895279:stack/amplify-hcc-dev-21502/a5bd5e40-d056-11ee-ba66-0af9bd5255bb",
+      "AmplifyAppId": "db99j6zcfnl51",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-hcc-dev-21502-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    },
+    "categories": {
+      "auth": {
+        "hcc2a93ee3c": {}
+      },
+      "function": {
+        "hcc2a93ee3cCustomMessage": {
+          "REDIRECTURL": "http://localhost:3000/",
+          "EMAILSUBJECT": "Please confirm your account",
+          "EMAILMESSAGE": "Please confirm your account creation by clicking on the link below",
+          "deploymentBucketName": "amplify-hcc-dev-21502-deployment",
+          "s3Key": "amplify-builds/hcc2a93ee3cCustomMessage-57374f6c6e2f594c7876-build.zip"
+        }
+      },
+      "storage": {
+        "s3dbbc2140": {}
+      }
+    }
+  }
+}

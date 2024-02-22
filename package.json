@@ -10,12 +10,14 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@aws-amplify/ui-react": "^6.1.4",
         "@chakra-ui/react": "^2.8.1",
         "@emotion/react": "^11.11.1",
         "@emotion/styled": "^11.11.0",
         "@hookform/resolvers": "^2.9.11",
         "@types/jsonwebtoken": "^9.0.5",
         "@types/react-datepicker": "^4.19.6",
+        "aws-amplify": "^6.0.17",
         "aws-sdk": "^2.1561.0",
         "axios": "^1.5.0",
         "framer-motion": "^10.16.4",

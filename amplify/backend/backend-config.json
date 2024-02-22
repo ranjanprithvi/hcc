@@ -1,0 +1,96 @@
+{
+  "auth": {
+    "hcc2a93ee3c": {
+      "customAuth": false,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Arn",
+            "Name"
+          ],
+          "category": "function",
+          "resourceName": "hcc2a93ee3cCustomMessage",
+          "triggerProvider": "Cognito"
+        }
+      ],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
+  "function": {
+    "hcc2a93ee3cCustomMessage": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_hcc2a93ee3cCustomMessage_EMAILMESSAGE": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hcc2a93ee3cCustomMessage"
+        }
+      ]
+    },
+    "AMPLIFY_function_hcc2a93ee3cCustomMessage_EMAILSUBJECT": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hcc2a93ee3cCustomMessage"
+        }
+      ]
+    },
+    "AMPLIFY_function_hcc2a93ee3cCustomMessage_REDIRECTURL": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hcc2a93ee3cCustomMessage"
+        }
+      ]
+    },
+    "AMPLIFY_function_hcc2a93ee3cCustomMessage_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hcc2a93ee3cCustomMessage"
+        }
+      ]
+    },
+    "AMPLIFY_function_hcc2a93ee3cCustomMessage_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hcc2a93ee3cCustomMessage"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "s3dbbc2140": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
+    }
+  }
+}

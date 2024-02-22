@@ -6,8 +6,11 @@ import App from "./App";
 import "./normalise.css";
 import "./loader.css";
 import "./index.css";
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Amplify } from "aws-amplify";
+import amplifyconfig from "./amplifyconfiguration.json";
+
+Amplify.configure(amplifyconfig);
 
 const router = createBrowserRouter([
     {

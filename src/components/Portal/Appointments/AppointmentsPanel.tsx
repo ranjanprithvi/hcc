@@ -1,10 +1,21 @@
-import { HStack, Heading, Button, Grid, Box, Text } from "@chakra-ui/react";
+import {
+    HStack,
+    Heading,
+    Button,
+    Grid,
+    Box,
+    Text,
+    GridItem,
+    Flex,
+    VStack,
+} from "@chakra-ui/react";
 import moment from "moment";
 import {
     BiCalendarAlt,
     BiCalendarX,
     BiCalendarPlus,
     BiCalendarEvent,
+    BiCalendarEdit,
 } from "react-icons/bi";
 import { IoMdCalendar } from "react-icons/io";
 import { Link } from "react-router-dom";
@@ -26,132 +37,21 @@ const AppointmentsPanel = ({ appointments, error }: Props) => {
     );
     return (
         <>
-            <HStack
-                justifyContent={"space-between"}
-                alignItems={"flex-start"}
-                paddingX={"20px"}
+            <Grid
+                templateColumns={"1fr 1fr 170px"}
+                columnGap={"50px"}
+                rowGap={"10px"}
+                padding={"20px"}
             >
-                <Box>
-                    <Box marginBottom={"20px"}>
-                        <HStack>
-                            <BiCalendarEvent
-                                size="20px"
-                                color={colourPalette.primary}
-                            />
-                            <Heading size="md">Upcoming Appointments</Heading>
-                        </HStack>
-
-                        <Grid
-                            templateColumns={"auto auto auto"}
-                            columnGap={"50px"}
-                            padding={"20px"}
-                        >
-                            {upcomingAppointments.length == 0 && (
-                                <Text>There are no upcoming appointments</Text>
-                            )}
-                            {upcomingAppointments.map((a) => (
-                                <Box
-                                    background={colourPalette.primaryBg}
-                                    padding={"20px 60px 20px 40px"}
-                                >
-                                    <Heading size="xs">
-                                        {moment(a.timeSlot).format(
-                                            "dddd, MMMM Do YYYY"
-                                        )}
-                                    </Heading>
-                                    <Text fontSize="x-large">
-                                        {moment(a.timeSlot).format("h:mm a")}
-                                    </Text>
-
-                                    {a.cancelled ? (
-                                        <div>Cancelled</div>
-                                    ) : (
-                                        new Date(a.timeSlot) > new Date() && (
-                                            <HStack>
-                                                <Button
-                                                    size="xs"
-                                                    leftIcon={<IoMdCalendar />}
-                                                    colorScheme="orange"
-                                                    variant={"outline"}
-                                                >
-                                                    Reschedule
-                                                </Button>
-
-                                                <Button
-                                                    size="xs"
-                                                    leftIcon={<BiCalendarX />}
-                                                    colorScheme="red"
-                                                    variant={"outline"}
-                                                >
-                                                    Cancel
-                                                </Button>
-                                            </HStack>
-                                        )
-                                    )}
-                                </Box>
-                            ))}
-                        </Grid>
-                    </Box>
-                    <Box marginBottom={"30px"}>
-                        <HStack>
-                            <BiCalendarAlt
-                                size="20px"
-                                color={colourPalette.secondary}
-                            />
-                            <Heading size="md">Past Appointments</Heading>
-                        </HStack>
-
-                        <Grid
-                            templateColumns={"auto auto auto"}
-                            columnGap={"50px"}
-                            padding={"20px"}
-                        >
-                            {pastAppointments.length == 0 && (
-                                <Text>There are no past appointments</Text>
-                            )}
-                            {pastAppointments.map((a) => (
-                                <Box
-                                    background={colourPalette.secondaryBg}
-                                    padding={"20px 60px 20px 40px"}
-                                >
-                                    <Heading size="xs">
-                                        {moment(a.timeSlot).format(
-                                            "dddd, MMMM Do YYYY"
-                                        )}
-                                    </Heading>
-                                    <Text fontSize="x-large">
-                                        {moment(a.timeSlot).format("h:mm a")}
-                                    </Text>
-                                    {a.cancelled ? (
-                                        <div>Cancelled</div>
-                                    ) : (
-                                        new Date(a.timeSlot) > new Date() && (
-                                            <HStack>
-                                                <Button
-                                                    size="xs"
-                                                    leftIcon={<IoMdCalendar />}
-                                                    colorScheme="orange"
-                                                    variant={"outline"}
-                                                >
-                                                    Reschedule
-                                                </Button>
-
-                                                <Button
-                                                    size="xs"
-                                                    leftIcon={<BiCalendarX />}
-                                                    colorScheme="red"
-                                                    variant={"outline"}
-                                                >
-                                                    Cancel
-                                                </Button>
-                                            </HStack>
-                                        )
-                                    )}
-                                </Box>
-                            ))}
-                        </Grid>
-                    </Box>
-                </Box>
+                <GridItem colSpan={2}>
+                    <HStack>
+                        <BiCalendarEvent
+                            size="20px"
+                            color={colourPalette.primary}
+                        />
+                        <Heading size="md">Upcoming Appointments</Heading>
+                    </HStack>
+                </GridItem>
                 <Button
                     as={Link}
                     to="/portal/appointments/book"
@@ -171,7 +71,86 @@ const AppointmentsPanel = ({ appointments, error }: Props) => {
                 >
                     Book Appointment
                 </Button>
-            </HStack>
+                {upcomingAppointments.length == 0 && (
+                    <Text>There are no upcoming appointments</Text>
+                )}
+                {upcomingAppointments.map((a) => (
+                    <Box
+                        background={colourPalette.primaryBg}
+                        padding={"20px 30px 20px 40px"}
+                    >
+                        <HStack justifyContent={"space-between"} width={"100%"}>
+                            <VStack alignItems={"flex-start"}>
+                                <Heading size="xs">
+                                    {moment(a.timeSlot).format(
+                                        "ddd, MMM Do YYYY"
+                                    )}
+                                </Heading>
+
+                                <Text fontSize="x-large">
+                                    {moment(a.timeSlot).format("h:mm a")}
+                                </Text>
+                            </VStack>
+
+                            <VStack alignItems={"stretch"}>
+                                <Button
+                                    size="xs"
+                                    leftIcon={<IoMdCalendar />}
+                                    colorScheme="pink"
+                                    variant={"outline"}
+                                >
+                                    Reschedule
+                                </Button>
+
+                                <Button
+                                    justifyContent={"flex-start"}
+                                    size="xs"
+                                    leftIcon={<BiCalendarX />}
+                                    colorScheme="orange"
+                                    variant={"outline"}
+                                >
+                                    Cancel
+                                </Button>
+                            </VStack>
+                        </HStack>
+                    </Box>
+                ))}
+            </Grid>
+            <Grid
+                templateColumns={"1fr 1fr 170px"}
+                columnGap={"50px"}
+                rowGap={"20px"}
+                padding={"20px"}
+            >
+                <HStack>
+                    <BiCalendarAlt
+                        size="20px"
+                        color={colourPalette.secondary}
+                    />
+                    <Heading size="md">Past Appointments</Heading>
+                </HStack>
+
+                {pastAppointments.length == 0 && (
+                    <GridItem colSpan={3}>
+                        <Text>There are no past appointments</Text>
+                    </GridItem>
+                )}
+                {pastAppointments.map((a, idx) => (
+                    <GridItem
+                        background={colourPalette.secondaryBg}
+                        padding={"20px 30px 20px 40px"}
+                        gridColumn={idx % 2 == 0 ? 1 : 2}
+                    >
+                        <Heading size="xs">
+                            {moment(a.timeSlot).format("ddd, MMM Do YYYY")}
+                        </Heading>
+                        <Text fontSize="x-large">
+                            {moment(a.timeSlot).format("h:mm a")}
+                        </Text>
+                        {a.cancelled && <div>Cancelled</div>}
+                    </GridItem>
+                ))}
+            </Grid>
         </>
     );
 };

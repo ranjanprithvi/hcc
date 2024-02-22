@@ -1,0 +1,13 @@
+{
+  "resourceName": "s3dbbc2140",
+  "policyUUID": "dbbc2140",
+  "bucketName": "hcc-databank",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

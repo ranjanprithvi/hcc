@@ -17,6 +17,7 @@ import ProfileForm from "./components/Portal/Profiles/ProfileForm";
 import { ProfileOverview } from "./components/Portal/Profiles/ProfileOverview";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import MedicalRecordForm from "./components/Portal/Medical Records/MedicalRecordForm";
+import TestForm from "./components/Account/TestForm";
 
 const Routes = () => {
     return (
