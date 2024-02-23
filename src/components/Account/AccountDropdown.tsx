@@ -125,7 +125,7 @@ const AccountDropdown = () => {
                         user={<ProfilesMenuGroup />}
                     ></ProtectedComponent>
 
-                    <MenuItem icon={<TbLogout />} onClick={props.signOut}>
+                    <MenuItem icon={<TbLogout />} onClick={onOpen}>
                         Logout
                     </MenuItem>
                 </MenuList>
