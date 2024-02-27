@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { Flex } from "@aws-amplify/ui-react";
 
 export interface Option {
     value: string | number;
@@ -74,8 +75,22 @@ const Form = <T extends FieldValues>({
     function renderInput({ label, name, inputType, pattern }: Field<T>) {
         return (
             <FormControl>
-                <FormLabel htmlFor={name}>{label}</FormLabel>
+                <FormLabel
+                    htmlFor={name}
+                    marginX={"10px"}
+                    marginY={"0"}
+                    fontSize={"12px"}
+                    fontWeight={"bold"}
+                >
+                    {label}
+                </FormLabel>
                 <Input
+                    background={"#f6f6f6"}
+                    border={"none"}
+                    paddingX={"12px"}
+                    size={"sm"}
+                    fontSize={"14px"}
+                    color={"gray.700"}
                     step="any"
                     id={name}
                     type={inputType}
@@ -85,6 +100,7 @@ const Form = <T extends FieldValues>({
                             inputType == "number" || inputType == "tel",
                     })}
                     onWheel={(e) => (e.target as HTMLInputElement).blur()} // Prevents scrolling from skewing number input
+                    multiple={inputType == "file"}
                 />
             </FormControl>
         );
@@ -125,8 +141,22 @@ const Form = <T extends FieldValues>({
     }: Field<T>) {
         return (
             <FormControl>
-                <FormLabel htmlFor={name}>{label}</FormLabel>
+                <FormLabel
+                    htmlFor={name}
+                    marginX={"10px"}
+                    marginY={"0"}
+                    fontSize={"12px"}
+                    fontWeight={"bold"}
+                >
+                    {label}
+                </FormLabel>
                 <Select
+                    background={"#f6f6f6"}
+                    border={"none"}
+                    paddingY={"4px"}
+                    paddingX={"2px"}
+                    size={"sm"}
+                    fontSize={"14px"}
                     placeholder={placeholder}
                     {...register(name, {
                         valueAsNumber: inputType == "number",
@@ -227,28 +257,47 @@ const Form = <T extends FieldValues>({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <VStack>
-                <Heading marginBottom="5">{heading}</Heading>
-                {fields.map((field) => (
-                    <FormControl
-                        key={field.name}
-                        marginBottom={3}
-                        isInvalid={errors[field.name] ? true : false}
-                    >
-                        {renderField(field)}
-                    </FormControl>
-                ))}
+            <Flex
+                direction="column"
+                alignItems="center"
+                justifyContent="center"
+            >
+                <VStack width={"60%"}>
+                    <Heading size={"lg"} marginBottom="5">
+                        {heading}
+                    </Heading>
+                    {fields.map((field) => (
+                        <FormControl
+                            key={field.name}
+                            marginBottom={3}
+                            isInvalid={errors[field.name] ? true : false}
+                        >
+                            {renderField(field)}
+                        </FormControl>
+                    ))}
 
-                <HStack justifyContent="flex-end">
-                    {/* <Button isDisabled={!isValid} colorScheme="green" type="submit"> */}
-                    <Button colorScheme="green" type="submit" id="submit">
-                        {submitButtonLabel || "Submit"}
-                    </Button>
-                    <Button onClick={() => navigate(-1)} colorScheme="gray">
-                        Cancel
-                    </Button>
-                </HStack>
-            </VStack>
+                    <HStack alignSelf={"flex-end"} marginTop={"10px"}>
+                        {/* <Button isDisabled={!isValid} colorScheme="green" type="submit"> */}
+                        <Button
+                            size={"sm"}
+                            borderRadius={"2px"}
+                            colorScheme="pink"
+                            type="submit"
+                            id="submit"
+                        >
+                            {submitButtonLabel || "Submit"}
+                        </Button>
+                        <Button
+                            size={"sm"}
+                            borderRadius={"2px"}
+                            onClick={() => navigate(-1)}
+                            colorScheme="gray"
+                        >
+                            Cancel
+                        </Button>
+                    </HStack>
+                </VStack>
+            </Flex>
         </form>
     );
 };

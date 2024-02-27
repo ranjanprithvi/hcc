@@ -219,9 +219,7 @@ export const AppointmentsDashboard = () => {
             <CardBody>
                 <VStack width={"100%"}>
                     {isLoading ? (
-                        <Box marginTop={"200px"}>
-                            <Loader />
-                        </Box>
+                        <Loader />
                     ) : appointments.length > 0 ? (
                         <VStack width={"65%"}>
                             {appointments
@@ -407,7 +405,7 @@ export const AppointmentsDashboard = () => {
                                 ))}
                         </VStack>
                     ) : (
-                        <Text>No appointments found</Text>
+                        <Text>No appointment slots found</Text>
                     )}
                 </VStack>
             </CardBody>

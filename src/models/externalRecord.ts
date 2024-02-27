@@ -10,7 +10,6 @@ export interface ExternalRecord {
     hospital: string;
     specialization: Specialization;
     dateOnDocument: Date;
-    recordName: string;
     recordType: string;
     folderPath: string; // s3 path + record name
     files: File[] | string[];

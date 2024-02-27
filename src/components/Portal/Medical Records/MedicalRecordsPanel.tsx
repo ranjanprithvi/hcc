@@ -13,21 +13,37 @@ import {
     Th,
     Thead,
     Tr,
+    useToast,
 } from "@chakra-ui/react";
-import { BiFolder, BiPlusCircle, BiUpload } from "react-icons/bi";
+import { BiFolder, BiUpload } from "react-icons/bi";
 import { MedicalRecord } from "../../../models/medicalRecord";
 import { BsDownload } from "react-icons/bs";
-import { GoPencil } from "react-icons/go";
+import { GoTrash } from "react-icons/go";
 import moment from "moment";
 import colourPalette from "../../../utilities/colour-palette";
 import ProtectedComponent from "../../common/ProtectedComponent";
 import { Link } from "react-router-dom";
+import {
+    handleDelete,
+    handleDownload,
+} from "../../../utilities/record-manager-service";
+import Loader from "../../common/Loader";
 
 interface Props {
     medicalRecords: MedicalRecord[];
+    profileId?: string;
+    error: string;
+    isLoading: boolean;
 }
 
-const MedicalRecords = ({ medicalRecords }: Props) => {
+const MedicalRecords = ({
+    medicalRecords,
+    profileId,
+    error,
+    isLoading,
+}: Props) => {
+    const toast = useToast();
+
     return (
         <Card
             boxShadow={"0px 0px 10px #b3b3b3"}
@@ -44,7 +60,7 @@ const MedicalRecords = ({ medicalRecords }: Props) => {
                         hospital={
                             <Button
                                 as={Link}
-                                to="/portal/medicalRecords/new"
+                                to={`/portal/medicalRecords/new/${profileId}`}
                                 size="sm"
                                 colorScheme="pink"
                                 variant={"outline"}
@@ -58,59 +74,81 @@ const MedicalRecords = ({ medicalRecords }: Props) => {
             </CardHeader>
             <Divider color={"gray.300"} />
 
-            <CardBody>
-                <TableContainer paddingX={"20px"}>
-                    <Table variant="simple" size={"sm"}>
-                        <Thead>
-                            <Tr>
-                                <Th>Name</Th>
-                                <Th>Type</Th>
-                                <Th>Date</Th>
-                                <Th isNumeric></Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {medicalRecords.map((record) => (
-                                <Tr key={record._id}>
-                                    <Td>{record.recordName}</Td>
-                                    <Td>{record.recordType}</Td>
-                                    <Td>
-                                        {moment(record.dateOnDocument).format(
-                                            "DD/MM/YYYY"
-                                        )}
-                                    </Td>
+            {isLoading ? (
+                <Loader />
+            ) : error ? (
+                <div>{error}</div>
+            ) : (
+                <CardBody>
+                    <TableContainer paddingX={"20px"}>
+                        {medicalRecords.length === 0 ? (
+                            <>There are no records to show</>
+                        ) : (
+                            <Table variant="simple" size={"sm"}>
+                                <Thead>
+                                    <Tr>
+                                        <Th>Name</Th>
+                                        <Th>Type</Th>
+                                        <Th>Date</Th>
+                                        <Th isNumeric></Th>
+                                    </Tr>
+                                </Thead>
+                                <Tbody>
+                                    {medicalRecords.map((record) => (
+                                        <Tr key={record._id}>
+                                            <Td>
+                                                {record.folderPath
+                                                    ?.split("/")
+                                                    .pop()}
+                                            </Td>
+                                            <Td>{record.recordType}</Td>
+                                            <Td>
+                                                {moment(
+                                                    record.dateOnDocument
+                                                ).format("DD/MM/YYYY")}
+                                            </Td>
 
-                                    <Td isNumeric>
-                                        <ProtectedComponent
-                                            hospital={
+                                            <Td isNumeric>
                                                 <Button
-                                                    as={Link}
-                                                    to={`/portal/medicalRecords/${record._id}`}
-                                                    leftIcon={<GoPencil />}
+                                                    leftIcon={<BsDownload />}
                                                     size={"xs"}
                                                     colorScheme="pink"
-                                                    variant={"outline"}
-                                                    marginRight={"5px"}
+                                                    onClick={() => {
+                                                        handleDownload(record);
+                                                    }}
                                                 >
-                                                    Edit
+                                                    Download
                                                 </Button>
-                                            }
-                                        ></ProtectedComponent>
-                                        <Button
-                                            leftIcon={<BsDownload />}
-                                            size={"xs"}
-                                            colorScheme="pink"
-                                            variant={"outline"}
-                                        >
-                                            Download
-                                        </Button>
-                                    </Td>
-                                </Tr>
-                            ))}
-                        </Tbody>
-                    </Table>
-                </TableContainer>
-            </CardBody>
+                                                <ProtectedComponent
+                                                    hospital={
+                                                        <Button
+                                                            leftIcon={
+                                                                <GoTrash />
+                                                            }
+                                                            size={"xs"}
+                                                            colorScheme="red"
+                                                            marginLeft={"5px"}
+                                                            onClick={() => {
+                                                                handleDelete(
+                                                                    record,
+                                                                    toast,
+                                                                    "/medicalRecords"
+                                                                );
+                                                            }}
+                                                        >
+                                                            Delete
+                                                        </Button>
+                                                    }
+                                                ></ProtectedComponent>
+                                            </Td>
+                                        </Tr>
+                                    ))}
+                                </Tbody>
+                            </Table>
+                        )}
+                    </TableContainer>
+                </CardBody>
+            )}
         </Card>
     );
 };

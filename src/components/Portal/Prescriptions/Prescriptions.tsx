@@ -3,6 +3,9 @@ import { Prescription } from "../../../models/prescription";
 import PrescriptionsPanel from "./PrescriptionsPanel";
 import ExternalPrescriptionsPanel from "./ExternalPrescriptionsPanel";
 import { ExternalPrescription } from "../../../models/externalPrescription";
+import useExternalPrescriptions from "../../../hooks/useExternalPrescriptions";
+import { getCurrentProfileId } from "../../../utilities/helper-service";
+import usePrescriptions from "../../../hooks/usePrescriptions";
 
 const mockPrescriptions: Prescription[] = [
     {
@@ -97,11 +100,31 @@ const mockExternalPrescriptions: ExternalPrescription[] = [
     },
 ];
 const Prescriptions = () => {
+    const {
+        prescriptions,
+        isLoading: prescriptionsLoading,
+        error: prescriptionsError,
+    } = usePrescriptions({
+        profileId: getCurrentProfileId() || "",
+    });
+    const {
+        externalPrescriptions,
+        isLoading: externalPrescriptionsLoading,
+        error: externalPrescriptionsError,
+    } = useExternalPrescriptions({
+        profileId: getCurrentProfileId() || "",
+    });
     return (
         <>
-            <PrescriptionsPanel prescriptions={mockPrescriptions} />
+            <PrescriptionsPanel
+                prescriptions={prescriptions}
+                isLoading={prescriptionsLoading}
+                error={prescriptionsError}
+            />
             <ExternalPrescriptionsPanel
-                externalPrescriptions={mockExternalPrescriptions}
+                externalPrescriptions={externalPrescriptions}
+                isLoading={externalPrescriptionsLoading}
+                error={externalPrescriptionsError}
             />
         </>
     );

@@ -131,11 +131,11 @@ const ProfileForm = () => {
         <GridItem colSpan={2} marginX={5}>
             <Box
                 marginX={"auto"}
-                borderColor={"blue.800"}
-                borderWidth={"medium"}
-                borderRadius={"xl"}
                 padding={10}
                 maxWidth={"600px"}
+                background={"white"}
+                borderRadius={"5px"}
+                boxShadow={"0px 0px 10px #b3b3b3"}
             >
                 <Form<ProfileData>
                     resolver={resolver}

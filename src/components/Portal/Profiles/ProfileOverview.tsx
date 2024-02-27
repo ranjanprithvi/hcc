@@ -24,27 +24,37 @@ export const ProfileOverview = () => {
         isLoading,
     } = useProfileOverview(id || "");
 
-    console.log(appointments);
-
     return (
         <VStack alignItems={"stretch"}>
             <AppointmentsPanel
                 appointments={appointments as Appointment[]}
+                profileId={id}
                 error={error}
+                isLoading={isLoading}
             ></AppointmentsPanel>
             <MedicalRecordsPanel
                 medicalRecords={medicalRecords as MedicalRecord[]}
+                profileId={id}
+                error={error}
+                isLoading={isLoading}
             ></MedicalRecordsPanel>
             <ExternalRecordsPanel
                 externalRecords={externalRecords as ExternalRecord[]}
+                error={error}
+                isLoading={isLoading}
             ></ExternalRecordsPanel>
             <PrescriptionsPanel
                 prescriptions={prescriptions as Prescription[]}
+                profileId={id}
+                error={error}
+                isLoading={isLoading}
             ></PrescriptionsPanel>
             <ExternalPrescriptionsPanel
                 externalPrescriptions={
                     externalPrescriptions as ExternalPrescription[]
                 }
+                error={error}
+                isLoading={isLoading}
             ></ExternalPrescriptionsPanel>
         </VStack>
     );

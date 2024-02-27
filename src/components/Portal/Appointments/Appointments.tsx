@@ -62,7 +62,13 @@ const UserAppointments = () => {
         profileId: localStorage.getItem("currentProfileId") || "",
     });
 
-    return <AppointmentsPanel appointments={appointments} error={error} />;
+    return (
+        <AppointmentsPanel
+            appointments={appointments}
+            error={error}
+            isLoading={isLoading}
+        />
+    );
 };
 
 export default UserAppointments;

@@ -55,7 +55,7 @@ export const HorizontalCalendar = ({
                                 : "gray.100"
                         }
                         onClick={() => setSelectedDate(date.toDate())}
-                        borderRadius={"100px"}
+                        borderRadius={"100px !important"}
                         padding={"0"}
                     >
                         <Text

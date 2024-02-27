@@ -8,6 +8,10 @@ import {
     GridItem,
     Flex,
     VStack,
+    Tooltip,
+    IconButton,
+    useToast,
+    useDisclosure,
 } from "@chakra-ui/react";
 import moment from "moment";
 import {
@@ -22,21 +26,82 @@ import { Link } from "react-router-dom";
 import { Appointment } from "../../../models/appointment";
 import colourPalette from "../../../utilities/colour-palette";
 import { partition } from "lodash";
+import Loader from "../../common/Loader";
+import { httpService } from "../../../services/http-service";
+import Modal from "../../common/Modal";
+import { useState } from "react";
 
 interface Props {
     appointments: Appointment[];
+    profileId?: string;
     error: string;
+    isLoading: boolean;
 }
 
-const AppointmentsPanel = ({ appointments, error }: Props) => {
-    const [upcomingAppointments, pastAppointments] = partition(
+const AppointmentsPanel = ({
+    appointments,
+    profileId,
+    error,
+    isLoading,
+}: Props) => {
+    const toast = useToast();
+    const { isOpen, onOpen, onClose, getDisclosureProps } = useDisclosure();
+    const [appointmentToDelete, setAppointmentToDelete] = useState<Appointment>(
+        {} as Appointment
+    );
+
+    const [upcomingAppointments, otherAppointments] = partition(
         appointments,
         (a) => {
             return new Date(a.timeSlot) > new Date() && !a.cancelled;
         }
     );
-    return (
+
+    function handleReschedule(a: Appointment): void {
+        const appointmentService = httpService("/appointments");
+    }
+
+    function handleCancel(a: Appointment): void {
+        const appointmentService = httpService("/appointments/cancel");
+
+        appointmentService
+            .patch({}, a._id)
+            .then((res) => {
+                window.location.reload();
+            })
+            .catch((err) => {
+                toast({
+                    title: "Error",
+                    description: err.message,
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                });
+            });
+    }
+
+    return isLoading ? (
+        <Loader />
+    ) : (
         <>
+            <Modal
+                header="Logout"
+                body="Are you sure you want to cancel this appointment?"
+                onClose={onClose}
+                isOpen={isOpen}
+                renderFooter={() => (
+                    <>
+                        <Button
+                            colorScheme="pink"
+                            mr={3}
+                            onClick={() => handleCancel(appointmentToDelete)}
+                        >
+                            Yes
+                        </Button>
+                        <Button onClick={onClose}>Cancel</Button>
+                    </>
+                )}
+            />
             <Grid
                 templateColumns={"1fr 1fr 170px"}
                 columnGap={"50px"}
@@ -54,7 +119,11 @@ const AppointmentsPanel = ({ appointments, error }: Props) => {
                 </GridItem>
                 <Button
                     as={Link}
-                    to="/portal/appointments/book"
+                    to={
+                        profileId
+                            ? `/portal/appointments/book/${profileId}`
+                            : "/portal/appointments/book"
+                    }
                     size="sm"
                     colorScheme="pink"
                     variant={"outline"}
@@ -71,50 +140,62 @@ const AppointmentsPanel = ({ appointments, error }: Props) => {
                 >
                     Book Appointment
                 </Button>
-                {upcomingAppointments.length == 0 && (
+                {upcomingAppointments.length == 0 ? (
                     <Text>There are no upcoming appointments</Text>
+                ) : (
+                    upcomingAppointments.map((a) => (
+                        <Box
+                            background={colourPalette.primaryBg}
+                            padding={"20px 30px 20px 40px"}
+                        >
+                            <HStack
+                                justifyContent={"space-between"}
+                                width={"100%"}
+                                alignItems={"flex-start"}
+                            >
+                                <VStack alignItems={"flex-start"}>
+                                    <Heading size="xs">
+                                        {moment(a.timeSlot).format(
+                                            "ddd, Do MMM YYYY"
+                                        )}
+                                    </Heading>
+
+                                    <Text fontSize="x-large">
+                                        {moment(a.timeSlot).format("h:mm a")}
+                                    </Text>
+                                </VStack>
+
+                                <Box>
+                                    <Tooltip label="Reschedule">
+                                        <IconButton
+                                            as={Link}
+                                            to={`/portal/appointments/reschedule/${a._id}`}
+                                            marginRight={"10px"}
+                                            size={"sm"}
+                                            colorScheme="pink"
+                                            icon={
+                                                <IoMdCalendar size={"20px"} />
+                                            }
+                                            aria-label={"Reschedule"}
+                                        ></IconButton>
+                                    </Tooltip>
+                                    <Tooltip label="Cancel">
+                                        <IconButton
+                                            size={"sm"}
+                                            colorScheme="orange"
+                                            icon={<BiCalendarX size={"20px"} />}
+                                            aria-label={"Cancel"}
+                                            onClick={() => {
+                                                setAppointmentToDelete(a);
+                                                onOpen();
+                                            }}
+                                        ></IconButton>
+                                    </Tooltip>
+                                </Box>
+                            </HStack>
+                        </Box>
+                    ))
                 )}
-                {upcomingAppointments.map((a) => (
-                    <Box
-                        background={colourPalette.primaryBg}
-                        padding={"20px 30px 20px 40px"}
-                    >
-                        <HStack justifyContent={"space-between"} width={"100%"}>
-                            <VStack alignItems={"flex-start"}>
-                                <Heading size="xs">
-                                    {moment(a.timeSlot).format(
-                                        "ddd, MMM Do YYYY"
-                                    )}
-                                </Heading>
-
-                                <Text fontSize="x-large">
-                                    {moment(a.timeSlot).format("h:mm a")}
-                                </Text>
-                            </VStack>
-
-                            <VStack alignItems={"stretch"}>
-                                <Button
-                                    size="xs"
-                                    leftIcon={<IoMdCalendar />}
-                                    colorScheme="pink"
-                                    variant={"outline"}
-                                >
-                                    Reschedule
-                                </Button>
-
-                                <Button
-                                    justifyContent={"flex-start"}
-                                    size="xs"
-                                    leftIcon={<BiCalendarX />}
-                                    colorScheme="orange"
-                                    variant={"outline"}
-                                >
-                                    Cancel
-                                </Button>
-                            </VStack>
-                        </HStack>
-                    </Box>
-                ))}
             </Grid>
             <Grid
                 templateColumns={"1fr 1fr 170px"}
@@ -130,26 +211,43 @@ const AppointmentsPanel = ({ appointments, error }: Props) => {
                     <Heading size="md">Past Appointments</Heading>
                 </HStack>
 
-                {pastAppointments.length == 0 && (
+                {otherAppointments.length == 0 ? (
                     <GridItem colSpan={3}>
                         <Text>There are no past appointments</Text>
                     </GridItem>
+                ) : (
+                    otherAppointments
+                        .sort((a, b) => {
+                            return a.timeSlot > b.timeSlot ? -1 : 1;
+                        })
+                        .map((a, idx) => (
+                            <GridItem
+                                background={
+                                    a.cancelled
+                                        ? "gray.200"
+                                        : colourPalette.secondaryBg
+                                }
+                                padding={"20px 30px 20px 40px"}
+                                gridColumn={idx % 2 == 0 ? 1 : 2}
+                            >
+                                <HStack justifyContent={"space-between"}>
+                                    <VStack alignItems={"flex-start"}>
+                                        <Heading size="xs">
+                                            {moment(a.timeSlot).format(
+                                                "ddd, Do MMM YYYY"
+                                            )}
+                                        </Heading>
+                                        <Text fontSize="x-large">
+                                            {moment(a.timeSlot).format(
+                                                "h:mm a"
+                                            )}
+                                        </Text>
+                                    </VStack>
+                                    {a.cancelled && <div>Cancelled</div>}
+                                </HStack>
+                            </GridItem>
+                        ))
                 )}
-                {pastAppointments.map((a, idx) => (
-                    <GridItem
-                        background={colourPalette.secondaryBg}
-                        padding={"20px 30px 20px 40px"}
-                        gridColumn={idx % 2 == 0 ? 1 : 2}
-                    >
-                        <Heading size="xs">
-                            {moment(a.timeSlot).format("ddd, MMM Do YYYY")}
-                        </Heading>
-                        <Text fontSize="x-large">
-                            {moment(a.timeSlot).format("h:mm a")}
-                        </Text>
-                        {a.cancelled && <div>Cancelled</div>}
-                    </GridItem>
-                ))}
             </Grid>
         </>
     );

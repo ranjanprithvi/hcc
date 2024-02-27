@@ -1,17 +1,18 @@
 import { Box, GridItem, useToast } from "@chakra-ui/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import _, { create, get } from "lodash";
+import _ from "lodash";
 import Form, { Field } from "../../common/Form";
-import useMedicalRecord from "../../../hooks/useMedicalRecord";
+import useExternalRecord from "../../../hooks/useExternalRecord";
 import { useNavigate, useParams } from "react-router-dom";
 import { doctorId } from "../../../App";
-import { MedicalRecord } from "../../../models/medicalRecord";
+import { ExternalRecord } from "../../../models/externalRecord";
 import moment from "moment";
 import { uploadData } from "aws-amplify/storage";
-import { error } from "console";
 import { httpService } from "../../../services/http-service";
 import { Profile } from "../../../models/profile";
+import { getCurrentProfileId } from "../../../utilities/helper-service";
+import useSpecializations from "../../../hooks/useSpecializations";
 import {
     createRecordinDb,
     handleUpload,
@@ -20,39 +21,67 @@ import {
 const schema = z.object({
     files: z.instanceof(FileList),
     profileId: z.string(),
-    doctorId: z.string(),
+    doctor: z.string(),
+    specializationId: z.string(),
+    hospital: z.string(),
     dateOnDocument: z.string(),
     recordName: z.string(),
     recordType: z.string(),
 });
 
-type MedicalRecordData = z.infer<typeof schema>;
+type ExternalRecordData = z.infer<typeof schema>;
 
-const MedicalRecordForm = () => {
+const ExternalRecordForm = () => {
     const navigate = useNavigate();
     const toast = useToast();
     const resolver = zodResolver(schema);
     const { id, profileId } = useParams();
     if (!id) return null;
+    const { specializations } = useSpecializations();
 
-    const { medicalRecord, error } = useMedicalRecord(id);
+    const { externalRecord, error } = useExternalRecord(id);
 
     if (error) {
         return <div>{error}</div>;
     }
 
     const resetObject = {
-        profileId: (medicalRecord?.profile as Profile)?._id || profileId || "",
-        doctorId: doctorId,
-        dateOnDocument: moment(medicalRecord?.dateOnDocument).format(
+        profileId:
+            (externalRecord?.profile as Profile)?._id ||
+            getCurrentProfileId() ||
+            "",
+        doctor: externalRecord.doctor,
+        specializationId: externalRecord.specialization?._id,
+        hospital: externalRecord.hospital,
+        dateOnDocument: moment(externalRecord?.dateOnDocument).format(
             "YYYY-MM-DD"
         ),
-        recordName: medicalRecord?.folderPath?.split("/").pop() || "",
-        recordType: medicalRecord?.recordType,
+        recordName: externalRecord?.folderPath?.split("/").pop() || "",
+        recordType: externalRecord?.recordType,
         files: {} as FileList,
     };
 
-    const fields: Field<MedicalRecordData>[] = [
+    const fields: Field<ExternalRecordData>[] = [
+        {
+            type: "textInput",
+            label: "Doctor",
+            name: "doctor",
+        },
+        {
+            type: "select",
+            label: "Specialization",
+            name: "specializationId",
+            placeholder: "--Select Specialization--",
+            options: specializations.map((s) => ({
+                label: s.name,
+                value: s._id,
+            })),
+        },
+        {
+            type: "textInput",
+            label: "Hospital",
+            name: "hospital",
+        },
         {
             type: "textInput",
             label: "Date On Document",
@@ -80,14 +109,14 @@ const MedicalRecordForm = () => {
         });
     }
 
-    const onSubmit = (data: MedicalRecordData) => {
+    const onSubmit = (data: ExternalRecordData) => {
         if (id == "new") {
             handleUpload(
                 id,
                 data,
-                "MedicalRecords",
-                "/medicalRecords",
-                `/portal/profileOverview/${profileId}`,
+                "ExternalRecords",
+                "/externalRecords",
+                "/portal/records",
                 toast,
                 navigate
             );
@@ -100,13 +129,13 @@ const MedicalRecordForm = () => {
         <GridItem colSpan={2} marginX={5} marginY="auto">
             <Box
                 marginX={"auto"}
+                padding={10}
+                maxWidth={"600px"}
                 background={"white"}
                 borderRadius={"5px"}
                 boxShadow={"0px 0px 10px #b3b3b3"}
-                padding={10}
-                maxWidth={"600px"}
             >
-                <Form<MedicalRecordData>
+                <Form<ExternalRecordData>
                     resolver={resolver}
                     fields={fields}
                     resetObject={resetObject}
@@ -118,4 +147,4 @@ const MedicalRecordForm = () => {
     );
 };
 
-export default MedicalRecordForm;
+export default ExternalRecordForm;

@@ -22,6 +22,7 @@ import useProfiles from "../../../hooks/useProfiles";
 import { FaPen } from "react-icons/fa";
 import { LuUser } from "react-icons/lu";
 import colourPalette from "../../../utilities/colour-palette";
+import Loader from "../../common/Loader";
 
 const mockProfiles: Profile[] = [
     {
@@ -68,7 +69,7 @@ const AllProfiles = () => {
                         </HStack>
                         <Button
                             as={Link}
-                            to="/portal/appointments/new"
+                            to="/portal/profiles/new"
                             size="sm"
                             colorScheme="pink"
                             variant={"outline"}
@@ -82,58 +83,61 @@ const AllProfiles = () => {
 
                 <CardBody>
                     <TableContainer paddingX={"20px"}>
-                        <Table variant="simple" size={"sm"}>
-                            <Thead>
-                                <Tr>
-                                    <Th width={"5px"}></Th>
-                                    <Th>Name</Th>
-                                    <Th>Gender</Th>
-                                    <Th>Age</Th>
-                                    <Th>Phone</Th>
-                                    <Th isNumeric></Th>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                {profiles.map((profile) => (
-                                    <Tr key={profile._id}>
-                                        <Td width={"5px"}>
-                                            <LuUser />
-                                        </Td>
-                                        <Td>
-                                            <Button
-                                                size={"sm"}
-                                                as={Link}
-                                                to={`/portal/profileOverview/${profile._id}`}
-                                                variant={"link"}
-                                                color={"gray.800"}
-                                            >
-                                                {profile.name}
-                                            </Button>
-                                        </Td>
-                                        <Td>{profile.gender}</Td>
-                                        <Td>
-                                            {moment(profile.dob).format(
-                                                "DD/MM/YYYY"
-                                            )}
-                                        </Td>
-                                        <Td>{profile.phone}</Td>
-                                        <Td isNumeric>
-                                            <Button
-                                                size={"xs"}
-                                                leftIcon={<FaPen />}
-                                                colorScheme="pink"
-                                                variant={"outline"}
-                                                marginRight={"5px"}
-                                                as={Link}
-                                                to={`/portal/profiles/${profile._id}`}
-                                            >
-                                                Edit
-                                            </Button>
-                                        </Td>
+                        {isLoading ? (
+                            <Loader />
+                        ) : (
+                            <Table variant="simple" size={"sm"}>
+                                <Thead>
+                                    <Tr>
+                                        <Th width={"5px"}></Th>
+                                        <Th>Name</Th>
+                                        <Th>Gender</Th>
+                                        <Th>Date of Birth</Th>
+                                        <Th>Phone</Th>
+                                        <Th isNumeric></Th>
                                     </Tr>
-                                ))}
-                            </Tbody>
-                        </Table>
+                                </Thead>
+                                <Tbody>
+                                    {profiles.map((profile) => (
+                                        <Tr key={profile._id}>
+                                            <Td width={"5px"}>
+                                                <LuUser />
+                                            </Td>
+                                            <Td>
+                                                <Button
+                                                    size={"sm"}
+                                                    as={Link}
+                                                    to={`/portal/profileOverview/${profile._id}`}
+                                                    variant={"link"}
+                                                    color={"gray.800"}
+                                                >
+                                                    {profile.name}
+                                                </Button>
+                                            </Td>
+                                            <Td>{profile.gender}</Td>
+                                            <Td>
+                                                {moment(profile.dob).format(
+                                                    "DD/MM/YYYY"
+                                                )}
+                                            </Td>
+                                            <Td>{profile.phone}</Td>
+                                            <Td isNumeric>
+                                                <Button
+                                                    size={"xs"}
+                                                    leftIcon={<FaPen />}
+                                                    colorScheme="pink"
+                                                    marginRight={"5px"}
+                                                    as={Link}
+                                                    to={`/portal/profiles/${profile._id}`}
+                                                >
+                                                    Edit
+                                                </Button>
+                                            </Td>
+                                        </Tr>
+                                    ))}
+                                </Tbody>
+                            </Table>
+                        )}
                     </TableContainer>
                 </CardBody>
             </Card>

@@ -6,6 +6,7 @@ import { FaPen } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import useProfiles from "../../../hooks/useProfiles";
 import colourPalette from "../../../utilities/colour-palette";
+import Loader from "../../common/Loader";
 
 const mockProfiles: Profile[] = [
     {
@@ -39,11 +40,11 @@ const mockProfiles: Profile[] = [
 const Profiles = () => {
     const { profiles, error, isLoading } = useProfiles();
 
-    if (isLoading) {
-        return <div className="loader"></div>;
-    }
-
-    return (
+    return isLoading ? (
+        <Loader />
+    ) : error ? (
+        <div>{error}</div>
+    ) : (
         <>
             <HStack
                 alignItems={"center"}

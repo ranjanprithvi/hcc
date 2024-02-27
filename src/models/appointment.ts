@@ -21,3 +21,7 @@ export interface MyAppointmentsQuery {
 export interface BookAppointmentData {
     profileId: string;
 }
+
+export interface RescheduleAppointmentData {
+    newAppointmentId: string;
+}

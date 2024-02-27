@@ -7,7 +7,6 @@ export interface MedicalRecord {
     profile: Profile | string;
     doctor: Doctor | string;
     dateOnDocument: Date;
-    recordName: string;
     recordType: string;
     folderPath: string; // s3 path + record name
     files: File[] | string[];

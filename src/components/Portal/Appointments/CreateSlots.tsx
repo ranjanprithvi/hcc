@@ -93,11 +93,11 @@ const CreateSlotsForm = () => {
         <GridItem colSpan={2} marginX={5} color={"gray.700"}>
             <Box
                 marginX={"auto"}
-                borderColor={"gray.400"}
-                borderWidth={"1px"}
-                borderRadius={"xl"}
                 padding={10}
                 maxWidth={"600px"}
+                background={"white"}
+                borderRadius={"5px"}
+                boxShadow={"0px 0px 10px #b3b3b3"}
             >
                 <Form<AppointmentData>
                     resolver={resolver}
