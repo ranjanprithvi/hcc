@@ -20,6 +20,7 @@ import MedicalRecordForm from "./components/Portal/Medical Records/MedicalRecord
 import ExternalRecordForm from "./components/Portal/Medical Records/ExternalRecordForm";
 import ExternalPrescriptionForm from "./components/Portal/Prescriptions/ExternalPrescriptionForm";
 import PrescriptionForm from "./components/Portal/Prescriptions/PrescriptionForm";
+import AssignProfileToSlot from "./components/Portal/Appointments/ChooseProfileForm";
 
 const Routes = () => {
     return (
@@ -64,6 +65,23 @@ const Routes = () => {
                     }
                 />
                 <Route
+                    path="appointments/assignToProfile/:id?"
+                    element={
+                        <ProtectedRoute
+                            user={<AssignProfileToSlot />}
+                        ></ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="appointments/create"
+                    element={
+                        <ProtectedRoute
+                            hospital={<CreateSlots />}
+                        ></ProtectedRoute>
+                    }
+                />
+
+                <Route
                     path="records"
                     element={<ProtectedRoute user={<Records />} />}
                 />
@@ -97,14 +115,6 @@ const Routes = () => {
                     path="externalPrescriptions/:id"
                     element={
                         <ProtectedRoute user={<ExternalPrescriptionForm />} />
-                    }
-                />
-                <Route
-                    path="appointments/create"
-                    element={
-                        <ProtectedRoute
-                            hospital={<CreateSlots />}
-                        ></ProtectedRoute>
                     }
                 />
             </Route>

@@ -26,15 +26,16 @@ const schema = z.object({
 type AppointmentData = z.infer<typeof schema>;
 
 const CreateSlotsForm = () => {
+    const { date } = useLocation().state;
     const navigate = useNavigate();
     const toast = useToast();
 
     const resolver = zodResolver(schema);
 
     const resetObject = {
-        date: new Date().toISOString().split("T")[0],
-        startTime: "",
-        endTime: "",
+        date: date || new Date().toISOString().split("T")[0],
+        startTime: "17:00",
+        endTime: "20:40",
         durationInMinutes: 20,
         doctorId: doctorId,
     };
@@ -42,13 +43,12 @@ const CreateSlotsForm = () => {
     const resetDependencies = [] as any[];
 
     const onSubmit = (data: AppointmentData) => {
-        console.log(data);
         let createSlotsService = httpService("/appointments/createSlots");
         createSlotsService
             .post<AppointmentData, Appointment[]>(data)
             .then((res) => {
                 navigate("/portal/appointments", {
-                    replace: true,
+                    state: { date: data.date },
                 });
             })
             .catch((err) => {

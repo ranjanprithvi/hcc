@@ -276,7 +276,7 @@ const Form = <T extends FieldValues>({
                         </FormControl>
                     ))}
 
-                    <HStack alignSelf={"flex-end"} marginTop={"10px"}>
+                    <HStack marginTop={"10px"}>
                         {/* <Button isDisabled={!isValid} colorScheme="green" type="submit"> */}
                         <Button
                             size={"sm"}

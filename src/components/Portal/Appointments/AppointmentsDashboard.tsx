@@ -14,12 +14,14 @@ import {
     CardHeader,
     CardBody,
     Divider,
+    useToast,
+    useDisclosure,
 } from "@chakra-ui/react";
 import { HorizontalCalendar } from "../../common/HorizontalCalendar";
 import { useContext, useState } from "react";
 import { PiPlusBold } from "react-icons/pi";
 import { Appointment } from "../../../models/appointment";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Profile } from "../../../models/profile";
 import moment from "moment";
 import { HiDotsVertical } from "react-icons/hi";
@@ -29,6 +31,8 @@ import Loader from "../../common/Loader";
 import useAppointments from "../../../hooks/useAppointments";
 import { doctorId } from "../../../App";
 import colourPalette from "../../../utilities/colour-palette";
+import { httpService } from "../../../services/http-service";
+import Modal from "../../common/Modal";
 
 const mockAppointments: Appointment[] = [
     {
@@ -170,7 +174,16 @@ const mockAppointments: Appointment[] = [
 ];
 
 export const AppointmentsDashboard = () => {
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const { state } = useLocation();
+    const { date } = state || { date: null };
+    const toast = useToast();
+    const [selectedDate, setSelectedDate] = useState(
+        date ? new Date(date as string) : new Date()
+    );
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment>(
+        {} as Appointment
+    );
 
     const { appointments, isLoading, error } = useAppointments(
         {
@@ -180,8 +193,71 @@ export const AppointmentsDashboard = () => {
         [selectedDate]
     );
 
+    const handleDelete = (a: Appointment) => {
+        const service = httpService("/appointments");
+
+        service
+            .delete(a._id)
+            .then((res) => {
+                alert("Slot Deleted successfully");
+                // window.history.pushState(
+                //     { date: selectedDate.toISOString().split("T")[0] },
+                //     ""
+                // );
+                window.history.replaceState({}, "");
+                window.location.reload();
+            })
+            .catch((err) => {
+                toast({
+                    title: "Error",
+                    description: err.response?.data?.toString(),
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+            });
+    };
+
+    const handleCancel = (a: Appointment) => {
+        const service = httpService("/appointments/cancel");
+
+        service
+            .patch({}, a._id)
+            .then((res) => {
+                window.location.reload();
+                alert("Appointment canceled successfully");
+            })
+            .catch((err) => {
+                toast({
+                    title: "Error",
+                    description: err.response?.data?.toString(),
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+            });
+    };
+
     return (
         <Card>
+            <Modal
+                header="Cancel Appointment"
+                body="Are you sure you want to cancel this appointment?"
+                onClose={onClose}
+                isOpen={isOpen}
+                renderFooter={() => (
+                    <>
+                        <Button
+                            colorScheme="pink"
+                            mr={3}
+                            onClick={() => handleCancel(appointmentToCancel)}
+                        >
+                            Yes
+                        </Button>
+                        <Button onClick={onClose}>Cancel</Button>
+                    </>
+                )}
+            />
             <CardHeader
                 alignItems={"center"}
                 flexDirection={"column"}
@@ -190,7 +266,10 @@ export const AppointmentsDashboard = () => {
                 <Flex alignItems={"center"} justifyContent={"space-between"}>
                     <Button
                         as={Link}
-                        to={"/portal/appointments/create"}
+                        to="/portal/appointments/create"
+                        state={{
+                            date: selectedDate.toISOString().split("T")[0],
+                        }}
                         leftIcon={<PiPlusBold />}
                         size={"sm"}
                         colorScheme="pink"
@@ -298,22 +377,33 @@ export const AppointmentsDashboard = () => {
                                                                         "year"
                                                                     )}
                                                             </Text>
-                                                            <FaPhoneAlt
-                                                                color="gray"
-                                                                size={"10px"}
-                                                            />
-                                                            <Text
-                                                                fontSize={
-                                                                    "small"
-                                                                }
-                                                                color={"gray"}
-                                                            >
-                                                                {
-                                                                    (
-                                                                        appointment.profile as Profile
-                                                                    )?.phone
-                                                                }
-                                                            </Text>
+                                                            {(
+                                                                appointment.profile as Profile
+                                                            )?.phone && (
+                                                                <>
+                                                                    <FaPhoneAlt
+                                                                        color="gray"
+                                                                        size={
+                                                                            "10px"
+                                                                        }
+                                                                    />
+                                                                    <Text
+                                                                        fontSize={
+                                                                            "small"
+                                                                        }
+                                                                        color={
+                                                                            "gray"
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            (
+                                                                                appointment.profile as Profile
+                                                                            )
+                                                                                ?.phone
+                                                                        }
+                                                                    </Text>
+                                                                </>
+                                                            )}
                                                         </>
                                                     )}
                                                 </HStack>
@@ -327,76 +417,81 @@ export const AppointmentsDashboard = () => {
                                                             Cancelled
                                                         </Text>
                                                     ) : (
-                                                        <Menu>
-                                                            <MenuButton
-                                                                as={Button}
-                                                                size={"sm"}
-                                                                background={
-                                                                    "none"
-                                                                }
-                                                                _hover={{
-                                                                    background:
-                                                                        "none",
-                                                                }}
-                                                            >
-                                                                <HiDotsVertical />
-                                                            </MenuButton>
-                                                            <MenuList
-                                                                fontSize={
-                                                                    "small"
-                                                                }
-                                                            >
-                                                                {!appointment.profile ? (
-                                                                    <>
-                                                                        <MenuItem
-                                                                            as={
-                                                                                Link
-                                                                            }
-                                                                            to={
-                                                                                "/portal/appointments/book"
-                                                                            }
-                                                                            icon={
-                                                                                <FaUser />
-                                                                            }
-                                                                        >
-                                                                            Book
-                                                                            Appointment
-                                                                        </MenuItem>
-                                                                        <MenuItem
-                                                                            as={
-                                                                                NavLink
-                                                                            }
-                                                                            to={
-                                                                                "/userDetails/me"
-                                                                            }
-                                                                            icon={
-                                                                                <FaRegTimesCircle />
-                                                                            }
-                                                                        >
-                                                                            Delete
-                                                                            Slot
-                                                                        </MenuItem>
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <MenuItem
-                                                                            as={
-                                                                                NavLink
-                                                                            }
-                                                                            to={
-                                                                                "/userDetails/me"
-                                                                            }
-                                                                            icon={
-                                                                                <FaRegTimesCircle />
-                                                                            }
-                                                                        >
-                                                                            Cancel
-                                                                            Appointment
-                                                                        </MenuItem>
-                                                                    </>
-                                                                )}
-                                                            </MenuList>
-                                                        </Menu>
+                                                        moment(
+                                                            appointment.timeSlot
+                                                        ) >
+                                                            moment().subtract(
+                                                                "minutes",
+                                                                30
+                                                            ) && (
+                                                            <Menu>
+                                                                <MenuButton
+                                                                    as={Button}
+                                                                    size={"sm"}
+                                                                    background={
+                                                                        "none"
+                                                                    }
+                                                                    _hover={{
+                                                                        background:
+                                                                            "none",
+                                                                    }}
+                                                                >
+                                                                    <HiDotsVertical />
+                                                                </MenuButton>
+                                                                <MenuList
+                                                                    fontSize={
+                                                                        "small"
+                                                                    }
+                                                                >
+                                                                    {!appointment.profile ? (
+                                                                        <>
+                                                                            <MenuItem
+                                                                                as={
+                                                                                    Link
+                                                                                }
+                                                                                to={`/portal/appointments/assignToProfile/${appointment._id}`}
+                                                                                icon={
+                                                                                    <FaUser />
+                                                                                }
+                                                                            >
+                                                                                Book
+                                                                                Appointment
+                                                                            </MenuItem>
+                                                                            <MenuItem
+                                                                                icon={
+                                                                                    <FaRegTimesCircle />
+                                                                                }
+                                                                                onClick={() =>
+                                                                                    handleDelete(
+                                                                                        appointment
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                Delete
+                                                                                Slot
+                                                                            </MenuItem>
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <MenuItem
+                                                                                icon={
+                                                                                    <FaRegTimesCircle />
+                                                                                }
+                                                                                onClick={() => {
+                                                                                    setAppointmentToCancel(
+                                                                                        appointment
+                                                                                    );
+                                                                                    onOpen();
+                                                                                }}
+                                                                            >
+                                                                                Cancel
+                                                                                Appointment
+                                                                            </MenuItem>
+                                                                        </>
+                                                                    )}
+                                                                </MenuList>
+                                                            </Menu>
+                                                        )
                                                     )}
                                                 </HStack>
                                             </HStack>

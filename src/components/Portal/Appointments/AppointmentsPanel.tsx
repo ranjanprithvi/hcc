@@ -45,8 +45,8 @@ const AppointmentsPanel = ({
     isLoading,
 }: Props) => {
     const toast = useToast();
-    const { isOpen, onOpen, onClose, getDisclosureProps } = useDisclosure();
-    const [appointmentToDelete, setAppointmentToDelete] = useState<Appointment>(
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment>(
         {} as Appointment
     );
 
@@ -56,10 +56,6 @@ const AppointmentsPanel = ({
             return new Date(a.timeSlot) > new Date() && !a.cancelled;
         }
     );
-
-    function handleReschedule(a: Appointment): void {
-        const appointmentService = httpService("/appointments");
-    }
 
     function handleCancel(a: Appointment): void {
         const appointmentService = httpService("/appointments/cancel");
@@ -85,7 +81,7 @@ const AppointmentsPanel = ({
     ) : (
         <>
             <Modal
-                header="Logout"
+                header="Cancel Appointment"
                 body="Are you sure you want to cancel this appointment?"
                 onClose={onClose}
                 isOpen={isOpen}
@@ -94,7 +90,7 @@ const AppointmentsPanel = ({
                         <Button
                             colorScheme="pink"
                             mr={3}
-                            onClick={() => handleCancel(appointmentToDelete)}
+                            onClick={() => handleCancel(appointmentToCancel)}
                         >
                             Yes
                         </Button>
@@ -186,7 +182,7 @@ const AppointmentsPanel = ({
                                             icon={<BiCalendarX size={"20px"} />}
                                             aria-label={"Cancel"}
                                             onClick={() => {
-                                                setAppointmentToDelete(a);
+                                                setAppointmentToCancel(a);
                                                 onOpen();
                                             }}
                                         ></IconButton>

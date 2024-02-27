@@ -8,7 +8,7 @@ const Loader = () => {
             alignItems={"center"}
             justifyContent={"center"}
         >
-            <div className="loader" />;
+            <div className="loader" />
         </Flex>
     );
 };
