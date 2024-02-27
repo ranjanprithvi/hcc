@@ -111,7 +111,7 @@ const ExternalRecordForm = () => {
 
     const onSubmit = (data: ExternalRecordData) => {
         if (id == "new") {
-            handleUpload(
+            handleUpload<ExternalRecordData, ExternalRecord>(
                 id,
                 data,
                 "ExternalRecords",

@@ -79,7 +79,7 @@ const PrescriptionForm = () => {
 
     const onSubmit = (data: PrescriptionData) => {
         if (id == "new") {
-            handleUpload(
+            handleUpload<PrescriptionData, Prescription>(
                 id,
                 data,
                 "Prescriptions",

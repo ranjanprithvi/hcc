@@ -19,9 +19,9 @@ interface DataEntity {
     files: FileList;
 }
 
-export const handleUpload = async <T extends DataEntity>(
+export const handleUpload = async <T1 extends DataEntity, T2 extends Entity>(
     id: string,
-    data: T,
+    data: T1,
     folder: string,
     endPoint: string,
     navigateTo: string,
@@ -44,7 +44,19 @@ export const handleUpload = async <T extends DataEntity>(
     );
     Promise.all(promises)
         .then((res) => {
-            createRecordinDb(id, data, endPoint, navigateTo, toast, navigate);
+            createRecordinDb<T1, T2>(
+                id,
+                {
+                    ...data,
+                    files: Array.from(data.files).map((file) => {
+                        return { name: file.name, sizeInBytes: file.size };
+                    }),
+                },
+                endPoint,
+                navigateTo,
+                toast,
+                navigate
+            );
         })
         .catch((err) => {
             console.log(err);

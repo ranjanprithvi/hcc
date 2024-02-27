@@ -104,7 +104,7 @@ const ExternalPrescriptionForm = () => {
 
     const onSubmit = (data: ExternalPrescriptionData) => {
         if (id == "new") {
-            handleUpload(
+            handleUpload<ExternalPrescriptionData, ExternalPrescription>(
                 id,
                 data,
                 "ExternalPrescriptions",

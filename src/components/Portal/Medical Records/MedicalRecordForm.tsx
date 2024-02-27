@@ -82,7 +82,7 @@ const MedicalRecordForm = () => {
 
     const onSubmit = (data: MedicalRecordData) => {
         if (id == "new") {
-            handleUpload(
+            handleUpload<MedicalRecordData, MedicalRecord>(
                 id,
                 data,
                 "MedicalRecords",
