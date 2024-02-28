@@ -1,4 +1,13 @@
-import { Button, Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import {
+    Button,
+    HStack,
+    Table,
+    Tbody,
+    Td,
+    Th,
+    Thead,
+    Tr,
+} from "@chakra-ui/react";
 import moment from "moment";
 import React from "react";
 import { FaPen } from "react-icons/fa";
@@ -7,6 +16,7 @@ import { Profile } from "../../../models/profile";
 import { Link } from "react-router-dom";
 import useProfiles from "../../../hooks/useProfiles";
 import Loader from "../../common/Loader";
+import { GoLink } from "react-icons/go";
 
 interface Props {
     searchTerm: string;
@@ -56,16 +66,31 @@ const ProfilesTable = ({ searchTerm }: Props) => {
                         <Td>{moment(profile.dob).format("DD/MM/YYYY")}</Td>
                         <Td>{profile.phone}</Td>
                         <Td isNumeric>
-                            <Button
-                                size={"xs"}
-                                leftIcon={<FaPen />}
-                                colorScheme="pink"
-                                marginRight={"5px"}
-                                as={Link}
-                                to={`/portal/profiles/${profile._id}`}
-                            >
-                                Edit
-                            </Button>
+                            <HStack justifyContent={"flex-end"}>
+                                {!profile.account && (
+                                    <Button
+                                        size={"xs"}
+                                        leftIcon={<GoLink />}
+                                        colorScheme="pink"
+                                        variant={"outline"}
+                                        marginRight={"5px"}
+                                        as={Link}
+                                        to={`/portal/profiles/link/${profile._id}`}
+                                    >
+                                        Link Account
+                                    </Button>
+                                )}
+                                <Button
+                                    size={"xs"}
+                                    leftIcon={<FaPen />}
+                                    colorScheme="pink"
+                                    marginRight={"5px"}
+                                    as={Link}
+                                    to={`/portal/profiles/${profile._id}`}
+                                >
+                                    Edit
+                                </Button>
+                            </HStack>
                         </Td>
                     </Tr>
                 ))}

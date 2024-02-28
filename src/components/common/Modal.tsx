@@ -1,6 +1,4 @@
 import {
-    useDisclosure,
-    Button,
     Modal as ChakraModal,
     ModalOverlay,
     ModalContent,
@@ -31,7 +29,7 @@ function Modal({ header, body, renderFooter, isOpen, onClose }: Props) {
             <ModalContent>
                 <ModalHeader>{header}</ModalHeader>
                 <ModalCloseButton />
-                <ModalBody pb={6}>{body}</ModalBody>
+                {body && <ModalBody pb={6}>{body}</ModalBody>}
 
                 <ModalFooter>{renderFooter()}</ModalFooter>
             </ModalContent>

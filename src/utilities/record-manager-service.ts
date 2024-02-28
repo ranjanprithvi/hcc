@@ -1,5 +1,10 @@
 import { MedicalRecord } from "../models/medicalRecord";
-import { getUrl, remove, uploadData } from "aws-amplify/storage";
+import {
+    TransferProgressEvent,
+    getUrl,
+    remove,
+    uploadData,
+} from "aws-amplify/storage";
 import { ExternalRecord } from "../models/externalRecord";
 import { File } from "../models/file";
 import { Prescription } from "../models/prescription";
@@ -24,6 +29,7 @@ export const handleUpload = async <T1 extends DataEntity, T2 extends Entity>(
     data: T1,
     folder: string,
     endPoint: string,
+    handleProgress: (event: TransferProgressEvent) => void,
     navigateTo: string,
     toast: any,
     navigate: any
@@ -35,10 +41,7 @@ export const handleUpload = async <T1 extends DataEntity, T2 extends Entity>(
                 key: `hcc/${data.profileId}/${folder}/${data.recordName}/${file.name}`,
                 data: file,
                 options: {
-                    onProgress: (progress) =>
-                        console.log(
-                            `Uploaded: ${progress.transferredBytes}/${progress.totalBytes}`
-                        ),
+                    onProgress: handleProgress,
                 },
             }).result
     );

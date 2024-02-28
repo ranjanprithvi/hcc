@@ -44,10 +44,9 @@ const LoginForm = () => {
             name: "email",
         },
         {
-            type: "textInput",
+            type: "password",
             label: "Password",
             name: "password",
-            inputType: "password",
         },
     ];
 

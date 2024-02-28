@@ -1,22 +1,27 @@
-import { Box, GridItem, useToast } from "@chakra-ui/react";
+import {
+    Box,
+    GridItem,
+    HStack,
+    Progress,
+    useDisclosure,
+    useToast,
+    Text,
+} from "@chakra-ui/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
 import Form, { Field } from "../../common/Form";
 import useExternalRecord from "../../../hooks/useExternalRecord";
 import { useNavigate, useParams } from "react-router-dom";
-import { doctorId } from "../../../App";
 import { ExternalRecord } from "../../../models/externalRecord";
 import moment from "moment";
-import { uploadData } from "aws-amplify/storage";
-import { httpService } from "../../../services/http-service";
+import { TransferProgressEvent } from "aws-amplify/storage";
 import { Profile } from "../../../models/profile";
 import { getCurrentProfileId } from "../../../utilities/helper-service";
 import useSpecializations from "../../../hooks/useSpecializations";
-import {
-    createRecordinDb,
-    handleUpload,
-} from "../../../utilities/record-manager-service";
+import { handleUpload } from "../../../utilities/record-manager-service";
+import Modal from "../../common/Modal";
+import { useState } from "react";
 
 const schema = z.object({
     files: z.instanceof(FileList),
@@ -34,6 +39,15 @@ type ExternalRecordData = z.infer<typeof schema>;
 const ExternalRecordForm = () => {
     const navigate = useNavigate();
     const toast = useToast();
+
+    const [progress, setProgress] = useState(0);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const handleProgress = (progress: TransferProgressEvent) => {
+        setProgress(
+            (progress.transferredBytes / (progress.totalBytes || 1)) * 100
+        );
+    };
+
     const resolver = zodResolver(schema);
     const { id, profileId } = useParams();
     if (!id) return null;
@@ -110,12 +124,14 @@ const ExternalRecordForm = () => {
     }
 
     const onSubmit = (data: ExternalRecordData) => {
+        onOpen();
         if (id == "new") {
             handleUpload<ExternalRecordData, ExternalRecord>(
                 id,
                 data,
                 "ExternalRecords",
                 "/externalRecords",
+                handleProgress,
                 "/portal/records",
                 toast,
                 navigate
@@ -127,6 +143,23 @@ const ExternalRecordForm = () => {
 
     return (
         <GridItem colSpan={2} marginX={5} marginY="auto">
+            <Modal
+                header="Uploading Record..."
+                body=""
+                onClose={onClose}
+                isOpen={isOpen}
+                renderFooter={() => (
+                    <HStack width={"100%"}>
+                        <Progress
+                            width={"100%"}
+                            value={progress}
+                            hasStripe
+                            colorScheme="pink"
+                        />
+                        <Text>{Math.floor(progress) + "%"}</Text>
+                    </HStack>
+                )}
+            />
             <Box
                 marginX={"auto"}
                 padding={10}

@@ -6,14 +6,20 @@ import {
     FormLabel,
     HStack,
     Heading,
+    IconButton,
     Input,
+    InputGroup,
+    InputRightElement,
     Select,
     Textarea,
     VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Flex } from "@aws-amplify/ui-react";
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
+import PasswordInput from "./PasswordInput";
 
 export interface Option {
     value: string | number;
@@ -22,7 +28,7 @@ export interface Option {
 }
 
 export interface Field<T> {
-    type: "textInput" | "textArea" | "select" | "slider";
+    type: "textInput" | "textArea" | "password" | "select" | "slider";
     label: string;
     name: Path<T>;
     inputType?: string;
@@ -102,6 +108,23 @@ const Form = <T extends FieldValues>({
                     onWheel={(e) => (e.target as HTMLInputElement).blur()} // Prevents scrolling from skewing number input
                     multiple={inputType == "file"}
                 />
+            </FormControl>
+        );
+    }
+
+    function renderPasswordInput({ label, name }: Field<T>) {
+        return (
+            <FormControl>
+                <FormLabel
+                    htmlFor={name}
+                    marginX={"10px"}
+                    marginY={"0"}
+                    fontSize={"12px"}
+                    fontWeight={"bold"}
+                >
+                    {label}
+                </FormLabel>
+                <PasswordInput name={name} />
             </FormControl>
         );
     }
@@ -238,6 +261,9 @@ const Form = <T extends FieldValues>({
             //     break;
             case "textArea":
                 renderElement = renderTextArea;
+                break;
+            case "password":
+                renderElement = renderPasswordInput;
                 break;
             default:
                 renderElement = renderInput;

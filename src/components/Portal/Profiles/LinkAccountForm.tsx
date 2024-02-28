@@ -5,24 +5,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import { httpService } from "../../../services/http-service";
-import moment from "moment";
-import useProfile from "../../../hooks/useProfile";
 import { Profile } from "../../../models/profile";
-import { Appointment } from "../../../models/appointment";
-import useProfiles from "../../../hooks/useProfiles";
 import Loader from "../../common/Loader";
-
-const phoneRegex = new RegExp(/^[+]?[0-9]{9,13}$/);
+import useAccounts from "../../../hooks/useAccounts";
 
 const schemaObject = {
-    profileId: z.string(),
+    accountId: z.string(),
 };
 const schema = z.object(schemaObject);
 
-type ChooseProfileData = z.infer<typeof schema>;
+type LinkAccountData = z.infer<typeof schema>;
 
-const ChooseProfileForm = () => {
-    const { profiles, isLoading, error } = useProfiles();
+const LinkAccountForm = () => {
+    const { accounts, isLoading, error } = useAccounts();
     const navigate = useNavigate();
     const toast = useToast();
     const { id } = useParams();
@@ -31,16 +26,16 @@ const ChooseProfileForm = () => {
     const resolver = zodResolver(schema);
 
     const resetObject = {
-        profileId: "",
+        accountId: "",
     };
 
-    const onSubmit = (data: ChooseProfileData) => {
-        let appointmentService = httpService("/appointments/book");
+    const onSubmit = (data: LinkAccountData) => {
+        let profileService = httpService("/profiles/link");
 
-        appointmentService
-            .patch<ChooseProfileData, Appointment>(data, id)
+        profileService
+            .patch<LinkAccountData, Profile>(data, id)
             .then((res) => {
-                navigate(`/portal/appointments`, {
+                navigate(`/portal/profiles`, {
                     replace: true,
                 });
             })
@@ -55,19 +50,16 @@ const ChooseProfileForm = () => {
             });
     };
 
-    const fields: Field<ChooseProfileData>[] = [
+    const fields: Field<LinkAccountData>[] = [
         {
             type: "select",
-            placeholder: "--Select Profile--",
-            options: profiles.map((profile) => ({
-                label:
-                    profile.name +
-                    " " +
-                    (profile.phone ? `(${profile.phone})` : ""),
-                value: profile._id,
+            placeholder: "--Select Account--",
+            options: accounts.map((account) => ({
+                label: account.email,
+                value: account._id,
             })),
-            label: "Profile",
-            name: "profileId",
+            label: "Account",
+            name: "accountId",
         },
     ];
 
@@ -84,10 +76,10 @@ const ChooseProfileForm = () => {
                 {isLoading ? (
                     <Loader />
                 ) : (
-                    <Form<ChooseProfileData>
+                    <Form<LinkAccountData>
                         resolver={resolver}
                         fields={fields}
-                        heading={"Choose Patient"}
+                        heading={"Link Account"}
                         onSubmit={onSubmit}
                         resetObject={resetObject}
                     />
@@ -97,4 +89,4 @@ const ChooseProfileForm = () => {
     );
 };
 
-export default ChooseProfileForm;
+export default LinkAccountForm;
