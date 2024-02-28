@@ -5,13 +5,15 @@ import {
     InputRightElement,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { UseFormRegister } from "react-hook-form";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 
 interface Props {
     name: string;
+    register: UseFormRegister<any>;
 }
 
-const PasswordInput = ({ name }: Props) => {
+const PasswordInput = ({ name, register }: Props) => {
     const [show, setShow] = useState(false);
     const handleClick = () => setShow((s) => !s);
 
@@ -27,6 +29,7 @@ const PasswordInput = ({ name }: Props) => {
                 step="any"
                 id={name}
                 type={show ? "text" : "password"}
+                {...register(name)}
             />
             <InputRightElement height={"35px"}>
                 <IconButton

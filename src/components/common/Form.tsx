@@ -124,7 +124,7 @@ const Form = <T extends FieldValues>({
                 >
                     {label}
                 </FormLabel>
-                <PasswordInput name={name} />
+                <PasswordInput name={name} register={register} />
             </FormControl>
         );
     }
