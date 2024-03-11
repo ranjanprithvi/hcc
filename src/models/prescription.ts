@@ -9,6 +9,13 @@ export interface Prescription {
     doctor: Doctor | string;
     dateOnDocument: Date;
     content?: string;
+    medications: {
+        name: string;
+        dosage: string;
+        interval: string;
+        quantity: string;
+        instructions: string;
+    }[];
     folderPath: string; // s3 path + record name
-    files: File[] | string[];
+    files: File[];
 }

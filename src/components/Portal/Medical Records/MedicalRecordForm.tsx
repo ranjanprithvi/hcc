@@ -16,11 +16,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { doctorId } from "../../../App";
 import { MedicalRecord } from "../../../models/medicalRecord";
 import moment from "moment";
-import { TransferProgressEvent } from "aws-amplify/storage";
+import { TransferProgressEvent, list } from "aws-amplify/storage";
 import { Profile } from "../../../models/profile";
 import { handleUpload } from "../../../utilities/record-manager-service";
 import Modal from "../../common/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const schema = z.object({
     files: z.instanceof(FileList),
@@ -54,6 +54,25 @@ const MedicalRecordForm = () => {
     if (error) {
         return <div>{error}</div>;
     }
+
+    useEffect(() => {
+        const fetchFiles = async () => {
+            try {
+                const result = await list({
+                    prefix:
+                        "hcc/" +
+                        profileId +
+                        "/MedicalRecords/" +
+                        "asdfsd" +
+                        "/",
+                });
+                console.log(result.items[0].key);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchFiles();
+    }, []);
 
     const resetObject = {
         profileId: (medicalRecord?.profile as Profile)?._id || profileId || "",

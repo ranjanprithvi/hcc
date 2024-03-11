@@ -169,6 +169,7 @@ const AppointmentsPanel = ({
                                             marginRight={"10px"}
                                             size={"sm"}
                                             colorScheme="pink"
+                                            variant={"outline"}
                                             icon={
                                                 <IoMdCalendar size={"20px"} />
                                             }
@@ -178,7 +179,7 @@ const AppointmentsPanel = ({
                                     <Tooltip label="Cancel">
                                         <IconButton
                                             size={"sm"}
-                                            colorScheme="orange"
+                                            colorScheme="pink"
                                             icon={<BiCalendarX size={"20px"} />}
                                             aria-label={"Cancel"}
                                             onClick={() => {

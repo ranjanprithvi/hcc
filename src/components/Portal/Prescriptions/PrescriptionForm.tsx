@@ -10,24 +10,34 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
-import Form, { Field } from "../../common/Form";
+import GridForm, { Field } from "./PrescriptionGridForm";
 import usePrescription from "../../../hooks/usePrescription";
 import { useNavigate, useParams } from "react-router-dom";
 import { doctorId } from "../../../App";
 import { Prescription } from "../../../models/prescription";
 import moment from "moment";
-import { TransferProgressEvent } from "aws-amplify/storage";
+import { TransferProgressEvent, list } from "aws-amplify/storage";
 import { Profile } from "../../../models/profile";
 import { handleUpload } from "../../../utilities/record-manager-service";
 import Modal from "../../common/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const schema = z.object({
-    files: z.instanceof(FileList),
+    files: z.instanceof(FileList).optional(),
     profileId: z.string(),
     doctorId: z.string(),
     dateOnDocument: z.string(),
     recordName: z.string(),
+    content: z.string(),
+    medications: z.array(
+        z.object({
+            name: z.string(),
+            dosage: z.string().optional(),
+            interval: z.string().optional(),
+            quantity: z.string().optional(),
+            instructions: z.string().optional(),
+        })
+    ),
 });
 
 type PrescriptionData = z.infer<typeof schema>;
@@ -50,6 +60,21 @@ const PrescriptionForm = () => {
 
     const { prescription, error } = usePrescription(id);
 
+    useEffect(() => {
+        const fetchFiles = async () => {
+            try {
+                const result = await list({
+                    prefix: "hcc/" + profileId + "/Prescriptions/" + id + "/",
+                });
+                console.log(result);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchFiles();
+    }, []);
+
+    console.log(prescription);
     if (error) {
         return <div>{error}</div>;
     }
@@ -60,22 +85,32 @@ const PrescriptionForm = () => {
         dateOnDocument: moment(prescription?.dateOnDocument).format(
             "YYYY-MM-DD"
         ),
-        recordName: prescription?.folderPath?.split("/").pop() || "",
-        files: {} as FileList,
+        recordName:
+            prescription?.folderPath?.split("/").pop() || Date.now().toString(),
+        // files: undefined,
+        content: prescription?.content || "",
+        medications: prescription?.medications || [],
     };
 
     const fields: Field<PrescriptionData>[] = [
         {
             type: "textInput",
-            label: "Date On Document",
+            label: "Date of Prescription",
             name: "dateOnDocument",
             inputType: "date",
         },
         {
-            type: "textInput",
-            label: "Record Name",
-            name: "recordName",
+            type: "textArea",
+            label: "Content",
+            name: "content",
+            minHeight: "200px",
         },
+        // {
+        //     type: "textInput",
+        //     label: "Medications",
+        //     name: "medications",
+        //     inputType: "text",
+        // },
     ];
 
     if (id == "new") {
@@ -88,7 +123,8 @@ const PrescriptionForm = () => {
     }
 
     const onSubmit = (data: PrescriptionData) => {
-        onOpen();
+        if (data.files && data.files.length > 0) onOpen();
+
         if (id == "new") {
             handleUpload<PrescriptionData, Prescription>(
                 id,
@@ -105,8 +141,12 @@ const PrescriptionForm = () => {
         }
     };
 
+    // const onSubmit = (data: PrescriptionData) => {
+    //     console.log(data);
+    // };
+
     return (
-        <GridItem colSpan={2} marginX={5} marginY="auto">
+        <GridItem colSpan={2} marginY="auto">
             <Modal
                 header="Uploading Record..."
                 body=""
@@ -126,14 +166,12 @@ const PrescriptionForm = () => {
             />
             <Box
                 marginX={"auto"}
-                marginTop="5%"
                 padding={10}
-                maxWidth={"600px"}
                 background={"white"}
                 borderRadius={"5px"}
                 boxShadow={"0px 0px 10px #b3b3b3"}
             >
-                <Form<PrescriptionData>
+                <GridForm<PrescriptionData>
                     resolver={resolver}
                     fields={fields}
                     resetObject={resetObject}

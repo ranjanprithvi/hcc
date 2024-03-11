@@ -6,17 +6,19 @@ import {
     Divider,
     HStack,
     Heading,
+    IconButton,
     Table,
     TableContainer,
     Tbody,
     Td,
     Th,
     Thead,
+    Tooltip,
     Tr,
     useToast,
 } from "@chakra-ui/react";
 import moment from "moment";
-import { BsDownload, BsTrash } from "react-icons/bs";
+import { BsDownload, BsPen, BsPencil, BsPlus, BsTrash } from "react-icons/bs";
 import { PiNote } from "react-icons/pi";
 import { Doctor } from "../../../models/doctor";
 import { Hospital } from "../../../models/hospital";
@@ -30,6 +32,8 @@ import {
     handleDownload,
 } from "../../../utilities/record-manager-service";
 import Loader from "../../common/Loader";
+import { FaDownload, FaPen, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { record } from "zod";
 
 interface Props {
     prescriptions: Prescription[];
@@ -65,9 +69,9 @@ const PrescriptionsPanel = ({
                                 size="sm"
                                 colorScheme="pink"
                                 variant={"outline"}
-                                leftIcon={<BiUpload />}
+                                leftIcon={<BsPlus />}
                             >
-                                Upload Prescription
+                                Create Prescription
                             </Button>
                         }
                     ></ProtectedComponent>
@@ -110,35 +114,59 @@ const PrescriptionsPanel = ({
                                     </Td> */}
 
                                             <Td isNumeric>
-                                                <Button
-                                                    leftIcon={<BsDownload />}
-                                                    size={"xs"}
-                                                    colorScheme="pink"
-                                                    onClick={() => {
-                                                        handleDownload(p);
-                                                    }}
-                                                >
-                                                    Download
-                                                </Button>
                                                 <ProtectedComponent
                                                     hospital={
-                                                        <Button
-                                                            leftIcon={
-                                                                <BsTrash />
-                                                            }
-                                                            size={"xs"}
-                                                            colorScheme="red"
-                                                            marginLeft={"5px"}
-                                                            onClick={() => {
-                                                                handleDelete(
-                                                                    p,
-                                                                    toast,
-                                                                    "/prescriptions"
-                                                                );
-                                                            }}
-                                                        >
-                                                            Delete
-                                                        </Button>
+                                                        <Tooltip label="Edit">
+                                                            <IconButton
+                                                                icon={<FaPen />}
+                                                                aria-label="Edit Record"
+                                                                as={Link}
+                                                                to={`/portal/prescriptions/${p._id}`}
+                                                                size={"xs"}
+                                                                colorScheme="pink"
+                                                                variant={
+                                                                    "outline"
+                                                                }
+                                                            ></IconButton>
+                                                        </Tooltip>
+                                                    }
+                                                ></ProtectedComponent>
+                                                <Tooltip label="Download">
+                                                    <IconButton
+                                                        icon={<FaDownload />}
+                                                        aria-label="Download Record"
+                                                        size={"xs"}
+                                                        colorScheme="pink"
+                                                        variant={"outline"}
+                                                        marginLeft={"5px"}
+                                                        onClick={() => {
+                                                            handleDownload(p);
+                                                        }}
+                                                    />
+                                                </Tooltip>
+
+                                                <ProtectedComponent
+                                                    hospital={
+                                                        <Tooltip label="Delete">
+                                                            <IconButton
+                                                                icon={
+                                                                    <FaTrashAlt />
+                                                                }
+                                                                aria-label="Delete Record"
+                                                                size={"xs"}
+                                                                colorScheme="pink"
+                                                                marginLeft={
+                                                                    "5px"
+                                                                }
+                                                                onClick={() => {
+                                                                    handleDelete(
+                                                                        p,
+                                                                        toast,
+                                                                        "/prescriptions"
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </Tooltip>
                                                     }
                                                 ></ProtectedComponent>
                                             </Td>

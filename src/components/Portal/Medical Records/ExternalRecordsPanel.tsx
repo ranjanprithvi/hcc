@@ -15,6 +15,7 @@ import {
     Tr,
     useToast,
     Tooltip,
+    IconButton,
 } from "@chakra-ui/react";
 import { BiFolderOpen, BiUpload } from "react-icons/bi";
 import { Link } from "react-router-dom";
@@ -115,24 +116,29 @@ const ExternalRecordsPanel = ({ externalRecords, error, isLoading }: Props) => {
                                             <Td>{record.hospital}</Td>
                                             <Td isNumeric>
                                                 <Tooltip label="Download">
-                                                    <Button
+                                                    <IconButton
+                                                        icon={<FaDownload />}
+                                                        aria-label="Download Record"
                                                         size={"xs"}
                                                         colorScheme="orange"
+                                                        variant={"outline"}
                                                         onClick={() => {
                                                             handleDownload(
                                                                 record
                                                             );
                                                         }}
-                                                    >
-                                                        <FaDownload />
-                                                    </Button>
+                                                    />
                                                 </Tooltip>
                                                 <ProtectedComponent
                                                     user={
                                                         <Tooltip label="Delete">
-                                                            <Button
+                                                            <IconButton
+                                                                icon={
+                                                                    <FaTrashAlt />
+                                                                }
+                                                                aria-label="Delete Record"
                                                                 size={"xs"}
-                                                                colorScheme="red"
+                                                                colorScheme="orange"
                                                                 marginLeft={
                                                                     "5px"
                                                                 }
@@ -143,9 +149,7 @@ const ExternalRecordsPanel = ({ externalRecords, error, isLoading }: Props) => {
                                                                         "/externalRecords"
                                                                     );
                                                                 }}
-                                                            >
-                                                                <FaTrashAlt />
-                                                            </Button>
+                                                            />
                                                         </Tooltip>
                                                     }
                                                 ></ProtectedComponent>

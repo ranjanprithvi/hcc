@@ -340,23 +340,36 @@ export const AppointmentsDashboard = () => {
                                                 <HStack>
                                                     {appointment.profile && (
                                                         <>
-                                                            <Text
-                                                                fontSize={
-                                                                    "medium"
-                                                                }
-                                                                fontWeight={
-                                                                    "bold"
-                                                                }
-                                                                marginRight={
-                                                                    "30px"
-                                                                }
-                                                            >
-                                                                {
+                                                            <Link
+                                                                to={`/portal/profileOverview/${
                                                                     (
                                                                         appointment.profile as Profile
-                                                                    )?.name
-                                                                }
-                                                            </Text>
+                                                                    )?._id
+                                                                }`}
+                                                            >
+                                                                <Text
+                                                                    fontSize={
+                                                                        "medium"
+                                                                    }
+                                                                    fontWeight={
+                                                                        "bold"
+                                                                    }
+                                                                    marginRight={
+                                                                        "30px"
+                                                                    }
+                                                                    _hover={{
+                                                                        textDecoration:
+                                                                            "underline",
+                                                                    }}
+                                                                >
+                                                                    {
+                                                                        (
+                                                                            appointment.profile as Profile
+                                                                        )?.name
+                                                                    }
+                                                                </Text>
+                                                            </Link>
+
                                                             <Text
                                                                 fontSize={
                                                                     "small"

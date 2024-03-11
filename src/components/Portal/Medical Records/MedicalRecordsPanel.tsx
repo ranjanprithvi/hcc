@@ -14,6 +14,8 @@ import {
     Thead,
     Tr,
     useToast,
+    IconButton,
+    Tooltip,
 } from "@chakra-ui/react";
 import { BiFolder, BiUpload } from "react-icons/bi";
 import { MedicalRecord } from "../../../models/medicalRecord";
@@ -28,6 +30,7 @@ import {
     handleDownload,
 } from "../../../utilities/record-manager-service";
 import Loader from "../../common/Loader";
+import { FaDownload, FaPen, FaTrash, FaTrashAlt } from "react-icons/fa";
 
 interface Props {
     medicalRecords: MedicalRecord[];
@@ -109,35 +112,61 @@ const MedicalRecords = ({
                                             </Td>
 
                                             <Td isNumeric>
-                                                <Button
-                                                    leftIcon={<BsDownload />}
-                                                    size={"xs"}
-                                                    colorScheme="pink"
-                                                    onClick={() => {
-                                                        handleDownload(record);
-                                                    }}
-                                                >
-                                                    Download
-                                                </Button>
                                                 <ProtectedComponent
                                                     hospital={
-                                                        <Button
-                                                            leftIcon={
-                                                                <GoTrash />
-                                                            }
-                                                            size={"xs"}
-                                                            colorScheme="red"
-                                                            marginLeft={"5px"}
-                                                            onClick={() => {
-                                                                handleDelete(
-                                                                    record,
-                                                                    toast,
-                                                                    "/medicalRecords"
-                                                                );
-                                                            }}
-                                                        >
-                                                            Delete
-                                                        </Button>
+                                                        <Tooltip label="Edit">
+                                                            <IconButton
+                                                                icon={<FaPen />}
+                                                                aria-label="Edit Record"
+                                                                as={Link}
+                                                                to={`/portal/medicalRecords/${record._id}`}
+                                                                size={"xs"}
+                                                                colorScheme="pink"
+                                                                variant={
+                                                                    "outline"
+                                                                }
+                                                            ></IconButton>
+                                                        </Tooltip>
+                                                    }
+                                                ></ProtectedComponent>
+                                                <Tooltip label="Download">
+                                                    <IconButton
+                                                        icon={<FaDownload />}
+                                                        aria-label="Download Record"
+                                                        size={"xs"}
+                                                        colorScheme="pink"
+                                                        variant={"outline"}
+                                                        marginLeft={"5px"}
+                                                        onClick={() => {
+                                                            handleDownload(
+                                                                record
+                                                            );
+                                                        }}
+                                                    />
+                                                </Tooltip>
+
+                                                <ProtectedComponent
+                                                    hospital={
+                                                        <Tooltip label="Delete">
+                                                            <IconButton
+                                                                icon={
+                                                                    <FaTrashAlt />
+                                                                }
+                                                                aria-label="Delete Record"
+                                                                size={"xs"}
+                                                                colorScheme="pink"
+                                                                marginLeft={
+                                                                    "5px"
+                                                                }
+                                                                onClick={() => {
+                                                                    handleDelete(
+                                                                        record,
+                                                                        toast,
+                                                                        "/medicalRecords"
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </Tooltip>
                                                     }
                                                 ></ProtectedComponent>
                                             </Td>

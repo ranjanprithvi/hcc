@@ -9,13 +9,19 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Amplify } from "aws-amplify";
 import amplifyconfig from "./amplifyconfiguration.json";
+import { Authenticator } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
 
 Amplify.configure(amplifyconfig);
 
 const router = createBrowserRouter([
     {
         path: "*",
-        element: <App />,
+        element: (
+            // <Authenticator socialProviders={["google"]}>
+            <App />
+            // </Authenticator>
+        ),
     },
 ]);
 

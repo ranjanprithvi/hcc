@@ -57,7 +57,9 @@ const ProfilesTable = ({ searchTerm }: Props) => {
                                 to={`/portal/profileOverview/${profile._id}`}
                                 variant={"link"}
                                 color={"gray.800"}
-                                textDecoration={"underline"}
+                                _hover={{
+                                    textDecoration: "underline",
+                                }}
                             >
                                 {profile.name}
                             </Button>

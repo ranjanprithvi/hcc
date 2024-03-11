@@ -1,20 +1,33 @@
-import { FieldValues, Path, useForm } from "react-hook-form";
+import {
+    ArrayPath,
+    FieldArray,
+    FieldValues,
+    Path,
+    useFieldArray,
+    useForm,
+} from "react-hook-form";
 import {
     Button,
+    Divider,
+    Flex,
     FormControl,
     FormErrorMessage,
     FormLabel,
+    Grid,
+    GridItem,
     HStack,
     Heading,
+    IconButton,
     Input,
     Select,
     Textarea,
     VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { Flex } from "@aws-amplify/ui-react";
-import PasswordInput from "./PasswordInput";
+import { useEffect, useRef, useState } from "react";
+import { BiMinus, BiMinusCircle, BiPlus, BiPlusCircle } from "react-icons/bi";
+import InputWithSearch from "../../common/InputWithSearch";
+import useMedications from "../../../hooks/useMedications";
 
 export interface Option {
     value: string | number;
@@ -23,17 +36,26 @@ export interface Option {
 }
 
 export interface Field<T> {
-    type: "textInput" | "textArea" | "password" | "select" | "slider";
+    type:
+        | "textInput"
+        | "textArea"
+        | "password"
+        | "select"
+        | "slider"
+        | "render";
     label: string;
     name: Path<T>;
     inputType?: string;
     pattern?: string;
     options?: Option[];
+    height?: string;
+    minHeight?: string;
     // sliderMarks?: SliderMarks[] | number[];
     // sliderMarks?: number[];
     // min?: number;
     // max?: number;
     placeholder?: string;
+    render?: (arg0: Field<T>) => JSX.Element;
 }
 
 interface Props<T extends FieldValues> {
@@ -44,26 +66,38 @@ interface Props<T extends FieldValues> {
     resetObject?: T;
     resetDependencies?: any[];
     submitButtonLabel?: string;
+    // formProps?:any
 }
 
-const Form = <T extends FieldValues>({
+const GridForm = <T extends FieldValues>({
     fields,
-    heading,
     onSubmit,
     resolver,
     resetObject,
     resetDependencies,
     submitButtonLabel,
-}: Props<T>) => {
+}: // formProps,
+Props<T>) => {
     const navigate = useNavigate();
 
     const {
         register,
+        control,
         handleSubmit,
         formState: { errors },
         reset,
     } = useForm<T>({
+        // ...formProps,
         resolver,
+    });
+
+    const {
+        fields: arrayFields,
+        append,
+        remove,
+    } = useFieldArray({
+        control,
+        name: "medications" as ArrayPath<T>,
     });
 
     useEffect(
@@ -107,7 +141,7 @@ const Form = <T extends FieldValues>({
         );
     }
 
-    function renderPasswordInput({ label, name }: Field<T>) {
+    function renderTextArea({ label, name, minHeight }: Field<T>) {
         return (
             <FormControl>
                 <FormLabel
@@ -119,16 +153,7 @@ const Form = <T extends FieldValues>({
                 >
                     {label}
                 </FormLabel>
-                <PasswordInput name={name} register={register} />
-            </FormControl>
-        );
-    }
-
-    function renderTextArea({ label, name }: Field<T>) {
-        return (
-            <FormControl>
-                <FormLabel htmlFor={name}>{label}</FormLabel>
-                <Textarea id={name} {...register(name)} />
+                <Textarea id={name} {...register(name)} minHeight={minHeight} />
             </FormControl>
         );
     }
@@ -195,108 +220,137 @@ const Form = <T extends FieldValues>({
         );
     }
 
-    // function renderSlider({ label, name, min, max }: Field<T>) {
-    //     return (
-    //         <FormControl>
-    //             <FormLabel htmlFor={name}>{label}</FormLabel>
-    //             <Slider
-    //                 min={min}
-    //                 max={max}
-    //                  {...register(name, { valueAsNumber: true})}
-    //             >
-    //                 <SliderTrack >
-    //                     <SliderFilledTrack />
-    //                 </SliderTrack>
-    //                 <SliderThumb boxSize={5} />
-    //             </Slider>
-    //         </FormControl>
-    //     );
-    // }
+    function renderField(field?: Field<T>) {
+        if (field == undefined) return <></>;
 
-    // function renderSlider({ label, name, sliderMarks }: Field<T>) {
-    //     return (
-    //         <FormControl>
-    //             <FormLabel htmlFor={name}>{label}</FormLabel>
-    //             <Slider>
-    //                 {sliderMarks?.map(
-    //                     (mark) => (
-    //                         // {
-    //                         // return typeof mark == "number" ? (
-    //                         <SliderMark key={mark} value={mark}>
-    //                             {mark}
-    //                         </SliderMark>
-    //                     )
-    //                     // ) : (
-    //                     //     <SliderMark key={mark.value} value={mark.value}>
-    //                     //         {mark.label || mark.value}
-    //                     //     </SliderMark>
-    //                     // );
-    //                     // }
-    //                 )}
-    //                 <SliderTrack>
-    //                     <SliderFilledTrack />
-    //                 </SliderTrack>
-    //                 <SliderThumb />
-    //             </Slider>
-    //         </FormControl>
-    //     );
-    // }
-
-    function renderField(field: Field<T>) {
         let renderElement: (arg0: Field<T>) => JSX.Element;
         switch (field.type) {
             case "select":
                 renderElement = renderSelect;
                 break;
-            // case "slider":
-            //     renderElement = renderSlider;
-            //     break;
-            // case "numberInput":
-            //     renderElement = renderNumberInput;
-            //     break;
             case "textArea":
                 renderElement = renderTextArea;
-                break;
-            case "password":
-                renderElement = renderPasswordInput;
                 break;
             default:
                 renderElement = renderInput;
         }
 
         return (
-            <>
+            <FormControl
+                key={field.name}
+                marginBottom={3}
+                isInvalid={errors[field.name] ? true : false}
+            >
                 {renderElement(field)}
                 <FormErrorMessage>
                     {errors[field.name]?.message?.toString()}
                 </FormErrorMessage>
-            </>
+            </FormControl>
         );
     }
 
-    // console.log(errors, isValid);
+    const [search, setSearch] = useState("");
+    const { medications } = useMedications(
+        {
+            search: search,
+        },
+        [search]
+    );
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <Flex
-                direction="column"
-                alignItems="center"
-                justifyContent="center"
+            <Grid
+                width={"100%"}
+                columnGap={"30px"}
+                templateAreas={`"dateOnDocument medications" 
+                "content medications"
+                "files medications"
+                "footer medications"`}
+                templateColumns={"auto 350px"}
             >
-                <VStack width={"60%"}>
-                    <Heading size={"lg"} marginBottom="5">
-                        {heading}
-                    </Heading>
-                    {fields.map((field) => (
-                        <FormControl
-                            key={field.name}
-                            marginBottom={3}
-                            isInvalid={errors[field.name] ? true : false}
+                {fields.map((field) => (
+                    <GridItem area={field.name}>{renderField(field)}</GridItem>
+                ))}
+                <GridItem area={"medications"}>
+                    <Flex direction={"column"} alignItems={"flex-end"}>
+                        {arrayFields.map((field, index) => (
+                            <HStack
+                                key={field.id}
+                                marginBottom={"10px"}
+                                borderBottom={"1px dotted #a1a1a1"}
+                                paddingBottom={"10px"}
+                            >
+                                <VStack>
+                                    <InputWithSearch
+                                        options={medications.map((m) => {
+                                            return {
+                                                label: m.name,
+                                                value: m.name,
+                                            };
+                                        })}
+                                        onTextChange={setSearch}
+                                        size={"xs"}
+                                        placeholder="Name"
+                                        {...register(
+                                            `medications.${index}.name` as Path<T>
+                                        )}
+                                    ></InputWithSearch>
+                                    <HStack>
+                                        <Input
+                                            size={"xs"}
+                                            {...register(
+                                                `medications.${index}.dosage` as Path<T>
+                                            )}
+                                            placeholder="Dosage"
+                                        />
+                                        <Input
+                                            size={"xs"}
+                                            {...register(
+                                                `medications.${index}.interval` as Path<T>
+                                            )}
+                                            placeholder="Interval"
+                                        />
+                                        <Input
+                                            size={"xs"}
+                                            {...register(
+                                                `medications.${index}.quantity` as Path<T>
+                                            )}
+                                            placeholder="Quantity"
+                                        />
+                                    </HStack>
+                                    <Input
+                                        size={"xs"}
+                                        {...register(
+                                            `medications.${index}.instructions` as Path<T>
+                                        )}
+                                        placeholder="Instructions"
+                                    ></Input>
+                                </VStack>
+                                <IconButton
+                                    size={"xs"}
+                                    icon={<BiMinus size={"20px"} />}
+                                    aria-label="Remove Medication"
+                                    onClick={() => remove(index)}
+                                    variant={"outline"}
+                                    colorScheme="pink"
+                                ></IconButton>
+                            </HStack>
+                        ))}
+                        <Button
+                            size={"xs"}
+                            leftIcon={<BiPlus size={"20px"} />}
+                            variant={"outline"}
+                            colorScheme="pink"
+                            onClick={() =>
+                                append({} as FieldArray<T, ArrayPath<T>>)
+                            }
                         >
-                            {renderField(field)}
-                        </FormControl>
-                    ))}
+                            Add Medication
+                        </Button>
+                    </Flex>
+                </GridItem>
 
+                <GridItem marginTop={"10px"} area={"footer"} marginX={"auto"}>
                     <HStack marginTop={"10px"}>
                         {/* <Button isDisabled={!isValid} colorScheme="green" type="submit"> */}
                         <Button
@@ -317,10 +371,10 @@ const Form = <T extends FieldValues>({
                             Cancel
                         </Button>
                     </HStack>
-                </VStack>
-            </Flex>
+                </GridItem>
+            </Grid>
         </form>
     );
 };
 
-export default Form;
+export default GridForm;

@@ -6,6 +6,6 @@ interface ILoginContext {
     setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
     accessLevel: number;
     setAccessLevel: React.Dispatch<React.SetStateAction<number>>;
-    props: WithAuthenticatorProps;
+    props?: WithAuthenticatorProps;
 }
 export const LoginContext = createContext<ILoginContext>({} as ILoginContext);

@@ -15,6 +15,7 @@ import {
     Td,
     useToast,
     Tooltip,
+    IconButton,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { BiPlusMedical, BiUpload } from "react-icons/bi";
@@ -107,32 +108,41 @@ const ExternalPrescriptionsPanel = ({
                                             <Td>{p.hospital}</Td>
                                             <Td isNumeric>
                                                 <Tooltip label="Download">
-                                                    <Button
+                                                    <IconButton
+                                                        icon={<FaDownload />}
+                                                        aria-label="Download Record"
                                                         size={"xs"}
                                                         colorScheme="orange"
+                                                        variant={"outline"}
                                                         onClick={() => {
                                                             handleDownload(p);
                                                         }}
-                                                    >
-                                                        <FaDownload />
-                                                    </Button>
+                                                    />
                                                 </Tooltip>
-                                                <Tooltip label="Delete">
-                                                    <Button
-                                                        size={"xs"}
-                                                        colorScheme="red"
-                                                        marginLeft={"5px"}
-                                                        onClick={() => {
-                                                            handleDelete(
-                                                                p,
-                                                                toast,
-                                                                "/externalPrescriptions"
-                                                            );
-                                                        }}
-                                                    >
-                                                        <FaTrashAlt />
-                                                    </Button>
-                                                </Tooltip>
+                                                <ProtectedComponent
+                                                    user={
+                                                        <Tooltip label="Delete">
+                                                            <IconButton
+                                                                icon={
+                                                                    <FaTrashAlt />
+                                                                }
+                                                                aria-label="Delete Record"
+                                                                size={"xs"}
+                                                                colorScheme="orange"
+                                                                marginLeft={
+                                                                    "5px"
+                                                                }
+                                                                onClick={() => {
+                                                                    handleDelete(
+                                                                        p,
+                                                                        toast,
+                                                                        "/externalPrescriptions"
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </Tooltip>
+                                                    }
+                                                ></ProtectedComponent>
                                             </Td>
                                         </Tr>
                                     ))}

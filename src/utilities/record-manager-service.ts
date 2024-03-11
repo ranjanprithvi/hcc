@@ -21,7 +21,7 @@ interface Entity {
 interface DataEntity {
     profileId: string;
     recordName: string;
-    files: FileList;
+    files?: FileList;
 }
 
 export const handleUpload = async <T1 extends DataEntity, T2 extends Entity>(
@@ -35,23 +35,27 @@ export const handleUpload = async <T1 extends DataEntity, T2 extends Entity>(
     navigate: any
 ) => {
     // console.log("data", data);
-    const promises = Array.from(data.files).map(
-        (file) =>
-            uploadData({
-                key: `hcc/${data.profileId}/${folder}/${data.recordName}/${file.name}`,
-                data: file,
-                options: {
-                    onProgress: handleProgress,
-                },
-            }).result
-    );
+    let promises;
+    if (!data.files) promises = [Promise.resolve()];
+    else
+        promises = Array.from(data.files).map(
+            (file) =>
+                uploadData({
+                    key: `hcc/${data.profileId}/${folder}/${data.recordName}/${file.name}`,
+                    data: file,
+                    options: {
+                        onProgress: handleProgress,
+                    },
+                }).result
+        );
+
     Promise.all(promises)
         .then((res) => {
             createRecordinDb<T1, T2>(
                 id,
                 {
                     ...data,
-                    files: Array.from(data.files).map((file) => {
+                    files: Array.from(data.files || []).map((file) => {
                         return { name: file.name, sizeInBytes: file.size };
                     }),
                 },
@@ -66,7 +70,7 @@ export const handleUpload = async <T1 extends DataEntity, T2 extends Entity>(
         });
 };
 
-export const createRecordinDb = <T1, T2>(
+export const createRecordinDb = async <T1, T2>(
     id: string,
     data: T1,
     endPoint: string,
@@ -143,8 +147,15 @@ export const handleDelete = async <T extends Entity>(
     toast: any,
     serviceEndpoint: string
 ) => {
-    const key = record.folderPath + "/" + (record.files[0] as File).name;
-    await remove({ key: key })
+    if (record.files.length == 0) {
+        deleteRecordFromDb(record, toast, serviceEndpoint);
+        return;
+    }
+    const promises = record.files.map((file) =>
+        remove({ key: record.folderPath + "/" + (file as File).name })
+    );
+
+    Promise.all(promises)
         .then(() => deleteRecordFromDb(record, toast, serviceEndpoint))
         .catch(() => alert("Something went wrong"));
 };
