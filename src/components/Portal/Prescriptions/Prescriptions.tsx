@@ -7,65 +7,65 @@ import useExternalPrescriptions from "../../../hooks/useExternalPrescriptions";
 import { getCurrentProfileId } from "../../../utilities/helper-service";
 import usePrescriptions from "../../../hooks/usePrescriptions";
 
-const mockPrescriptions: Prescription[] = [
-    {
-        _id: "1",
-        profile: "123",
-        doctor: {
-            _id: "1",
-            name: "Dr. Roopa Ravi",
-            hospital: {
-                _id: "112",
-                name: "Heart Care Clinic",
-                doctors: [],
-            },
-            specialization: { _id: "1", name: "Cardiologist" },
-            qualifications: "MBBS, MD",
-            practicingSince: new Date("2010-01-01"),
-        },
-        dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123",
-    },
-    {
-        _id: "2",
-        profile: "123",
-        doctor: {
-            _id: "1",
-            name: "Dr. Roopa Ravi",
-            hospital: {
-                _id: "112",
-                name: "Heart Care Clinic",
-                doctors: [],
-            },
-            specialization: { _id: "1", name: "Cardiologist" },
-            qualifications: "MBBS, MD",
-            practicingSince: new Date("2010-01-01"),
-        },
-        dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123",
-    },
-    {
-        _id: "3",
-        profile: "123",
-        doctor: {
-            _id: "1",
-            name: "Dr. Roopa Ravi",
-            hospital: {
-                _id: "112",
-                name: "Heart Care Clinic",
-                doctors: ["1"],
-            },
-            specialization: { _id: "1", name: "Cardiology" },
-            qualifications: "MBBS, MD",
-            practicingSince: new Date("2010-01-01"),
-        },
-        dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123",
-    },
-];
+// const mockPrescriptions: Prescription[] = [
+//     {
+//         _id: "1",
+//         profile: "123",
+//         doctor: {
+//             _id: "1",
+//             name: "Dr. Roopa Ravi",
+//             hospital: {
+//                 _id: "112",
+//                 name: "Heart Care Clinic",
+//                 doctors: [],
+//             },
+//             specialization: { _id: "1", name: "Cardiologist" },
+//             qualifications: "MBBS, MD",
+//             practicingSince: new Date("2010-01-01"),
+//         },
+//         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
+//         files: [{ name: "asd.jpg", sizeInBytes: 123 }],
+//         folderPath: "123",
+//     },
+//     {
+//         _id: "2",
+//         profile: "123",
+//         doctor: {
+//             _id: "1",
+//             name: "Dr. Roopa Ravi",
+//             hospital: {
+//                 _id: "112",
+//                 name: "Heart Care Clinic",
+//                 doctors: [],
+//             },
+//             specialization: { _id: "1", name: "Cardiologist" },
+//             qualifications: "MBBS, MD",
+//             practicingSince: new Date("2010-01-01"),
+//         },
+//         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
+//         files: [{ name: "asd.jpg", sizeInBytes: 123 }],
+//         folderPath: "123",
+//     },
+//     {
+//         _id: "3",
+//         profile: "123",
+//         doctor: {
+//             _id: "1",
+//             name: "Dr. Roopa Ravi",
+//             hospital: {
+//                 _id: "112",
+//                 name: "Heart Care Clinic",
+//                 doctors: ["1"],
+//             },
+//             specialization: { _id: "1", name: "Cardiology" },
+//             qualifications: "MBBS, MD",
+//             practicingSince: new Date("2010-01-01"),
+//         },
+//         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
+//         files: [{ name: "asd.jpg", sizeInBytes: 123 }],
+//         folderPath: "123",
+//     },
+// ];
 
 const mockExternalPrescriptions: ExternalPrescription[] = [
     {
@@ -105,14 +105,14 @@ const Prescriptions = () => {
         isLoading: prescriptionsLoading,
         error: prescriptionsError,
     } = usePrescriptions({
-        profileId: getCurrentProfileId() || "",
+        profile: getCurrentProfileId() || "",
     });
     const {
         externalPrescriptions,
         isLoading: externalPrescriptionsLoading,
         error: externalPrescriptionsError,
     } = useExternalPrescriptions({
-        profileId: getCurrentProfileId() || "",
+        profile: getCurrentProfileId() || "",
     });
     return (
         <>

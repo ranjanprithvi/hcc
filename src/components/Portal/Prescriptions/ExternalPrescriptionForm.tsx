@@ -15,24 +15,26 @@ import useExternalPrescription from "../../../hooks/useExternalPrescription";
 import { useNavigate, useParams } from "react-router-dom";
 import { ExternalPrescription } from "../../../models/externalPrescription";
 import moment from "moment";
-import { TransferProgressEvent } from "aws-amplify/storage";
+import { TransferProgressEvent, list } from "aws-amplify/storage";
 import { Profile } from "../../../models/profile";
 import { getCurrentProfileId } from "../../../utilities/helper-service";
 import useSpecializations from "../../../hooks/useSpecializations";
 import {
     handleUpload,
+    uploadFilesToS3,
 } from "../../../utilities/record-manager-service";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../../common/Modal";
+import FilesList from "../FilesList";
 
 const schema = z.object({
-    files: z.instanceof(FileList),
-    profileId: z.string(),
+    files: z.union([z.instanceof(FileList), z.literal("")]),
+    existingFiles: z.array(z.any()).optional(),
+    profile: z.string(),
     doctor: z.string(),
     specializationId: z.string(),
     hospital: z.string(),
     dateOnDocument: z.string(),
-    recordName: z.string(),
 });
 
 type ExternalPrescriptionData = z.infer<typeof schema>;
@@ -60,8 +62,29 @@ const ExternalPrescriptionForm = () => {
         return <div>{error}</div>;
     }
 
+    const [existingFiles, setExistingFiles] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchFiles = async () => {
+            try {
+                const result = await list({
+                    prefix:
+                        getCurrentProfileId() +
+                        "/externalPrescriptions/" +
+                        id +
+                        "/",
+                });
+                // console.log((medicalRecord?.profile as Profile)?._id);
+                setExistingFiles(result.items);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchFiles();
+    }, [externalPrescription]);
+
     const resetObject = {
-        profileId:
+        profile:
             (externalPrescription?.profile as Profile)?._id ||
             getCurrentProfileId() ||
             "",
@@ -71,8 +94,7 @@ const ExternalPrescriptionForm = () => {
         dateOnDocument: moment(externalPrescription?.dateOnDocument).format(
             "YYYY-MM-DD"
         ),
-        recordName: externalPrescription?.folderPath?.split("/").pop() || "",
-        files: {} as FileList,
+        files: "" as "",
     };
 
     const fields: Field<ExternalPrescriptionData>[] = [
@@ -80,6 +102,11 @@ const ExternalPrescriptionForm = () => {
             type: "textInput",
             label: "Doctor",
             name: "doctor",
+        },
+        {
+            type: "textInput",
+            label: "Hospital",
+            name: "hospital",
         },
         {
             type: "select",
@@ -93,48 +120,64 @@ const ExternalPrescriptionForm = () => {
         },
         {
             type: "textInput",
-            label: "Hospital",
-            name: "hospital",
-        },
-        {
-            type: "textInput",
             label: "Date On Document",
             name: "dateOnDocument",
             inputType: "date",
         },
-        {
-            type: "textInput",
-            label: "Prescription Name",
-            name: "recordName",
-        },
+        // {
+        //     type: "textInput",
+        //     label: "Prescription Name",
+        //     name: "recordName",
+        // },
     ];
 
-    if (id == "new") {
+    if (id != "new") {
         fields.push({
-            type: "textInput",
-            label: "Files",
-            name: "files",
-            inputType: "file",
+            render: () => <FilesList files={existingFiles}></FilesList>,
+            label: "Existing Files",
+            name: "existingFiles",
         });
     }
 
+    fields.push({
+        type: "textInput",
+        label: "Add Files",
+        name: "files",
+        inputType: "file",
+        acceptFileTypes: "image/*",
+    });
+
     const onSubmit = (data: ExternalPrescriptionData) => {
-        onOpen();
-        if (id == "new") {
-            handleUpload<ExternalPrescriptionData, ExternalPrescription>(
-                id,
-                data,
-                "ExternalPrescriptions",
-                "/externalPrescriptions",
-                handleProgress,
-                "/portal/prescriptions",
-                toast,
-                navigate
-            );
-        } else {
-            console.log(data);
-        }
+        if (data.files && data.files.length > 0) onOpen();
+
+        handleUpload(
+            id,
+            _.omit(data, ["existingFiles"]),
+            "/externalPrescriptions",
+            toast,
+            handleProgress,
+            () => {
+                navigate(-1);
+            }
+        );
     };
+    // const onSubmit = (data: ExternalPrescriptionData) => {
+    //     onOpen();
+    //     if (id == "new") {
+    //         uploadFilesToS3<ExternalPrescriptionData, ExternalPrescription>(
+    //             id,
+    //             data,
+    //             "ExternalPrescriptions",
+    //             "/externalPrescriptions",
+    //             handleProgress,
+    //             "/portal/prescriptions",
+    //             toast,
+    //             navigate
+    //         );
+    //     } else {
+    //         console.log(data);
+    //     }
+    // };
 
     return (
         <GridItem colSpan={2} marginX={5} marginY="auto">
@@ -167,7 +210,12 @@ const ExternalPrescriptionForm = () => {
                     resolver={resolver}
                     fields={fields}
                     resetObject={resetObject}
-                    heading={"Upload Prescription"}
+                    resetDependencies={[externalPrescription]}
+                    heading={
+                        id == "new"
+                            ? "Upload Prescription"
+                            : "Edit Prescription"
+                    }
                     onSubmit={onSubmit}
                 />
             </Box>

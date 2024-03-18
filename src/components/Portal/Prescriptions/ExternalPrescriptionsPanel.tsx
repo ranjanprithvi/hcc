@@ -16,20 +16,31 @@ import {
     useToast,
     Tooltip,
     IconButton,
+    useDisclosure,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { BiPlusMedical, BiUpload } from "react-icons/bi";
-import { FaEdit, FaDownload, FaTrash, FaTrashAlt } from "react-icons/fa";
+import {
+    FaEdit,
+    FaDownload,
+    FaTrash,
+    FaTrashAlt,
+    FaPen,
+    FaEye,
+} from "react-icons/fa";
 import { PiNoteBlank } from "react-icons/pi";
 import { Link } from "react-router-dom";
 import { ExternalPrescription } from "../../../models/externalPrescription";
 import colourPalette from "../../../utilities/colour-palette";
 import ProtectedComponent from "../../common/ProtectedComponent";
 import {
+    deleteFolderFromS3,
     handleDelete,
-    handleDownload,
+    handleViewRecord,
 } from "../../../utilities/record-manager-service";
 import Loader from "../../common/Loader";
+import GalleryModal from "../GalleryModal";
+import { useState } from "react";
 
 interface Props {
     externalPrescriptions: ExternalPrescription[];
@@ -44,70 +55,128 @@ const ExternalPrescriptionsPanel = ({
 }: Props) => {
     const toast = useToast();
 
-    return (
-        <Card
-            boxShadow={"0px 0px 10px #b3b3b3"}
-            maxWidth={"75vw"}
-            marginBottom={"1rem"}
-        >
-            <CardHeader>
-                <HStack justifyContent={"space-between"} paddingX={"20px"}>
-                    <HStack color={colourPalette.secondary}>
-                        <PiNoteBlank size="20px" />
-                        <Heading size="md">External Prescriptions</Heading>
-                    </HStack>
-                    <ProtectedComponent
-                        hospital={<></>}
-                        user={
-                            <Button
-                                as={Link}
-                                to="/portal/externalPrescriptions/new"
-                                size="sm"
-                                colorScheme="orange"
-                                variant={"outline"}
-                                leftIcon={<BiUpload />}
-                            >
-                                Upload Prescription
-                            </Button>
-                        }
-                    ></ProtectedComponent>
-                </HStack>
-            </CardHeader>
-            <Divider color={"gray.300"} />
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [galleryPath, setGalleryPath] = useState("");
 
-            {isLoading ? (
-                <Loader />
-            ) : error ? (
-                <div>{error}</div>
-            ) : (
-                <CardBody>
-                    <TableContainer paddingX={"20px"}>
-                        {externalPrescriptions.length === 0 ? (
-                            <>There are no prescriptions to show</>
-                        ) : (
-                            <Table variant="simple" size={"sm"}>
-                                <Thead>
-                                    <Tr>
-                                        <Th>Date</Th>
-                                        <Th>Doctor</Th>
-                                        <Th>Specialization</Th>
-                                        <Th>Hospital</Th>
-                                        <Th isNumeric></Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {externalPrescriptions.map((p) => (
-                                        <Tr key={p._id}>
-                                            <Td>
-                                                {moment(
-                                                    p.dateOnDocument
-                                                ).format("DD/MM/YYYY")}
-                                            </Td>
-                                            <Td>{p.doctor}</Td>
-                                            <Td>{p.specialization.name}</Td>
-                                            <Td>{p.hospital}</Td>
-                                            <Td isNumeric>
-                                                <Tooltip label="Download">
+    return (
+        <>
+            {isOpen && (
+                <GalleryModal
+                    path={galleryPath}
+                    isOpen={isOpen}
+                    onClose={onClose}
+                ></GalleryModal>
+            )}
+            <Card
+                boxShadow={"0px 0px 10px #b3b3b3"}
+                maxWidth={"75vw"}
+                marginBottom={"1rem"}
+            >
+                <CardHeader>
+                    <HStack justifyContent={"space-between"} paddingX={"20px"}>
+                        <HStack color={colourPalette.secondary}>
+                            <PiNoteBlank size="20px" />
+                            <Heading size="md">External Prescriptions</Heading>
+                        </HStack>
+                        <ProtectedComponent
+                            hospital={<></>}
+                            user={
+                                <Button
+                                    as={Link}
+                                    to="/portal/externalPrescriptions/new"
+                                    size="sm"
+                                    colorScheme="orange"
+                                    variant={"outline"}
+                                    leftIcon={<BiUpload />}
+                                >
+                                    Upload Prescription
+                                </Button>
+                            }
+                        ></ProtectedComponent>
+                    </HStack>
+                </CardHeader>
+                <Divider color={"gray.300"} />
+
+                {isLoading ? (
+                    <Loader />
+                ) : error ? (
+                    <div>{error}</div>
+                ) : (
+                    <CardBody>
+                        <TableContainer paddingX={"20px"}>
+                            {externalPrescriptions.length === 0 ? (
+                                <>There are no prescriptions to show</>
+                            ) : (
+                                <Table variant="simple" size={"sm"}>
+                                    <Thead>
+                                        <Tr>
+                                            <Th>Date</Th>
+                                            <Th>Doctor</Th>
+                                            <Th>Specialization</Th>
+                                            <Th>Hospital</Th>
+                                            <Th isNumeric></Th>
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {externalPrescriptions.map((p) => (
+                                            <Tr key={p._id}>
+                                                <Td>
+                                                    {moment(
+                                                        p.dateOnDocument
+                                                    ).format("DD/MM/YYYY")}
+                                                </Td>
+                                                <Td>{p.doctor}</Td>
+                                                <Td>{p.specialization.name}</Td>
+                                                <Td>{p.hospital}</Td>
+                                                <Td isNumeric>
+                                                    <Tooltip label="View">
+                                                        <IconButton
+                                                            icon={<FaEye />}
+                                                            aria-label="Download Record"
+                                                            size={"xs"}
+                                                            colorScheme="orange"
+                                                            variant={"outline"}
+                                                            // as={Link}
+                                                            // to={
+                                                            //     "/gallery/" +
+                                                            //     p.profile +
+                                                            //     "%2FexternalPrescriptions%2F" +
+                                                            //     p._id
+                                                            // }
+                                                            onClick={() => {
+                                                                setGalleryPath(
+                                                                    p.profile +
+                                                                        "/externalPrescriptions/" +
+                                                                        p._id
+                                                                );
+                                                                onOpen();
+                                                            }}
+                                                        />
+                                                    </Tooltip>
+                                                    <ProtectedComponent
+                                                        hospital={<></>}
+                                                        user={
+                                                            <Tooltip label="Edit">
+                                                                <IconButton
+                                                                    icon={
+                                                                        <FaPen />
+                                                                    }
+                                                                    aria-label="Edit Record"
+                                                                    size={"xs"}
+                                                                    colorScheme="orange"
+                                                                    variant={
+                                                                        "outline"
+                                                                    }
+                                                                    as={Link}
+                                                                    to={`/portal/externalPrescriptions/${p._id}`}
+                                                                    marginLeft={
+                                                                        "5px"
+                                                                    }
+                                                                />
+                                                            </Tooltip>
+                                                        }
+                                                    ></ProtectedComponent>
+                                                    {/* <Tooltip label="Download">
                                                     <IconButton
                                                         icon={<FaDownload />}
                                                         aria-label="Download Record"
@@ -115,44 +184,52 @@ const ExternalPrescriptionsPanel = ({
                                                         colorScheme="orange"
                                                         variant={"outline"}
                                                         onClick={() => {
-                                                            handleDownload(p);
+                                                            handleViewRecord(
+                                                                p.profile +
+                                                                    "/externalPrescriptions/" +
+                                                                    p._id
+                                                            );
                                                         }}
                                                     />
-                                                </Tooltip>
-                                                <ProtectedComponent
-                                                    user={
-                                                        <Tooltip label="Delete">
-                                                            <IconButton
-                                                                icon={
-                                                                    <FaTrashAlt />
-                                                                }
-                                                                aria-label="Delete Record"
-                                                                size={"xs"}
-                                                                colorScheme="orange"
-                                                                marginLeft={
-                                                                    "5px"
-                                                                }
-                                                                onClick={() => {
-                                                                    handleDelete(
-                                                                        p,
-                                                                        toast,
-                                                                        "/externalPrescriptions"
-                                                                    );
-                                                                }}
-                                                            />
-                                                        </Tooltip>
-                                                    }
-                                                ></ProtectedComponent>
-                                            </Td>
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                        )}
-                    </TableContainer>
-                </CardBody>
-            )}
-        </Card>
+                                                </Tooltip> */}
+                                                    <ProtectedComponent
+                                                        hospital={<></>}
+                                                        user={
+                                                            <Tooltip label="Delete">
+                                                                <IconButton
+                                                                    icon={
+                                                                        <FaTrashAlt />
+                                                                    }
+                                                                    aria-label="Delete Prescription"
+                                                                    size={"xs"}
+                                                                    colorScheme="orange"
+                                                                    onClick={() => {
+                                                                        handleDelete(
+                                                                            p,
+                                                                            "/externalPrescriptions",
+                                                                            toast,
+                                                                            () =>
+                                                                                window.location.reload()
+                                                                        );
+                                                                    }}
+                                                                    marginLeft={
+                                                                        "5px"
+                                                                    }
+                                                                />
+                                                            </Tooltip>
+                                                        }
+                                                    ></ProtectedComponent>
+                                                </Td>
+                                            </Tr>
+                                        ))}
+                                    </Tbody>
+                                </Table>
+                            )}
+                        </TableContainer>
+                    </CardBody>
+                )}
+            </Card>
+        </>
     );
 };
 

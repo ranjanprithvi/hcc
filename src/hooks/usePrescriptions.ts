@@ -1,7 +1,7 @@
 import { Prescription } from "../models/prescription";
 import useData from "./generic/useData";
 
-const usePrescriptions = (query?: { profileId: string }, deps?: any[]) => {
+const usePrescriptions = (query?: { profile: string }, deps?: any[]) => {
     const {
         data: prescriptions,
         setData: setPrescriptions,

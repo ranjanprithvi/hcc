@@ -6,6 +6,8 @@ import {
     useDisclosure,
     useToast,
     Text,
+    List,
+    ListItem,
 } from "@chakra-ui/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,18 +16,19 @@ import Form, { Field } from "../../common/Form";
 import useMedicalRecord from "../../../hooks/useMedicalRecord";
 import { useNavigate, useParams } from "react-router-dom";
 import { doctorId } from "../../../App";
-import { MedicalRecord } from "../../../models/medicalRecord";
 import moment from "moment";
 import { TransferProgressEvent, list } from "aws-amplify/storage";
 import { Profile } from "../../../models/profile";
 import { handleUpload } from "../../../utilities/record-manager-service";
 import Modal from "../../common/Modal";
 import { useEffect, useState } from "react";
+import FilesList from "../FilesList";
 
 const schema = z.object({
-    files: z.instanceof(FileList),
-    profileId: z.string(),
-    doctorId: z.string(),
+    files: z.union([z.instanceof(FileList), z.literal("")]),
+    existingFiles: z.array(z.any()).optional(),
+    profile: z.string(),
+    doctor: z.string(),
     dateOnDocument: z.string(),
     recordName: z.string(),
     recordType: z.string(),
@@ -55,43 +58,39 @@ const MedicalRecordForm = () => {
         return <div>{error}</div>;
     }
 
+    const [existingFiles, setExistingFiles] = useState<any[]>([]);
+
     useEffect(() => {
         const fetchFiles = async () => {
             try {
                 const result = await list({
                     prefix:
-                        "hcc/" +
-                        profileId +
-                        "/MedicalRecords/" +
-                        "asdfsd" +
+                        (medicalRecord.profile as Profile)._id +
+                        "/medicalRecords/" +
+                        id +
                         "/",
                 });
-                console.log(result.items[0].key);
+                // console.log((medicalRecord?.profile as Profile)?._id);
+                setExistingFiles(result.items);
             } catch (error) {
                 console.log(error);
             }
         };
         fetchFiles();
-    }, []);
+    }, [medicalRecord]);
 
     const resetObject = {
-        profileId: (medicalRecord?.profile as Profile)?._id || profileId || "",
-        doctorId: doctorId,
+        profile: (medicalRecord?.profile as Profile)?._id || profileId || "",
+        doctor: doctorId,
+        recordName: medicalRecord?.recordName,
+        recordType: medicalRecord?.recordType,
         dateOnDocument: moment(medicalRecord?.dateOnDocument).format(
             "YYYY-MM-DD"
         ),
-        recordName: medicalRecord?.folderPath?.split("/").pop() || "",
-        recordType: medicalRecord?.recordType,
-        files: {} as FileList,
+        files: "" as "",
     };
 
     const fields: Field<MedicalRecordData>[] = [
-        {
-            type: "textInput",
-            label: "Date On Document",
-            name: "dateOnDocument",
-            inputType: "date",
-        },
         {
             type: "textInput",
             label: "Record Name",
@@ -102,39 +101,49 @@ const MedicalRecordForm = () => {
             label: "Record Type",
             name: "recordType",
         },
+        {
+            type: "textInput",
+            label: "Date On Document",
+            name: "dateOnDocument",
+            inputType: "date",
+        },
     ];
 
-    if (id == "new") {
+    if (id != "new") {
         fields.push({
-            type: "textInput",
-            label: "Files",
-            name: "files",
-            inputType: "file",
+            render: () => <FilesList files={existingFiles}></FilesList>,
+            label: "Existing Files",
+            name: "existingFiles",
         });
     }
+    fields.push({
+        type: "textInput",
+        label: "Add Files",
+        name: "files",
+        inputType: "file",
+        acceptFileTypes:
+            "image/*,application/pdf,video/mp4,video/x-m4v,video/*",
+    });
 
     const onSubmit = (data: MedicalRecordData) => {
-        onOpen();
-        if (id == "new") {
-            handleUpload<MedicalRecordData, MedicalRecord>(
-                id,
-                data,
-                "MedicalRecords",
-                "/medicalRecords",
-                handleProgress,
-                `/portal/profileOverview/${profileId}`,
-                toast,
-                navigate
-            );
-        } else {
-            console.log(data);
-        }
+        if (data.files && data.files.length > 0) onOpen();
+
+        handleUpload(
+            id,
+            _.omit(data, ["existingFiles"]),
+            "/medicalRecords",
+            toast,
+            handleProgress,
+            () => {
+                navigate(-1);
+            }
+        );
     };
 
     return (
         <GridItem colSpan={2} marginX={5} marginY="auto">
             <Modal
-                header="Uploading Record..."
+                header="Uploading Files..."
                 body=""
                 onClose={onClose}
                 isOpen={isOpen}
@@ -162,7 +171,8 @@ const MedicalRecordForm = () => {
                     resolver={resolver}
                     fields={fields}
                     resetObject={resetObject}
-                    heading={"Upload Record"}
+                    resetDependencies={[medicalRecord]}
+                    heading={id == "new" ? "Upload Record" : "Edit Record"}
                     onSubmit={onSubmit}
                 />
             </Box>

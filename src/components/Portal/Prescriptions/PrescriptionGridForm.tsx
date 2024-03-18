@@ -36,13 +36,7 @@ export interface Option {
 }
 
 export interface Field<T> {
-    type:
-        | "textInput"
-        | "textArea"
-        | "password"
-        | "select"
-        | "slider"
-        | "render";
+    type?: "textInput" | "textArea" | "password" | "select" | "slider";
     label: string;
     name: Path<T>;
     inputType?: string;
@@ -55,7 +49,8 @@ export interface Field<T> {
     // min?: number;
     // max?: number;
     placeholder?: string;
-    render?: (arg0: Field<T>) => JSX.Element;
+    acceptFileTypes?: string;
+    render?: () => JSX.Element;
 }
 
 interface Props<T extends FieldValues> {
@@ -107,7 +102,13 @@ Props<T>) => {
         resetDependencies ? [...resetDependencies] : []
     );
 
-    function renderInput({ label, name, inputType, pattern }: Field<T>) {
+    function renderInput({
+        label,
+        name,
+        inputType,
+        pattern,
+        acceptFileTypes,
+    }: Field<T>) {
         return (
             <FormControl>
                 <FormLabel
@@ -136,6 +137,7 @@ Props<T>) => {
                     })}
                     onWheel={(e) => (e.target as HTMLInputElement).blur()} // Prevents scrolling from skewing number input
                     multiple={inputType == "file"}
+                    accept={inputType == "file" ? acceptFileTypes : ""}
                 />
             </FormControl>
         );
@@ -241,7 +243,7 @@ Props<T>) => {
                 marginBottom={3}
                 isInvalid={errors[field.name] ? true : false}
             >
-                {renderElement(field)}
+                {field.render ? field.render() : renderElement(field)}
                 <FormErrorMessage>
                     {errors[field.name]?.message?.toString()}
                 </FormErrorMessage>
@@ -257,6 +259,13 @@ Props<T>) => {
         [search]
     );
 
+    // const inputRef = useRef<HTMLInputElement>(null);
+
+    // const setRefValue = (value: string, index: number) => {
+    //     const { ref } = register(`medications.${index}.name` as Path<T>);
+    //     ref.value = value;
+    // };
+
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <Grid
@@ -264,6 +273,7 @@ Props<T>) => {
                 columnGap={"30px"}
                 templateAreas={`"dateOnDocument medications" 
                 "content medications"
+                "existingFiles medications"
                 "files medications"
                 "footer medications"`}
                 templateColumns={"auto 350px"}
@@ -281,20 +291,28 @@ Props<T>) => {
                                 paddingBottom={"10px"}
                             >
                                 <VStack>
-                                    <InputWithSearch
+                                    {/* <InputWithSearch
                                         options={medications.map((m) => {
                                             return {
                                                 label: m.name,
                                                 value: m.name,
                                             };
                                         })}
+                                        setRefValue={setRefValue}
                                         onTextChange={setSearch}
                                         size={"xs"}
                                         placeholder="Name"
                                         {...register(
                                             `medications.${index}.name` as Path<T>
                                         )}
-                                    ></InputWithSearch>
+                                    ></InputWithSearch> */}
+                                    <Input
+                                        size={"xs"}
+                                        {...register(
+                                            `medications.${index}.name` as Path<T>
+                                        )}
+                                        placeholder="Name"
+                                    ></Input>
                                     <HStack>
                                         <Input
                                             size={"xs"}

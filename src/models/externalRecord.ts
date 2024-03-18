@@ -11,6 +11,5 @@ export interface ExternalRecord {
     specialization: Specialization;
     dateOnDocument: Date;
     recordType: string;
-    folderPath: string; // s3 path + record name
-    files: File[] | string[];
+    recordName: string;
 }

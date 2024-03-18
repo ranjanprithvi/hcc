@@ -1,7 +1,7 @@
 import { ExternalRecord } from "../models/externalRecord";
 import useData from "./generic/useData";
 
-const useExternalRecords = (query?: { profileId: string }, deps?: any[]) => {
+const useExternalRecords = (query?: { profile: string }, deps?: any[]) => {
     const {
         data: externalRecords,
         setData: setExternalRecords,

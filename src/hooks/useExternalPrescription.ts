@@ -8,7 +8,7 @@ const useExternalPrescription = (id: string) => {
         error,
         setError,
         isLoading,
-    } = useDataItem<ExternalPrescription>("/prescriptions", id, {}, []);
+    } = useDataItem<ExternalPrescription>("/externalPrescriptions", id, {}, []);
     return {
         externalPrescription,
         setExternalPrescription,

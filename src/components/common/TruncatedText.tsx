@@ -1,13 +1,19 @@
-import { Box, Tooltip } from "@chakra-ui/react";
+import { Box, Text, Tooltip } from "@chakra-ui/react";
 
 interface Props {
     text: string;
+    length: number;
+    [key: string]: any;
 }
 
-const TruncatedText = ({ text }: Props) => {
+const TruncatedText = ({ text, length, ...props }: Props) => {
     return (
-        <Tooltip label={text.length > 20 ? text : ""}>
-            {text.length > 20 ? <>{text.slice(0, 20)}...</> : <>{text}</>}
+        <Tooltip label={text.length > length ? text : ""}>
+            {text.length > length ? (
+                <Text {...props}>{text.slice(0, length)}...</Text>
+            ) : (
+                <Text {...props}>{text}</Text>
+            )}
         </Tooltip>
     );
 };

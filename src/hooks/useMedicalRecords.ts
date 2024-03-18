@@ -1,7 +1,7 @@
 import { MedicalRecord } from "../models/medicalRecord";
 import useData from "./generic/useData";
 
-const useMedicalRecords = (query?: { profileId: string }, deps?: any[]) => {
+const useMedicalRecords = (query?: { profile: string }, deps?: any[]) => {
     const {
         data: medicalRecords,
         setData: setMedicalRecords,

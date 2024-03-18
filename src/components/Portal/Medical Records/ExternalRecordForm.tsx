@@ -6,6 +6,11 @@ import {
     useDisclosure,
     useToast,
     Text,
+    List,
+    ListItem,
+    Tooltip,
+    Flex,
+    UnorderedList,
 } from "@chakra-ui/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,19 +20,25 @@ import useExternalRecord from "../../../hooks/useExternalRecord";
 import { useNavigate, useParams } from "react-router-dom";
 import { ExternalRecord } from "../../../models/externalRecord";
 import moment from "moment";
-import { TransferProgressEvent } from "aws-amplify/storage";
+import { TransferProgressEvent, list } from "aws-amplify/storage";
 import { Profile } from "../../../models/profile";
 import { getCurrentProfileId } from "../../../utilities/helper-service";
 import useSpecializations from "../../../hooks/useSpecializations";
-import { handleUpload } from "../../../utilities/record-manager-service";
+import {
+    handleUpload,
+    uploadFilesToS3,
+} from "../../../utilities/record-manager-service";
 import Modal from "../../common/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import TruncatedText from "../../common/TruncatedText";
+import FilesList from "../FilesList";
 
 const schema = z.object({
-    files: z.instanceof(FileList),
-    profileId: z.string(),
+    files: z.union([z.instanceof(FileList), z.literal("")]),
+    existingFiles: z.array(z.any()).optional(),
+    profile: z.string(),
     doctor: z.string(),
-    specializationId: z.string(),
+    specialization: z.string(),
     hospital: z.string(),
     dateOnDocument: z.string(),
     recordName: z.string(),
@@ -55,27 +66,56 @@ const ExternalRecordForm = () => {
 
     const { externalRecord, error } = useExternalRecord(id);
 
+    const [existingFiles, setExistingFiles] = useState<
+        { key: string; size?: number }[]
+    >([]);
+
+    useEffect(() => {
+        const fetchFiles = async () => {
+            try {
+                const result = await list({
+                    prefix:
+                        getCurrentProfileId() + "/externalRecords/" + id + "/",
+                });
+                setExistingFiles(result.items);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchFiles();
+    }, []);
+
     if (error) {
         return <div>{error}</div>;
     }
 
     const resetObject = {
-        profileId:
+        profile:
             (externalRecord?.profile as Profile)?._id ||
             getCurrentProfileId() ||
             "",
         doctor: externalRecord.doctor,
-        specializationId: externalRecord.specialization?._id,
+        specialization: externalRecord.specialization?._id,
         hospital: externalRecord.hospital,
         dateOnDocument: moment(externalRecord?.dateOnDocument).format(
             "YYYY-MM-DD"
         ),
-        recordName: externalRecord?.folderPath?.split("/").pop() || "",
+        recordName: externalRecord?.recordName,
         recordType: externalRecord?.recordType,
-        files: {} as FileList,
+        files: "" as "",
     };
 
     const fields: Field<ExternalRecordData>[] = [
+        {
+            type: "textInput",
+            label: "Record Name",
+            name: "recordName",
+        },
+        {
+            type: "textInput",
+            label: "Record Type",
+            name: "recordType",
+        },
         {
             type: "textInput",
             label: "Doctor",
@@ -84,7 +124,7 @@ const ExternalRecordForm = () => {
         {
             type: "select",
             label: "Specialization",
-            name: "specializationId",
+            name: "specialization",
             placeholder: "--Select Specialization--",
             options: specializations.map((s) => ({
                 label: s.name,
@@ -102,43 +142,36 @@ const ExternalRecordForm = () => {
             name: "dateOnDocument",
             inputType: "date",
         },
-        {
-            type: "textInput",
-            label: "Record Name",
-            name: "recordName",
-        },
-        {
-            type: "textInput",
-            label: "Record Type",
-            name: "recordType",
-        },
     ];
 
-    if (id == "new") {
+    if (id != "new") {
         fields.push({
-            type: "textInput",
-            label: "Files",
-            name: "files",
-            inputType: "file",
+            render: () => <FilesList files={existingFiles}></FilesList>,
+            label: "Existing Files",
+            name: "existingFiles",
         });
     }
+    fields.push({
+        type: "textInput",
+        label: "Add Files",
+        name: "files",
+        inputType: "file",
+        acceptFileTypes:
+            "image/*,application/pdf,video/mp4,video/x-m4v,video/*",
+    });
 
     const onSubmit = (data: ExternalRecordData) => {
-        onOpen();
-        if (id == "new") {
-            handleUpload<ExternalRecordData, ExternalRecord>(
-                id,
-                data,
-                "ExternalRecords",
-                "/externalRecords",
-                handleProgress,
-                "/portal/records",
-                toast,
-                navigate
-            );
-        } else {
-            console.log(data);
-        }
+        if (data.files && data.files.length > 0) onOpen();
+        handleUpload(
+            id,
+            _.omit(data, ["existingFiles"]),
+            "/externalRecords",
+            toast,
+            handleProgress,
+            () => {
+                navigate(-1);
+            }
+        );
     };
 
     return (
@@ -172,6 +205,7 @@ const ExternalRecordForm = () => {
                     resolver={resolver}
                     fields={fields}
                     resetObject={resetObject}
+                    resetDependencies={[externalRecord]}
                     heading={"Upload Record"}
                     onSubmit={onSubmit}
                 />

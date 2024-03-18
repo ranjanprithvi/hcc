@@ -1,82 +1,29 @@
-import { MedicalRecord } from "../models/medicalRecord";
+import { Profile } from "./../models/profile";
 import {
     TransferProgressEvent,
     getUrl,
+    list,
     remove,
     uploadData,
 } from "aws-amplify/storage";
-import { ExternalRecord } from "../models/externalRecord";
-import { File } from "../models/file";
-import { Prescription } from "../models/prescription";
-import { ExternalPrescription } from "../models/externalPrescription";
 import { httpService } from "../services/http-service";
-import Amplify from "aws-sdk/clients/amplify";
+import _ from "lodash";
 
 interface Entity {
     _id: string;
-    folderPath: string;
-    files: string[] | File[];
+    profile: Profile | string;
+    recordName?: string;
 }
 
 interface DataEntity {
-    profileId: string;
-    recordName: string;
-    files?: FileList;
+    profile: string;
+    files: FileList | "";
 }
 
-export const handleUpload = async <T1 extends DataEntity, T2 extends Entity>(
+export const pushRecordToDb = async <T1, T2 extends Entity>(
     id: string,
     data: T1,
-    folder: string,
-    endPoint: string,
-    handleProgress: (event: TransferProgressEvent) => void,
-    navigateTo: string,
-    toast: any,
-    navigate: any
-) => {
-    // console.log("data", data);
-    let promises;
-    if (!data.files) promises = [Promise.resolve()];
-    else
-        promises = Array.from(data.files).map(
-            (file) =>
-                uploadData({
-                    key: `hcc/${data.profileId}/${folder}/${data.recordName}/${file.name}`,
-                    data: file,
-                    options: {
-                        onProgress: handleProgress,
-                    },
-                }).result
-        );
-
-    Promise.all(promises)
-        .then((res) => {
-            createRecordinDb<T1, T2>(
-                id,
-                {
-                    ...data,
-                    files: Array.from(data.files || []).map((file) => {
-                        return { name: file.name, sizeInBytes: file.size };
-                    }),
-                },
-                endPoint,
-                navigateTo,
-                toast,
-                navigate
-            );
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-};
-
-export const createRecordinDb = async <T1, T2>(
-    id: string,
-    data: T1,
-    endPoint: string,
-    navigateTo: string,
-    toast: any,
-    navigate: any
+    endPoint: string
 ) => {
     let service = httpService(endPoint);
 
@@ -89,28 +36,99 @@ export const createRecordinDb = async <T1, T2>(
         promise = service.patch<T1, T2>(data, id);
     }
 
-    promise
+    return promise;
+};
+
+export const uploadFilesToS3 = async (
+    files: FileList | undefined,
+    folder: string,
+    handleProgress: (event: TransferProgressEvent) => void
+) => {
+    if (!files || files.length == 0) return Promise.resolve();
+
+    const promises = Array.from(files).map(
+        (file) =>
+            uploadData({
+                key: folder + "/" + file.name,
+                data: file,
+                options: {
+                    onProgress: handleProgress,
+                    contentType: file.type,
+                },
+            }).result
+    );
+    return Promise.all(promises);
+};
+
+export const handleUpload = <T extends DataEntity>(
+    id: string,
+    data: T,
+    endpoint: string,
+    toast: any,
+    handleProgress: (event: TransferProgressEvent) => void,
+    callBack?: () => void
+) => {
+    pushRecordToDb(id, _.omit(data, "files"), endpoint)
         .then((res) => {
-            navigate(navigateTo, {
-                replace: true,
-            });
-        })
-        .catch((err) => {
             toast({
-                title: "Error",
-                description: err.response?.data?.toString(),
+                title: `${res.data.recordName || "Prescription"} saved`,
+                status: "success",
+                duration: 3000,
+                position: "bottom-right",
+            });
+            if (data.files && data.files.length > 0) {
+                uploadFilesToS3(
+                    data.files,
+                    res.data.profile + endpoint + "/" + res.data._id,
+                    handleProgress
+                )
+                    .then((res) => {
+                        toast({
+                            title: "Files uploaded to storage",
+                            status: "success",
+                            duration: 3000,
+                            position: "bottom-right",
+                        });
+                        setTimeout(() => {
+                            callBack && callBack();
+                        }, 1000);
+                    })
+                    .catch((error) => {
+                        toast({
+                            title: "Error while uploading files",
+                            description: error.message,
+                            status: "error",
+                            duration: 5000,
+                            isClosable: true,
+                            position: "bottom-right",
+                        });
+                    });
+            } else {
+                setTimeout(() => {
+                    callBack && callBack();
+                }, 1000);
+            }
+        })
+        .catch((error) => {
+            toast({
+                title: "Error while creating record",
+                description: error.message,
                 status: "error",
                 duration: 5000,
                 isClosable: true,
+                position: "bottom-right",
             });
         });
 };
 
-export const handleDownload = async <T extends Entity>(record: T) => {
-    // console.log("record", record);
-    record.files.forEach(async (file) => {
+//Download
+export const handleViewRecord = async (folder: string) => {
+    const files = await list({ prefix: folder });
+
+    if (files.items.length == 0) return;
+    files.items.forEach(async (file) => {
         const getUrlResult = await getUrl({
-            key: record.folderPath + "/" + (file as File).name,
+            key: file.key,
             options: { expiresIn: 60, validateObjectExistence: true },
         });
 
@@ -118,44 +136,90 @@ export const handleDownload = async <T extends Entity>(record: T) => {
     });
 };
 
-const deleteRecordFromDb = <T extends Entity>(
+export const handleViewFile = async (key: string) => {
+    const getUrlResult = await getUrl({
+        key: key,
+        options: { expiresIn: 300, validateObjectExistence: true },
+    });
+
+    window.open(getUrlResult.url, "_blank");
+};
+
+//Delete
+export const deleteRecordFromDb = <T extends Entity>(
     record: T,
-    toast: any,
     serviceEndpoint: string
 ) => {
     let service = httpService(serviceEndpoint);
+    return service.delete(record._id);
+};
 
-    service
-        .delete(record._id)
+export const deleteFolderFromS3 = async (folderPath: string) => {
+    const files = await list({ prefix: folderPath });
+
+    if (files.items.length == 0) {
+        return Promise.resolve(false);
+    }
+    const promises = files.items.map((file) => remove({ key: file.key }));
+
+    return Promise.all(promises);
+};
+
+export const deleteFileFromS3 = async (key: string) => {
+    return remove({ key: key });
+};
+
+export const handleDelete = <T extends Entity>(
+    record: T,
+    endPoint: string,
+    toast: any,
+    callBack?: () => void
+) => {
+    deleteFolderFromS3(record.profile + endPoint + "/" + record._id + "/")
         .then((res) => {
-            alert(`${record.folderPath.split("/").pop()} deleted successfully`);
-            window.location.reload();
+            if (res != false) {
+                toast({
+                    title: `${
+                        record.recordName || "Prescription"
+                    } deleted from storage`,
+                    status: "success",
+                    duration: 3000,
+                    position: "bottom-right",
+                });
+            }
+            deleteRecordFromDb(record, endPoint)
+                .then((res) => {
+                    toast({
+                        title: `${
+                            record.recordName || "Prescription"
+                        } deleted from database`,
+                        status: "success",
+                        duration: 3000,
+                        position: "bottom-right",
+                    });
+                    setTimeout(() => {
+                        callBack && callBack();
+                    }, 1000);
+                })
+                .catch((error) => {
+                    toast({
+                        title: "Error while deleting record",
+                        description: error.message,
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                        position: "bottom-right",
+                    });
+                });
         })
-        .catch((err) => {
+        .catch((error) => {
             toast({
-                title: "Error",
-                description: err.response?.data?.toString(),
+                title: "Error while deleting files",
+                description: error.message,
                 status: "error",
                 duration: 5000,
                 isClosable: true,
+                position: "bottom-right",
             });
         });
-};
-
-export const handleDelete = async <T extends Entity>(
-    record: T,
-    toast: any,
-    serviceEndpoint: string
-) => {
-    if (record.files.length == 0) {
-        deleteRecordFromDb(record, toast, serviceEndpoint);
-        return;
-    }
-    const promises = record.files.map((file) =>
-        remove({ key: record.folderPath + "/" + (file as File).name })
-    );
-
-    Promise.all(promises)
-        .then(() => deleteRecordFromDb(record, toast, serviceEndpoint))
-        .catch(() => alert("Something went wrong"));
 };

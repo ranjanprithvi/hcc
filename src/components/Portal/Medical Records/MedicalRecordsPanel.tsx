@@ -16,21 +16,23 @@ import {
     useToast,
     IconButton,
     Tooltip,
+    useDisclosure,
 } from "@chakra-ui/react";
 import { BiFolder, BiUpload } from "react-icons/bi";
 import { MedicalRecord } from "../../../models/medicalRecord";
-import { BsDownload } from "react-icons/bs";
-import { GoTrash } from "react-icons/go";
 import moment from "moment";
 import colourPalette from "../../../utilities/colour-palette";
 import ProtectedComponent from "../../common/ProtectedComponent";
 import { Link } from "react-router-dom";
 import {
+    handleViewRecord,
     handleDelete,
-    handleDownload,
 } from "../../../utilities/record-manager-service";
 import Loader from "../../common/Loader";
-import { FaDownload, FaPen, FaTrash, FaTrashAlt } from "react-icons/fa";
+import { FaDownload, FaEye, FaPen, FaTrashAlt } from "react-icons/fa";
+import { error } from "console";
+import GalleryModal from "../GalleryModal";
+import { useState } from "react";
 
 interface Props {
     medicalRecords: MedicalRecord[];
@@ -47,138 +49,205 @@ const MedicalRecords = ({
 }: Props) => {
     const toast = useToast();
 
+    // const handleDelete = (record: MedicalRecord) => {
+    //     deleteFolderFromS3(record.profile + "/MedicalRecords/" + record._id)
+    //         .then(() => {
+    //             toast({
+    //                 title: `${
+    //                     record.recordName || "Record"
+    //                 } deleted from storage`,
+    //                 status: "success",
+    //                 duration: 3000,
+    //             });
+    //             deleteRecordFromDb(record, "/medicalRecords")
+    //                 .then((res) => {
+    //                     toast({
+    //                         title: `${
+    //                             record.recordName || "Record"
+    //                         } deleted from database`,
+    //                         status: "success",
+    //                         duration: 3000,
+    //                     });
+    //                 })
+    //                 .catch((error) => {
+    //                     toast({
+    //                         title: "Error while deleting record",
+    //                         description: error.message,
+    //                         status: "error",
+    //                         duration: 5000,
+    //                         isClosable: true,
+    //                     });
+    //                 });
+    //         })
+    //         .catch((error) => {
+    //             toast({
+    //                 title: "Error while deleting folder",
+    //                 description: error.message,
+    //                 status: "error",
+    //                 duration: 5000,
+    //                 isClosable: true,
+    //             });
+    //         });
+    // };
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [galleryPath, setGalleryPath] = useState("");
+
     return (
-        <Card
-            boxShadow={"0px 0px 10px #b3b3b3"}
-            maxWidth={"75vw"}
-            marginBottom={"1rem"}
-        >
-            <CardHeader color={colourPalette.primary}>
-                <HStack justifyContent={"space-between"} marginX={"20px"}>
-                    <HStack>
-                        <BiFolder size="20px" />
-                        <Heading size="md">Medical Records</Heading>
-                    </HStack>
-                    <ProtectedComponent
-                        hospital={
-                            <Button
-                                as={Link}
-                                to={`/portal/medicalRecords/new/${profileId}`}
-                                size="sm"
-                                colorScheme="pink"
-                                variant={"outline"}
-                                leftIcon={<BiUpload />}
-                            >
-                                Upload Record
-                            </Button>
-                        }
-                    ></ProtectedComponent>
-                </HStack>
-            </CardHeader>
-            <Divider color={"gray.300"} />
-
-            {isLoading ? (
-                <Loader />
-            ) : error ? (
-                <div>{error}</div>
-            ) : (
-                <CardBody>
-                    <TableContainer paddingX={"20px"}>
-                        {medicalRecords.length === 0 ? (
-                            <>There are no records to show</>
-                        ) : (
-                            <Table variant="simple" size={"sm"}>
-                                <Thead>
-                                    <Tr>
-                                        <Th>Name</Th>
-                                        <Th>Type</Th>
-                                        <Th>Date</Th>
-                                        <Th isNumeric></Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {medicalRecords.map((record) => (
-                                        <Tr key={record._id}>
-                                            <Td>
-                                                {record.folderPath
-                                                    ?.split("/")
-                                                    .pop()}
-                                            </Td>
-                                            <Td>{record.recordType}</Td>
-                                            <Td>
-                                                {moment(
-                                                    record.dateOnDocument
-                                                ).format("DD/MM/YYYY")}
-                                            </Td>
-
-                                            <Td isNumeric>
-                                                <ProtectedComponent
-                                                    hospital={
-                                                        <Tooltip label="Edit">
-                                                            <IconButton
-                                                                icon={<FaPen />}
-                                                                aria-label="Edit Record"
-                                                                as={Link}
-                                                                to={`/portal/medicalRecords/${record._id}`}
-                                                                size={"xs"}
-                                                                colorScheme="pink"
-                                                                variant={
-                                                                    "outline"
-                                                                }
-                                                            ></IconButton>
-                                                        </Tooltip>
-                                                    }
-                                                ></ProtectedComponent>
-                                                <Tooltip label="Download">
-                                                    <IconButton
-                                                        icon={<FaDownload />}
-                                                        aria-label="Download Record"
-                                                        size={"xs"}
-                                                        colorScheme="pink"
-                                                        variant={"outline"}
-                                                        marginLeft={"5px"}
-                                                        onClick={() => {
-                                                            handleDownload(
-                                                                record
-                                                            );
-                                                        }}
-                                                    />
-                                                </Tooltip>
-
-                                                <ProtectedComponent
-                                                    hospital={
-                                                        <Tooltip label="Delete">
-                                                            <IconButton
-                                                                icon={
-                                                                    <FaTrashAlt />
-                                                                }
-                                                                aria-label="Delete Record"
-                                                                size={"xs"}
-                                                                colorScheme="pink"
-                                                                marginLeft={
-                                                                    "5px"
-                                                                }
-                                                                onClick={() => {
-                                                                    handleDelete(
-                                                                        record,
-                                                                        toast,
-                                                                        "/medicalRecords"
-                                                                    );
-                                                                }}
-                                                            />
-                                                        </Tooltip>
-                                                    }
-                                                ></ProtectedComponent>
-                                            </Td>
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                        )}
-                    </TableContainer>
-                </CardBody>
+        <>
+            {isOpen && (
+                <GalleryModal
+                    path={galleryPath}
+                    isOpen={isOpen}
+                    onClose={onClose}
+                ></GalleryModal>
             )}
-        </Card>
+
+            <Card
+                boxShadow={"0px 0px 10px #b3b3b3"}
+                maxWidth={"75vw"}
+                marginBottom={"1rem"}
+            >
+                <CardHeader color={colourPalette.primary}>
+                    <HStack justifyContent={"space-between"} marginX={"20px"}>
+                        <HStack>
+                            <BiFolder size="20px" />
+                            <Heading size="md">Medical Records</Heading>
+                        </HStack>
+                        <ProtectedComponent
+                            hospital={
+                                <Button
+                                    as={Link}
+                                    to={`/portal/medicalRecords/new/${profileId}`}
+                                    size="sm"
+                                    colorScheme="pink"
+                                    variant={"outline"}
+                                    leftIcon={<BiUpload />}
+                                >
+                                    Upload Record
+                                </Button>
+                            }
+                        ></ProtectedComponent>
+                    </HStack>
+                </CardHeader>
+                <Divider color={"gray.300"} />
+
+                {isLoading ? (
+                    <Loader />
+                ) : error ? (
+                    <div>{error}</div>
+                ) : (
+                    <CardBody>
+                        <TableContainer paddingX={"20px"}>
+                            {medicalRecords.length === 0 ? (
+                                <>There are no records to show</>
+                            ) : (
+                                <Table variant="simple" size={"sm"}>
+                                    <Thead>
+                                        <Tr>
+                                            <Th>Name</Th>
+                                            <Th>Type</Th>
+                                            <Th>Date</Th>
+                                            <Th isNumeric></Th>
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {medicalRecords.map((record) => (
+                                            <Tr key={record._id}>
+                                                <Td>{record.recordName}</Td>
+                                                <Td>{record.recordType}</Td>
+                                                <Td>
+                                                    {moment(
+                                                        record.dateOnDocument
+                                                    ).format("DD/MM/YYYY")}
+                                                </Td>
+
+                                                <Td isNumeric>
+                                                    <Tooltip label="View">
+                                                        <IconButton
+                                                            icon={<FaEye />}
+                                                            aria-label="Download Record"
+                                                            size={"xs"}
+                                                            colorScheme="pink"
+                                                            variant={"outline"}
+                                                            // as={Link}
+                                                            // to={
+                                                            //     "/gallery/" +
+                                                            //     p.profile +
+                                                            //     "%2FexternalPrescriptions%2F" +
+                                                            //     p._id
+                                                            // }
+                                                            onClick={() => {
+                                                                setGalleryPath(
+                                                                    record.profile +
+                                                                        "/medicalRecords/" +
+                                                                        record._id
+                                                                );
+                                                                onOpen();
+                                                            }}
+                                                            marginLeft={"5px"}
+                                                        />
+                                                    </Tooltip>
+                                                    <ProtectedComponent
+                                                        hospital={
+                                                            <Tooltip label="Edit">
+                                                                <IconButton
+                                                                    icon={
+                                                                        <FaPen />
+                                                                    }
+                                                                    aria-label="Edit Record"
+                                                                    as={Link}
+                                                                    to={`/portal/medicalRecords/${record._id}`}
+                                                                    size={"xs"}
+                                                                    colorScheme="pink"
+                                                                    variant={
+                                                                        "outline"
+                                                                    }
+                                                                    marginLeft={
+                                                                        "5px"
+                                                                    }
+                                                                ></IconButton>
+                                                            </Tooltip>
+                                                        }
+                                                    ></ProtectedComponent>
+
+                                                    <ProtectedComponent
+                                                        hospital={
+                                                            <Tooltip label="Delete">
+                                                                <IconButton
+                                                                    icon={
+                                                                        <FaTrashAlt />
+                                                                    }
+                                                                    aria-label="Delete Record"
+                                                                    size={"xs"}
+                                                                    colorScheme="pink"
+                                                                    marginLeft={
+                                                                        "5px"
+                                                                    }
+                                                                    onClick={() => {
+                                                                        handleDelete(
+                                                                            record,
+                                                                            "/medicalRecords",
+                                                                            toast,
+                                                                            () =>
+                                                                                window.location.reload()
+                                                                        );
+                                                                    }}
+                                                                />
+                                                            </Tooltip>
+                                                        }
+                                                    ></ProtectedComponent>
+                                                </Td>
+                                            </Tr>
+                                        ))}
+                                    </Tbody>
+                                </Table>
+                            )}
+                        </TableContainer>
+                    </CardBody>
+                )}
+            </Card>
+        </>
     );
 };
 

@@ -23,7 +23,8 @@ export interface Option {
 }
 
 export interface Field<T> {
-    type: "textInput" | "textArea" | "password" | "select" | "slider";
+    type?: "textInput" | "textArea" | "password" | "select" | "slider";
+    render?: () => JSX.Element;
     label: string;
     name: Path<T>;
     inputType?: string;
@@ -34,6 +35,7 @@ export interface Field<T> {
     // min?: number;
     // max?: number;
     placeholder?: string;
+    acceptFileTypes?: string;
 }
 
 interface Props<T extends FieldValues> {
@@ -73,7 +75,13 @@ const Form = <T extends FieldValues>({
         resetDependencies ? [...resetDependencies] : []
     );
 
-    function renderInput({ label, name, inputType, pattern }: Field<T>) {
+    function renderInput({
+        label,
+        name,
+        inputType,
+        pattern,
+        acceptFileTypes,
+    }: Field<T>) {
         return (
             <FormControl>
                 <FormLabel
@@ -102,6 +110,7 @@ const Form = <T extends FieldValues>({
                     })}
                     onWheel={(e) => (e.target as HTMLInputElement).blur()} // Prevents scrolling from skewing number input
                     multiple={inputType == "file"}
+                    accept={inputType == "file" ? acceptFileTypes : ""}
                 />
             </FormControl>
         );
@@ -287,15 +296,20 @@ const Form = <T extends FieldValues>({
                     <Heading size={"lg"} marginBottom="5">
                         {heading}
                     </Heading>
-                    {fields.map((field) => (
-                        <FormControl
-                            key={field.name}
-                            marginBottom={3}
-                            isInvalid={errors[field.name] ? true : false}
-                        >
-                            {renderField(field)}
-                        </FormControl>
-                    ))}
+                    {fields.map((field) => {
+                        if (field.render) {
+                            return field.render();
+                        }
+                        return (
+                            <FormControl
+                                key={field.name}
+                                marginBottom={3}
+                                isInvalid={errors[field.name] ? true : false}
+                            >
+                                {renderField(field)}
+                            </FormControl>
+                        );
+                    })}
 
                     <HStack marginTop={"10px"}>
                         {/* <Button isDisabled={!isValid} colorScheme="green" type="submit"> */}

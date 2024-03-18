@@ -2,7 +2,7 @@ import { ExternalPrescription } from "../models/externalPrescription";
 import useData from "./generic/useData";
 
 const useExternalPrescriptions = (
-    query?: { profileId: string },
+    query?: { profile: string },
     deps?: any[]
 ) => {
     const {

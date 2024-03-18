@@ -61,6 +61,14 @@ export const removeCurrentDoctorId = () => {
     localStorage.removeItem("currentDoctorId");
 };
 
+// export const getGalleryPath = () => {
+//     return localStorage.getItem("galleryPath");
+// };
+
+// export const setGalleryPath = (path: string) => {
+//     localStorage.setItem("galleryPath", path);
+// };
+
 export const handleLogout = () => {
     removeToken();
     removeUser();

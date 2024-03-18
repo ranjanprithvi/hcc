@@ -46,6 +46,7 @@ const LinkAccountForm = () => {
                     status: "error",
                     duration: 5000,
                     isClosable: true,
+                    position: "bottom-right",
                 });
             });
     };

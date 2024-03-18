@@ -22,6 +22,7 @@ import ExternalPrescriptionForm from "./components/Portal/Prescriptions/External
 import PrescriptionForm from "./components/Portal/Prescriptions/PrescriptionForm";
 import AssignProfileToSlot from "./components/Portal/Appointments/ChooseProfileForm";
 import LinkAccountForm from "./components/Portal/Profiles/LinkAccountForm";
+import GalleryModal from "./components/Portal/GalleryModal";
 
 const Routes = () => {
     return (
@@ -120,6 +121,7 @@ const Routes = () => {
                     }
                 />
             </Route>
+            {/* <Route path="/gallery/:path" element={<Gallery />} /> */}
             <Route path="/login" element={<LoginForm />} />
             <Route path="/not-found" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/not-found" replace />} />

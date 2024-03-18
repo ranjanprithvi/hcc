@@ -12,23 +12,23 @@ import {
 import { ChangeHandler } from "react-hook-form";
 
 interface Props {
-    name: string;
     options: { value: any; label: string }[];
     // value: string;
     onChange: ChangeHandler;
     onTextChange: (value: string) => void;
     // setRefValue: (value: string) => void;
     [key: string]: any;
+    setRefValue: (value: string) => void;
 }
 
 const InputWithSearch = forwardRef<HTMLInputElement, Props>(
     (
-        { name, options, value, onChange, onTextChange, setRefValue, ...props },
+        { options, value, onChange, onTextChange, setRefValue, ...props },
         ref
     ) => {
         // const isSearchActive = useRef(false);
         const [isOpen, setIsOpen] = useState(false);
-        const [inputValue, setInputValue] = useState("");
+        // const [inputValue, setInputValue] = useState("");
 
         // useEffect((value: string) => {
         //     function fetchValues() {
@@ -49,13 +49,11 @@ const InputWithSearch = forwardRef<HTMLInputElement, Props>(
             <Popover isOpen={isOpen} autoFocus={false} matchWidth>
                 <PopoverTrigger>
                     <Input
-                        name={name}
                         type={"text"}
-                        value={inputValue}
                         autoComplete="off"
                         onChange={(e) => {
+                            // setInputValue(e.target.value);
                             handleTextChange(e.target.value);
-                            setInputValue(e.target.value);
                         }}
                         id={"dropdownId"}
                         ref={ref}
@@ -89,7 +87,8 @@ const InputWithSearch = forwardRef<HTMLInputElement, Props>(
                 // inputRef.current!.value = label;
                 // (ref as HTMLInputElement)
                 // setRefValue(label);
-                setInputValue(label);
+                // setInputValue(label);
+                setRefValue(label);
                 setIsOpen(false);
             }
 

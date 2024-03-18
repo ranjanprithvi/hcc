@@ -24,8 +24,7 @@ const mockRecords: MedicalRecord[] = [
         profile: "123",
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012022.jpeg",
+        recordName: "ECG_Report_20012022.jpeg",
     },
     {
         _id: "2",
@@ -44,8 +43,7 @@ const mockRecords: MedicalRecord[] = [
         profile: "123",
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012023",
+        recordName: "ECG_Report_20012023",
     },
     {
         _id: "3",
@@ -64,8 +62,7 @@ const mockRecords: MedicalRecord[] = [
         profile: "123",
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012024",
+        recordName: "ECG_Report_20012024",
     },
     {
         _id: "1",
@@ -84,8 +81,7 @@ const mockRecords: MedicalRecord[] = [
         profile: "123",
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012022",
+        recordName: "ECG_Report_20012022",
     },
     {
         _id: "2",
@@ -104,8 +100,7 @@ const mockRecords: MedicalRecord[] = [
         profile: "123",
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012023",
+        recordName: "ECG_Report_20012023",
     },
     {
         _id: "3",
@@ -124,8 +119,7 @@ const mockRecords: MedicalRecord[] = [
         profile: "123",
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012024",
+        recordName: "ECG_Report_20012024",
     },
 ];
 
@@ -138,8 +132,7 @@ const mockExternalRecords: ExternalRecord[] = [
         specialization: { _id: "1", name: "Cardiology" },
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012022",
+        recordName: "ECG_Report_20012022",
     },
     {
         _id: "2",
@@ -149,8 +142,7 @@ const mockExternalRecords: ExternalRecord[] = [
         specialization: { _id: "1", name: "Cardiology" },
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012024",
+        recordName: "ECG_Report_20012024",
     },
     {
         _id: "3",
@@ -160,8 +152,7 @@ const mockExternalRecords: ExternalRecord[] = [
         specialization: { _id: "1", name: "Cardiology" },
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012023",
+        recordName: "ECG_Report_20012023",
     },
 
     {
@@ -172,8 +163,7 @@ const mockExternalRecords: ExternalRecord[] = [
         specialization: { _id: "1", name: "Cardiology" },
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012022",
+        recordName: "ECG_Report_20012022",
     },
     {
         _id: "2",
@@ -183,8 +173,7 @@ const mockExternalRecords: ExternalRecord[] = [
         specialization: { _id: "1", name: "Cardiology" },
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012024",
+        recordName: "ECG_Report_20012024",
     },
     {
         _id: "3",
@@ -194,8 +183,7 @@ const mockExternalRecords: ExternalRecord[] = [
         specialization: { _id: "1", name: "Cardiology" },
         dateOnDocument: new Date("2024-04-01T10:00:00.000Z"),
         recordType: "ECG",
-        files: [{ name: "asd.jpg", sizeInBytes: 123 }],
-        folderPath: "123/ECG_Report_20012023",
+        recordName: "ECG_Report_20012023",
     },
 ];
 
@@ -205,14 +193,14 @@ const Records = () => {
         error: mrError,
         isLoading: mrLoading,
     } = useMedicalRecords({
-        profileId: getCurrentProfileId() || "",
+        profile: getCurrentProfileId() || "",
     });
     const {
         externalRecords,
         error: erError,
         isLoading: erLoading,
     } = useExternalRecords({
-        profileId: getCurrentProfileId() || "",
+        profile: getCurrentProfileId() || "",
     });
     return (
         <>

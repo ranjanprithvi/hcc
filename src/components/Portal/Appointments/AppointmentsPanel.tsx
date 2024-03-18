@@ -72,6 +72,7 @@ const AppointmentsPanel = ({
                     status: "error",
                     duration: 3000,
                     isClosable: true,
+                    position: "bottom-right",
                 });
             });
     }

@@ -18,16 +18,20 @@ import { Prescription } from "../../../models/prescription";
 import moment from "moment";
 import { TransferProgressEvent, list } from "aws-amplify/storage";
 import { Profile } from "../../../models/profile";
-import { handleUpload } from "../../../utilities/record-manager-service";
+import {
+    handleUpload,
+    uploadFilesToS3,
+} from "../../../utilities/record-manager-service";
 import Modal from "../../common/Modal";
 import { useEffect, useState } from "react";
+import FilesList from "../FilesList";
 
 const schema = z.object({
-    files: z.instanceof(FileList).optional(),
-    profileId: z.string(),
-    doctorId: z.string(),
+    files: z.union([z.instanceof(FileList), z.literal("")]),
+    existingFiles: z.array(z.any()).optional(),
+    profile: z.string(),
+    doctor: z.string(),
     dateOnDocument: z.string(),
-    recordName: z.string(),
     content: z.string(),
     medications: z.array(
         z.object({
@@ -60,34 +64,38 @@ const PrescriptionForm = () => {
 
     const { prescription, error } = usePrescription(id);
 
+    const [existingFiles, setExistingFiles] = useState<any[]>([]);
+
     useEffect(() => {
         const fetchFiles = async () => {
             try {
                 const result = await list({
-                    prefix: "hcc/" + profileId + "/Prescriptions/" + id + "/",
+                    prefix:
+                        (prescription.profile as Profile)._id +
+                        "/prescriptions/" +
+                        id +
+                        "/",
                 });
-                console.log(result);
+                // console.log((medicalRecord?.profile as Profile)?._id);
+                setExistingFiles(result.items);
             } catch (error) {
                 console.log(error);
             }
         };
         fetchFiles();
-    }, []);
+    }, [prescription]);
 
-    console.log(prescription);
     if (error) {
         return <div>{error}</div>;
     }
 
     const resetObject = {
-        profileId: (prescription?.profile as Profile)?._id || profileId || "",
-        doctorId: doctorId,
+        profile: (prescription?.profile as Profile)?._id || profileId || "",
+        doctor: doctorId,
         dateOnDocument: moment(prescription?.dateOnDocument).format(
             "YYYY-MM-DD"
         ),
-        recordName:
-            prescription?.folderPath?.split("/").pop() || Date.now().toString(),
-        // files: undefined,
+        files: "" as "",
         content: prescription?.content || "",
         medications: prescription?.medications || [],
     };
@@ -113,33 +121,47 @@ const PrescriptionForm = () => {
         // },
     ];
 
-    if (id == "new") {
+    if (id != "new") {
         fields.push({
-            type: "textInput",
-            label: "Files",
-            name: "files",
-            inputType: "file",
+            render: () => <FilesList files={existingFiles}></FilesList>,
+            label: "Existing Files",
+            name: "existingFiles",
         });
     }
+    fields.push({
+        label: "Add Files",
+        name: "files",
+        inputType: "file",
+        acceptFileTypes: "image/*",
+    });
 
     const onSubmit = (data: PrescriptionData) => {
         if (data.files && data.files.length > 0) onOpen();
 
-        if (id == "new") {
-            handleUpload<PrescriptionData, Prescription>(
-                id,
-                data,
-                "Prescriptions",
-                "/prescriptions",
-                handleProgress,
-                `/portal/profileOverview/${profileId}`,
-                toast,
-                navigate
-            );
-        } else {
-            console.log(data);
-        }
+        handleUpload(
+            id,
+            _.omit(data, ["existingFiles"]),
+            "/prescriptions",
+            toast,
+            handleProgress,
+            () => {
+                navigate(-1);
+            }
+        );
     };
+    // const onSubmit = (data: PrescriptionData) => {
+    //     if (data.files && data.files.length > 0) onOpen();
+
+    //     if (id == "new") {
+    //         uploadFilesToS3(
+    //             data.files,
+    //             data.profileId + "/Prescriptions/" + data.recordName,
+    //             handleProgress
+    //         );
+    //     } else {
+    //         console.log(data);
+    //     }
+    // };
 
     // const onSubmit = (data: PrescriptionData) => {
     //     console.log(data);
@@ -175,6 +197,7 @@ const PrescriptionForm = () => {
                     resolver={resolver}
                     fields={fields}
                     resetObject={resetObject}
+                    resetDependencies={[prescription]}
                     heading={"Upload"}
                     onSubmit={onSubmit}
                 />
