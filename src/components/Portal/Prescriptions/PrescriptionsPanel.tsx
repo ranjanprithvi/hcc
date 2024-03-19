@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     Card,
     CardBody,
@@ -15,8 +16,10 @@ import {
     Thead,
     Tooltip,
     Tr,
+    VStack,
     useDisclosure,
     useToast,
+    Text,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { BsDownload, BsPen, BsPencil, BsPlus, BsTrash } from "react-icons/bs";
@@ -62,17 +65,20 @@ const PrescriptionsPanel = ({
     const toast = useToast();
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [recordDetails, setRecordDetails] = useState({
+    const [selectedPrescription, setSelectedPrescription] = useState({
         header: "",
         path: "",
         content: "",
+        leftPanel: <></>,
     });
 
     return (
         <>
             {isOpen && (
                 <GalleryModal
-                    recordDetails={recordDetails}
+                    path={selectedPrescription.path}
+                    header={selectedPrescription.header}
+                    content={selectedPrescription.content}
                     isOpen={isOpen}
                     onClose={onClose}
                 ></GalleryModal>
@@ -142,25 +148,6 @@ const PrescriptionsPanel = ({
                                     </Td> */}
 
                                                 <Td isNumeric>
-                                                    <ProtectedComponent
-                                                        hospital={
-                                                            <Tooltip label="Edit">
-                                                                <IconButton
-                                                                    icon={
-                                                                        <FaPen />
-                                                                    }
-                                                                    aria-label="Edit Record"
-                                                                    as={Link}
-                                                                    to={`/portal/prescriptions/${p._id}`}
-                                                                    size={"xs"}
-                                                                    colorScheme="pink"
-                                                                    variant={
-                                                                        "outline"
-                                                                    }
-                                                                ></IconButton>
-                                                            </Tooltip>
-                                                        }
-                                                    ></ProtectedComponent>
                                                     <Tooltip label="View">
                                                         <IconButton
                                                             icon={<FaEye />}
@@ -177,41 +164,84 @@ const PrescriptionsPanel = ({
                                                             //     );
                                                             // }}
                                                             onClick={() => {
-                                                                setGalleryPath(
-                                                                    p.profile +
-                                                                        "/prescriptions/" +
-                                                                        p._id
+                                                                setSelectedPrescription(
+                                                                    {
+                                                                        path:
+                                                                            p.profile +
+                                                                            "/prescriptions/" +
+                                                                            p._id,
+                                                                        header:
+                                                                            "Prescription - " +
+                                                                            moment(
+                                                                                p.dateOnDocument
+                                                                            ).format(
+                                                                                "DD/MM/yyyy"
+                                                                            ),
+                                                                        content:
+                                                                            p.content?.trim() ||
+                                                                            "",
+                                                                        leftPanel:
+                                                                            (
+                                                                                <>
+
+                                                                                </>
+                                                                            ),
+                                                                    }
                                                                 );
-                                                                setHeader;
                                                                 onOpen();
                                                             }}
                                                         />
                                                     </Tooltip>
-
                                                     <ProtectedComponent
                                                         hospital={
-                                                            <Tooltip label="Delete">
-                                                                <IconButton
-                                                                    icon={
-                                                                        <FaTrashAlt />
-                                                                    }
-                                                                    aria-label="Delete Record"
-                                                                    size={"xs"}
-                                                                    colorScheme="pink"
-                                                                    marginLeft={
-                                                                        "5px"
-                                                                    }
-                                                                    onClick={() => {
-                                                                        handleDelete(
-                                                                            p,
-                                                                            "/prescriptions",
-                                                                            toast,
-                                                                            () =>
-                                                                                window.location.reload()
-                                                                        );
-                                                                    }}
-                                                                />
-                                                            </Tooltip>
+                                                            <>
+                                                                <Tooltip label="Edit">
+                                                                    <IconButton
+                                                                        icon={
+                                                                            <FaPen />
+                                                                        }
+                                                                        aria-label="Edit Record"
+                                                                        as={
+                                                                            Link
+                                                                        }
+                                                                        to={`/portal/prescriptions/${p._id}`}
+                                                                        size={
+                                                                            "xs"
+                                                                        }
+                                                                        colorScheme="pink"
+                                                                        variant={
+                                                                            "outline"
+                                                                        }
+                                                                        marginLeft={
+                                                                            "5px"
+                                                                        }
+                                                                    ></IconButton>
+                                                                </Tooltip>
+                                                                <Tooltip label="Delete">
+                                                                    <IconButton
+                                                                        icon={
+                                                                            <FaTrashAlt />
+                                                                        }
+                                                                        aria-label="Delete Record"
+                                                                        size={
+                                                                            "xs"
+                                                                        }
+                                                                        colorScheme="pink"
+                                                                        marginLeft={
+                                                                            "5px"
+                                                                        }
+                                                                        onClick={() => {
+                                                                            handleDelete(
+                                                                                p,
+                                                                                "/prescriptions",
+                                                                                toast,
+                                                                                () =>
+                                                                                    window.location.reload()
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                </Tooltip>
+                                                            </>
                                                         }
                                                     ></ProtectedComponent>
                                                 </Td>

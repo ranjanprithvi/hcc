@@ -17,6 +17,9 @@ import {
     Tooltip,
     IconButton,
     useDisclosure,
+    VStack,
+    Box,
+    Text,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { BiPlusMedical, BiUpload } from "react-icons/bi";
@@ -56,15 +59,21 @@ const ExternalPrescriptionsPanel = ({
     const toast = useToast();
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [galleryPath, setGalleryPath] = useState("");
+    const [selectedPrescription, setSelectedPrescription] = useState({
+        path: "",
+        header: "",
+        leftPanel: <></>,
+    });
 
     return (
         <>
             {isOpen && (
                 <GalleryModal
-                    path={galleryPath}
+                    path={selectedPrescription.path}
                     isOpen={isOpen}
                     onClose={onClose}
+                    header={selectedPrescription.header}
+                    leftPanel={selectedPrescription.leftPanel}
                 ></GalleryModal>
             )}
             <Card
@@ -144,10 +153,78 @@ const ExternalPrescriptionsPanel = ({
                                                             //     p._id
                                                             // }
                                                             onClick={() => {
-                                                                setGalleryPath(
-                                                                    p.profile +
-                                                                        "/externalPrescriptions/" +
-                                                                        p._id
+                                                                setSelectedPrescription(
+                                                                    {
+                                                                        path:
+                                                                            p.profile +
+                                                                            "/externalPrescriptions/" +
+                                                                            p._id,
+                                                                        header:
+                                                                            "External Prescription - " +
+                                                                            moment(
+                                                                                p.dateOnDocument
+                                                                            ).format(
+                                                                                "DD/MM/yyyy"
+                                                                            ),
+                                                                        leftPanel:
+                                                                            (
+                                                                                <VStack
+                                                                                    alignItems={
+                                                                                        "flex-start"
+                                                                                    }
+                                                                                    padding={
+                                                                                        "20px 20px 0 0"
+                                                                                    }
+                                                                                >
+                                                                                    <Box
+                                                                                        width={
+                                                                                            "100%"
+                                                                                        }
+                                                                                        borderBottom={
+                                                                                            "1px solid #d5d5d5"
+                                                                                        }
+                                                                                    >
+                                                                                        <Heading size="xs">
+                                                                                            Doctor
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            {
+                                                                                                p.doctor
+                                                                                            }
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                    <Box
+                                                                                        borderBottom={
+                                                                                            "1px solid #d5d5d5"
+                                                                                        }
+                                                                                        width={
+                                                                                            "100%"
+                                                                                        }
+                                                                                    >
+                                                                                        <Heading size="xs">
+                                                                                            Hospital
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            {
+                                                                                                p.hospital
+                                                                                            }
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                    <Box>
+                                                                                        <Heading size="xs">
+                                                                                            Specialization
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            {
+                                                                                                p
+                                                                                                    .specialization
+                                                                                                    .name
+                                                                                            }
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                </VStack>
+                                                                            ),
+                                                                    }
                                                                 );
                                                                 onOpen();
                                                             }}

@@ -17,6 +17,9 @@ import {
     Tooltip,
     IconButton,
     useDisclosure,
+    Box,
+    VStack,
+    Text,
 } from "@chakra-ui/react";
 import { BiFolderOpen, BiUpload } from "react-icons/bi";
 import { Link } from "react-router-dom";
@@ -43,15 +46,21 @@ interface Props {
 const ExternalRecordsPanel = ({ externalRecords, error, isLoading }: Props) => {
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [galleryPath, setGalleryPath] = useState("");
+    const [selectedRecord, setSelectedRecord] = useState({
+        path: "",
+        header: "",
+        leftPanel: <></>,
+    });
 
     return (
         <>
             {isOpen && (
                 <GalleryModal
-                    path={galleryPath}
+                    path={selectedRecord.path}
                     isOpen={isOpen}
                     onClose={onClose}
+                    header={selectedRecord.header}
+                    leftPanel={selectedRecord.leftPanel}
                 ></GalleryModal>
             )}
             <Card
@@ -137,10 +146,93 @@ const ExternalRecordsPanel = ({ externalRecords, error, isLoading }: Props) => {
                                                             //     p._id
                                                             // }
                                                             onClick={() => {
-                                                                setGalleryPath(
-                                                                    record.profile +
-                                                                        "/externalRecords/" +
-                                                                        record._id
+                                                                setSelectedRecord(
+                                                                    {
+                                                                        path:
+                                                                            record.profile +
+                                                                            "/externalRecords/" +
+                                                                            record._id,
+                                                                        header:
+                                                                            "External Record - " +
+                                                                            record.recordName,
+                                                                        leftPanel:
+                                                                            (
+                                                                                <VStack
+                                                                                    alignItems={
+                                                                                        "flex-start"
+                                                                                    }
+                                                                                    padding={
+                                                                                        "20px 20px 0 0"
+                                                                                    }
+                                                                                >
+                                                                                    <Box
+                                                                                        width={
+                                                                                            "100%"
+                                                                                        }
+                                                                                        borderBottom={
+                                                                                            "1px solid #d5d5d5"
+                                                                                        }
+                                                                                    >
+                                                                                        <Heading size="xs">
+                                                                                            Doctor
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            {
+                                                                                                record.doctor
+                                                                                            }
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                    <Box
+                                                                                        borderBottom={
+                                                                                            "1px solid #d5d5d5"
+                                                                                        }
+                                                                                        width={
+                                                                                            "100%"
+                                                                                        }
+                                                                                    >
+                                                                                        <Heading size="xs">
+                                                                                            Hospital
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            {
+                                                                                                record.hospital
+                                                                                            }
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                    <Box
+                                                                                        borderBottom={
+                                                                                            "1px solid #d5d5d5"
+                                                                                        }
+                                                                                        width={
+                                                                                            "100%"
+                                                                                        }
+                                                                                    >
+                                                                                        <Heading size="xs">
+                                                                                            Specialization
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            {
+                                                                                                record
+                                                                                                    .specialization
+                                                                                                    .name
+                                                                                            }
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                    <Box>
+                                                                                        <Heading size="xs">
+                                                                                            Date
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            {moment(
+                                                                                                record.dateOnDocument
+                                                                                            ).format(
+                                                                                                "DD/MM/YYYY"
+                                                                                            )}
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                </VStack>
+                                                                            ),
+                                                                    }
                                                                 );
                                                                 onOpen();
                                                             }}

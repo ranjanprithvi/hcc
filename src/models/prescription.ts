@@ -16,6 +16,6 @@ export interface Prescription {
         quantity: string;
         instructions: string;
     }[];
-    folderPath: string; // s3 path + record name
-    files: File[];
+    // folderPath: string; // s3 path + record name
+    // files: File[];
 }

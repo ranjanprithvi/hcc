@@ -17,6 +17,9 @@ import {
     IconButton,
     Tooltip,
     useDisclosure,
+    Box,
+    VStack,
+    Text,
 } from "@chakra-ui/react";
 import { BiFolder, BiUpload } from "react-icons/bi";
 import { MedicalRecord } from "../../../models/medicalRecord";
@@ -91,15 +94,21 @@ const MedicalRecords = ({
     // };
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [galleryPath, setGalleryPath] = useState("");
+    const [selectedRecord, setSelectedRecord] = useState({
+        path: "",
+        header: "",
+        leftPanel: <></>,
+    });
 
     return (
         <>
             {isOpen && (
                 <GalleryModal
-                    path={galleryPath}
+                    path={selectedRecord.path}
                     isOpen={isOpen}
                     onClose={onClose}
+                    header={selectedRecord.header}
+                    leftPanel={selectedRecord.leftPanel}
                 ></GalleryModal>
             )}
 
@@ -178,10 +187,88 @@ const MedicalRecords = ({
                                                             //     p._id
                                                             // }
                                                             onClick={() => {
-                                                                setGalleryPath(
-                                                                    record.profile +
-                                                                        "/medicalRecords/" +
-                                                                        record._id
+                                                                setSelectedRecord(
+                                                                    {
+                                                                        path:
+                                                                            record.profile +
+                                                                            "/medicalRecords/" +
+                                                                            record._id,
+                                                                        header:
+                                                                            "Medical Record - " +
+                                                                            record.recordName,
+                                                                        leftPanel:
+                                                                            (
+                                                                                <VStack
+                                                                                    alignItems={
+                                                                                        "flex-start"
+                                                                                    }
+                                                                                    padding={
+                                                                                        "20px 20px 0 0"
+                                                                                    }
+                                                                                >
+                                                                                    <Box
+                                                                                        width={
+                                                                                            "100%"
+                                                                                        }
+                                                                                        borderBottom={
+                                                                                            "1px solid #d5d5d5"
+                                                                                        }
+                                                                                    >
+                                                                                        <Heading size="xs">
+                                                                                            Doctor
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            Roopa
+                                                                                            Ravi
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                    <Box
+                                                                                        borderBottom={
+                                                                                            "1px solid #d5d5d5"
+                                                                                        }
+                                                                                        width={
+                                                                                            "100%"
+                                                                                        }
+                                                                                    >
+                                                                                        <Heading size="xs">
+                                                                                            Hospital
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            Heart
+                                                                                            Care
+                                                                                            Clinic
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                    <Box
+                                                                                        borderBottom={
+                                                                                            "1px solid #d5d5d5"
+                                                                                        }
+                                                                                        width={
+                                                                                            "100%"
+                                                                                        }
+                                                                                    >
+                                                                                        <Heading size="xs">
+                                                                                            Specialization
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            Cardiology
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                    <Box>
+                                                                                        <Heading size="xs">
+                                                                                            Date
+                                                                                        </Heading>
+                                                                                        <Text>
+                                                                                            {moment(
+                                                                                                record.dateOnDocument
+                                                                                            ).format(
+                                                                                                "DD/MM/YYYY"
+                                                                                            )}
+                                                                                        </Text>
+                                                                                    </Box>
+                                                                                </VStack>
+                                                                            ),
+                                                                    }
                                                                 );
                                                                 onOpen();
                                                             }}
