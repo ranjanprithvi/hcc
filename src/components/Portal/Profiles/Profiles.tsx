@@ -1,4 +1,13 @@
-import { Box, Button, Card, HStack, Heading, Text } from "@chakra-ui/react";
+import {
+    Box,
+    Button,
+    Card,
+    Flex,
+    HStack,
+    Heading,
+    Text,
+    VStack,
+} from "@chakra-ui/react";
 import { Profile } from "../../../models/profile";
 import { BiUserCircle, BiUserPlus } from "react-icons/bi";
 import moment from "moment";
@@ -44,7 +53,7 @@ const Profiles = () => {
         <Loader />
     ) : error ? (
         <div>{error}</div>
-    ) : (
+    ) : profiles.length > 0 ? (
         <>
             <HStack
                 alignItems={"center"}
@@ -115,6 +124,20 @@ const Profiles = () => {
                 </Card>
             ))}
         </>
+    ) : (
+        <Flex width={"100%"} height={"100%"} justifyContent={"center"}>
+            <VStack>
+                <Text>There are no profiles in your account</Text>
+                <Button
+                    variant={"link"}
+                    as={Link}
+                    to={"/portal/profiles/new"}
+                    colorScheme="pink"
+                >
+                    Create a profile to get started
+                </Button>
+            </VStack>
+        </Flex>
     );
 };
 export default Profiles;

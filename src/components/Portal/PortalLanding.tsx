@@ -23,30 +23,36 @@ import {
 } from "react-icons/bi";
 import { Box } from "@chakra-ui/react";
 import { getValueByRole } from "../../utilities/getValueByRole";
+import { getCurrentProfileId } from "../../utilities/helper-service";
 
-const userSidebarList = [
-    {
-        name: "Appointments",
-        path: "/portal/appointments",
-        icon: <BiCalendar />,
-    },
-    {
-        name: "Medical Records",
-        path: "/portal/records",
-        icon: <BiFolder />,
-    },
-    // {
-    //     name: "External Records",
-    //     path: "/portal/externalRecords",
-    //     icon: <BiFolderOpen />,
-    // },
-    {
-        name: "Prescriptions",
-        path: "/portal/prescriptions",
-        icon: <BiNote />,
-    },
+let userSidebarList = [
     { name: "Profiles", path: "/portal/profiles", icon: <BiUserCircle /> },
 ];
+if (getCurrentProfileId()) {
+    userSidebarList = [
+        {
+            name: "Appointments",
+            path: "/portal/appointments",
+            icon: <BiCalendar />,
+        },
+        {
+            name: "Medical Records",
+            path: "/portal/records",
+            icon: <BiFolder />,
+        },
+        // {
+        //     name: "External Records",
+        //     path: "/portal/externalRecords",
+        //     icon: <BiFolderOpen />,
+        // },
+        {
+            name: "Prescriptions",
+            path: "/portal/prescriptions",
+            icon: <BiNote />,
+        },
+        ...userSidebarList,
+    ];
+}
 const hospitalSidebarList = [
     {
         name: "Appointments",

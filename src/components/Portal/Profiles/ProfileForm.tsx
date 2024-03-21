@@ -8,6 +8,7 @@ import { httpService } from "../../../services/http-service";
 import moment from "moment";
 import useProfile from "../../../hooks/useProfile";
 import { Profile } from "../../../models/profile";
+import { setCurrentProfileId } from "../../../utilities/helper-service";
 
 const phoneRegex = new RegExp(/^[+]?[0-9]{9,13}$/);
 
@@ -82,9 +83,8 @@ const ProfileForm = () => {
 
         promise
             .then((res) => {
-                navigate(`/portal/profiles`, {
-                    replace: true,
-                });
+                setCurrentProfileId(res.data._id);
+                window.location.href = `/portal/profiles`;
             })
             .catch((err) => {
                 toast({

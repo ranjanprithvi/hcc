@@ -10,13 +10,13 @@ function Home() {
                 padding="20px"
                 alignItems="center"
             >
-                <Image src="/doc.jpeg" width="500px" />
+                <Image src="/doc.png" width="500px" />
                 <VStack paddingLeft={{ base: 0, md: "20px" }}>
                     <Heading
                         alignSelf="flex-start"
                         color={colourPalette.primary}
                     >
-                        Dr. Roopa Ravi
+                        Dr. Gregory House
                     </Heading>
                     <Text>
                         Lorem ipsum dolor sit amet consectetur adipisicing elit.

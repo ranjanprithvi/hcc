@@ -41,11 +41,12 @@ export interface Field<T> {
 interface Props<T extends FieldValues> {
     resolver?: any;
     fields: Field<T>[];
-    heading: string;
+    heading?: string;
     onSubmit: (data: T) => void;
     resetObject?: T;
     resetDependencies?: any[];
     submitButtonLabel?: string;
+    submitButtonColourScheme?: string;
 }
 
 const Form = <T extends FieldValues>({
@@ -56,6 +57,7 @@ const Form = <T extends FieldValues>({
     resetObject,
     resetDependencies,
     submitButtonLabel,
+    submitButtonColourScheme: submitButtonColourScheme,
 }: Props<T>) => {
     const navigate = useNavigate();
 
@@ -292,10 +294,12 @@ const Form = <T extends FieldValues>({
                 alignItems="center"
                 justifyContent="center"
             >
-                <VStack width={"60%"}>
-                    <Heading size={"lg"} marginBottom="5">
-                        {heading}
-                    </Heading>
+                <VStack width={"80%"}>
+                    {heading && (
+                        <Heading size={"lg"} marginBottom="5">
+                            {heading}
+                        </Heading>
+                    )}
                     {fields.map((field) => {
                         if (field.render) {
                             return field.render();
@@ -316,7 +320,7 @@ const Form = <T extends FieldValues>({
                         <Button
                             size={"sm"}
                             borderRadius={"2px"}
-                            colorScheme="pink"
+                            colorScheme={submitButtonColourScheme || "pink"}
                             type="submit"
                             id="submit"
                         >

@@ -33,6 +33,7 @@ const PasswordInput = ({ name, register }: Props) => {
             />
             <InputRightElement height={"35px"}>
                 <IconButton
+                    tabIndex={-1}
                     marginTop={"0"}
                     icon={show ? <FaEyeSlash /> : <FaEye />}
                     aria-label={""}

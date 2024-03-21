@@ -30,6 +30,7 @@ import { LoginContext } from "../../contexts/loginContext";
 interface NavItem {
     label: string;
     path: string;
+    colour?: string;
 }
 
 const NavBar = () => {
@@ -44,7 +45,11 @@ const NavBar = () => {
     let navLinks = [] as NavItem[];
     navLinks = [
         { label: "Home", path: "/" },
-        { label: "Services", path: "/facilities" },
+        {
+            label: "Services",
+            path: "/facilities",
+            colour: colourPalette.secondary,
+        },
     ];
 
     const { props } = useContext(LoginContext);
@@ -112,7 +117,8 @@ const NavBar = () => {
                                         <Tab
                                             color={
                                                 pathname == link.path
-                                                    ? colourPalette.primary
+                                                    ? link.colour ||
+                                                      colourPalette.primary
                                                     : "gray"
                                             }
                                             borderBottom={
