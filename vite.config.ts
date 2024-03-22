@@ -1,9 +1,27 @@
+import fs from "fs";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import basicSsl from "@vitejs/plugin-basic-ssl";
+
+const plugins = [react()] as any[];
+if (process.env.NODE_ENV === "development") {
+    plugins.push(basicSsl());
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [react()],
+    // server: {
+    //     https:
+    //         process.env.NODE_ENV === "development" &&
+    //         process.env.SSL_CERT &&
+    //         process.env.SSL_KEY
+    //             ? {
+    //                   cert: fs.readFileSync("./cert/localhost.crt"),
+    //                   key: fs.readFileSync("./cert/localhost.key"),
+    //               }
+    //             : {},
+    // },
+    plugins: plugins,
     build: {
         rollupOptions: {
             /**
