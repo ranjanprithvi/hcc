@@ -14,10 +14,10 @@ export function getValueByRole<T extends string | any[]>({
     user,
     fallback,
 }: Props<T>) {
-    const isLoggedIn = getToken() !== null;
+    // const isLoggedIn = getToken() !== null;
     const accessLevel = getAccessLevel();
 
-    if (!isLoggedIn) return fallback || (undefined as unknown as T);
+    // if (!isLoggedIn) return fallback || (undefined as unknown as T);
 
     switch (accessLevel) {
         case roles.admin:

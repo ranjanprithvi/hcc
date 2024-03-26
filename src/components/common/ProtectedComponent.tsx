@@ -1,7 +1,8 @@
-import { ReactNode, useContext } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { Navigate, Route } from "react-router-dom";
 import { LoginContext } from "../../contexts/loginContext";
 import { roles } from "../../App";
+import { getAccessLevel, getToken } from "../../utilities/helper-service";
 
 interface Props {
     admin?: JSX.Element;
@@ -16,7 +17,18 @@ const ProtectedComponent = ({
     user,
     defaultComponent,
 }: Props) => {
-    const { isLoggedIn, accessLevel } = useContext(LoginContext);
+    // const { isLoggedIn, accessLevel } = useContext(LoginContext);
+
+    const [isLoggedIn, setLoggedIn] = useState<boolean>(
+        getToken() ? true : false
+    );
+    const accessLevel = getAccessLevel();
+
+    // useEffect(() => {
+    //     getToken().then((token) => {
+    //         setLoggedIn(!token ? false : true);
+    //     });
+    // }, []);
 
     if (!isLoggedIn) return defaultComponent || null;
 

@@ -1,4 +1,6 @@
+import { fetchAuthSession, signOut } from "aws-amplify/auth";
 import { jwtDecode } from "jwt-decode";
+import { roles } from "../App";
 
 type User = {
     _id: string;
@@ -8,11 +10,14 @@ type User = {
 };
 
 export const getToken = () => {
+    // const { tokens } = await fetchAuthSession();
+    // return tokens?.accessToken.toString();
     return localStorage.getItem("token");
 };
 
-export const setToken = (token: string) => {
-    localStorage.setItem("token", token);
+export const setToken = async () => {
+    const { tokens } = await fetchAuthSession();
+    localStorage.setItem("token", tokens?.accessToken.toString() || "");
 };
 
 export const removeToken = () => {
@@ -23,17 +28,38 @@ export const getUser = () => {
     return JSON.parse(localStorage.getItem("user") || "{}") as User;
 };
 
-export const setUser = () => {
-    localStorage.setItem("user", JSON.stringify(jwtDecode(getToken() || "")));
+export const setUser = async () => {
+    localStorage.setItem(
+        "user",
+        JSON.stringify(jwtDecode((await getToken()) || ""))
+    );
 };
 
 export const removeUser = () => {
     localStorage.removeItem("user");
 };
 
+export const setAccessLevel = () => {
+    fetchAuthSession().then(({ tokens }) => {
+        const groups = (tokens?.accessToken?.payload["cognito:groups"] ||
+            []) as string[];
+        const level = groups.includes("Admin")
+            ? roles.admin
+            : groups.includes("Hospital")
+            ? roles.hospital
+            : roles.user;
+
+        localStorage.setItem("accessLevel", level.toString());
+    });
+
+    // return Number.parseInt(
+    //     JSON.parse(localStorage.getItem("user") || "{}").accessLevel
+    // );
+};
+
 export const getAccessLevel = () => {
     return Number.parseInt(
-        JSON.parse(localStorage.getItem("user") || "{}").accessLevel
+        JSON.parse(localStorage.getItem("accessLevel") || "0")
     );
 };
 
@@ -74,5 +100,7 @@ export const handleLogout = () => {
     removeUser();
     removeCurrentProfileId();
     removeCurrentDoctorId();
-    window.location.assign("/");
+    signOut().then(() => {
+        window.location.assign("/");
+    });
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoginContext } from "./contexts/loginContext";
 import { useBreakpointValue } from "@chakra-ui/react";
 import Routes from "./Routes";
@@ -17,8 +17,14 @@ export const roles = {
 export const doctorId = "65c8d613c5a2abf941ae6c57";
 
 function App() {
-    const [isLoggedIn, setLoggedIn] = useState<boolean>(getToken() !== null);
+    const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
     const [accessLevel, setAccessLevel] = useState(getAccessLevel());
+
+    // useEffect(() => {
+    //     getToken().then((token) => {
+    //         setLoggedIn(!token ? false : true);
+    //     });
+    // }, []);
 
     const dataView = useBreakpointValue(
         {

@@ -160,13 +160,16 @@ const NavBar = () => {
                         defaultComponent={
                             <Button
                                 as={NavLink}
-                                to="/login"
+                                to="/auth/login"
                                 colorScheme="pink"
                                 variant="outline"
                                 size={"sm"}
                             >
                                 Login
                             </Button>
+                            // <a href="https://hcc.auth.ap-south-1.amazoncognito.com/login?client_id=2q6ub44kll21ngc6ft9o0ftjpm&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fportal%2Fappointments">
+                            //     Login
+                            // </a>
                         }
                     />
                 </Show>

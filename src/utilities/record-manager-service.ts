@@ -54,6 +54,7 @@ export const uploadFilesToS3 = async (
                 options: {
                     onProgress: handleProgress,
                     contentType: file.type,
+                    accessLevel: "protected",
                 },
             }).result
     );

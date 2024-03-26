@@ -32,7 +32,7 @@ const schema = z.object({
     existingFiles: z.array(z.any()).optional(),
     profile: z.string(),
     doctor: z.string(),
-    specializationId: z.string(),
+    specialization: z.string(),
     hospital: z.string(),
     dateOnDocument: z.string(),
 });
@@ -89,7 +89,7 @@ const ExternalPrescriptionForm = () => {
             getCurrentProfileId() ||
             "",
         doctor: externalPrescription.doctor,
-        specializationId: externalPrescription.specialization?._id,
+        specialization: externalPrescription.specialization?._id,
         hospital: externalPrescription.hospital,
         dateOnDocument: moment(externalPrescription?.dateOnDocument).format(
             "YYYY-MM-DD"
@@ -111,7 +111,7 @@ const ExternalPrescriptionForm = () => {
         {
             type: "select",
             label: "Specialization",
-            name: "specializationId",
+            name: "specialization",
             placeholder: "--Select Specialization--",
             options: specializations.map((s) => ({
                 label: s.name,

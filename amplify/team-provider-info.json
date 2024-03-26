@@ -14,7 +14,8 @@
     },
     "categories": {
       "auth": {
-        "hcc2a93ee3c": {}
+        "hcc2a93ee3c": {},
+        "userPoolGroups": {}
       },
       "function": {
         "hcc2a93ee3cCustomMessage": {

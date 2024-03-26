@@ -23,6 +23,9 @@ import PrescriptionForm from "./components/Portal/Prescriptions/PrescriptionForm
 import AssignProfileToSlot from "./components/Portal/Appointments/ChooseProfileForm";
 import LinkAccountForm from "./components/Portal/Profiles/LinkAccountForm";
 import GalleryModal from "./components/Portal/GalleryModal";
+import VerifyEmail from "./components/Account/VerifyEmail";
+import AuthLanding from "./components/Account/AuthLanding";
+import EnterCode from "./components/Account/EnterCode";
 
 const Routes = () => {
     return (
@@ -122,7 +125,12 @@ const Routes = () => {
                 />
             </Route>
             {/* <Route path="/gallery/:path" element={<Gallery />} /> */}
-            <Route path="/login" element={<LoginForm />} />
+            <Route path="/auth" element={<AuthLanding />}>
+                <Route path="login" element={<LoginForm />} />
+                <Route path="verifyEmail" element={<VerifyEmail />} />
+                <Route path="enterCode/:username" element={<EnterCode />} />
+            </Route>
+            {/* <Route path="/verifyEmail" element={<VerifyEmail />} /> */}
             <Route path="/not-found" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/not-found" replace />} />
         </ReactRoutes>

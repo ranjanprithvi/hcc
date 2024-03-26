@@ -98,7 +98,7 @@ const PortalNavBar = ({ heading }: Props) => {
                 defaultComponent={
                     <Button
                         as={NavLink}
-                        to="/login"
+                        to="/auth/login"
                         colorScheme="pink"
                         variant="outline"
                         size={"sm"}
