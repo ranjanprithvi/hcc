@@ -23,6 +23,7 @@ import { handleUpload } from "../../../utilities/record-manager-service";
 import Modal from "../../common/Modal";
 import { useEffect, useState } from "react";
 import FilesList from "../FilesList";
+import useS3Files from "../../../hooks/useS3Files";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -58,26 +59,11 @@ const MedicalRecordForm = () => {
         return <div>{error}</div>;
     }
 
-    const [existingFiles, setExistingFiles] = useState<any[]>([]);
-
-    useEffect(() => {
-        const fetchFiles = async () => {
-            try {
-                const result = await list({
-                    prefix:
-                        (medicalRecord.profile as Profile)._id +
-                        "/medicalRecords/" +
-                        id +
-                        "/",
-                });
-                // console.log((medicalRecord?.profile as Profile)?._id);
-                setExistingFiles(result.items);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchFiles();
-    }, [medicalRecord]);
+    const existingFiles = useS3Files(
+        (medicalRecord.profile as Profile)._id + "/medicalRecords/" + id + "/",
+        [medicalRecord],
+        "guest"
+    );
 
     const resetObject = {
         profile: (medicalRecord?.profile as Profile)?._id || profileId || "",

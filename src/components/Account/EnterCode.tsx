@@ -1,10 +1,8 @@
-import React from "react";
 import Form from "../common/Form";
 import { useParams } from "react-router-dom";
 import { z } from "zod";
-import { Box, Button, Heading, VStack } from "@chakra-ui/react";
+import { Button, Heading } from "@chakra-ui/react";
 import { autoSignIn, confirmSignUp, resendSignUpCode } from "aws-amplify/auth";
-import { setToken } from "../../utilities/helper-service";
 import { Flex } from "@aws-amplify/ui-react";
 
 const codeSchema = z.object({
@@ -45,13 +43,11 @@ const EnterCode = () => {
                                 nextStep.signUpStep == "COMPLETE_AUTO_SIGN_IN"
                             ) {
                                 autoSignIn().then(() => {
-                                    setToken().then(() => {
-                                        setTimeout(() => {
-                                            window.location.replace(
-                                                "/portal/appointments"
-                                            );
-                                        }, 2000);
-                                    });
+                                    setTimeout(() => {
+                                        window.location.replace(
+                                            "/portal/appointments"
+                                        );
+                                    }, 2000);
                                 });
                             }
 
@@ -59,13 +55,7 @@ const EnterCode = () => {
                             //     "Email Verified Successfully. Please log in to continue.."
                             // );
                             else if (nextStep.signUpStep == "DONE") {
-                                setToken()
-                                    .then(() => {
-                                        window.location.replace("/auth/login");
-                                    })
-                                    .catch((err) => {
-                                        console.log(err);
-                                    });
+                                window.location.replace("/auth/login");
                             }
                         })
                         .catch((err) => {

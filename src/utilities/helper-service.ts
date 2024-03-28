@@ -15,42 +15,43 @@ export const getToken = () => {
     return localStorage.getItem("token");
 };
 
-export const setToken = async () => {
-    const { tokens } = await fetchAuthSession();
-    localStorage.setItem("token", tokens?.accessToken.toString() || "");
-};
+// export const setToken = async () => {
+//     const { tokens } = await fetchAuthSession();
+//     localStorage.setItem("token", tokens?.accessToken.toString() || "");
+// };
 
-export const removeToken = () => {
-    localStorage.removeItem("token");
-};
+// export const removeToken = () => {
+//     localStorage.removeItem("token");
+// };
 
 export const getUser = () => {
     return JSON.parse(localStorage.getItem("user") || "{}") as User;
 };
 
-export const setUser = async () => {
-    localStorage.setItem(
-        "user",
-        JSON.stringify(jwtDecode((await getToken()) || ""))
-    );
-};
+// export const setUser = async () => {
+//     localStorage.setItem(
+//         "user",
+//         JSON.stringify(jwtDecode((await getToken()) || ""))
+//     );
+// };
 
 export const removeUser = () => {
     localStorage.removeItem("user");
 };
 
-export const setAccessLevel = () => {
-    fetchAuthSession().then(({ tokens }) => {
-        const groups = (tokens?.accessToken?.payload["cognito:groups"] ||
-            []) as string[];
-        const level = groups.includes("Admin")
-            ? roles.admin
-            : groups.includes("Hospital")
-            ? roles.hospital
-            : roles.user;
+export const setAccessLevel = async () => {
+    const { tokens } = await fetchAuthSession();
 
-        localStorage.setItem("accessLevel", level.toString());
-    });
+    console.log(tokens?.accessToken);
+    const groups = (tokens?.accessToken?.payload["cognito:groups"] ||
+        []) as string[];
+    const level = groups.includes("Admin")
+        ? roles.admin
+        : groups.includes("Hospital")
+        ? roles.hospital
+        : roles.user;
+
+    localStorage.setItem("accessLevel", level.toString());
 
     // return Number.parseInt(
     //     JSON.parse(localStorage.getItem("user") || "{}").accessLevel
@@ -96,11 +97,15 @@ export const removeCurrentDoctorId = () => {
 // };
 
 export const handleLogout = () => {
-    removeToken();
-    removeUser();
+    // removeToken();
+    // removeUser();
     removeCurrentProfileId();
     removeCurrentDoctorId();
-    signOut().then(() => {
-        window.location.assign("/");
-    });
+    signOut()
+        .then(() => {
+            window.location.assign("/");
+        })
+        .catch((e) => {
+            console.error(e);
+        });
 };

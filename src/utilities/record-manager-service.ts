@@ -8,6 +8,8 @@ import {
 } from "aws-amplify/storage";
 import { httpService } from "../services/http-service";
 import _ from "lodash";
+import { fetchAuthSession } from "aws-amplify/auth";
+import Amplify from "aws-amplify";
 
 interface Entity {
     _id: string;
@@ -42,7 +44,8 @@ export const pushRecordToDb = async <T1, T2 extends Entity>(
 export const uploadFilesToS3 = async (
     files: FileList | undefined,
     folder: string,
-    handleProgress: (event: TransferProgressEvent) => void
+    handleProgress: (event: TransferProgressEvent) => void,
+    identityId?: string
 ) => {
     if (!files || files.length == 0) return Promise.resolve();
 
@@ -54,7 +57,7 @@ export const uploadFilesToS3 = async (
                 options: {
                     onProgress: handleProgress,
                     contentType: file.type,
-                    accessLevel: "protected",
+                    accessLevel: "private",
                 },
             }).result
     );
@@ -67,6 +70,7 @@ export const handleUpload = <T extends DataEntity>(
     endpoint: string,
     toast: any,
     handleProgress: (event: TransferProgressEvent) => void,
+    identityId?: string,
     callBack?: () => void
 ) => {
     pushRecordToDb(id, _.omit(data, "files"), endpoint)
@@ -124,13 +128,22 @@ export const handleUpload = <T extends DataEntity>(
 
 //Download
 export const handleViewRecord = async (folder: string) => {
-    const files = await list({ prefix: folder });
+    const prefix = (await fetchAuthSession()).identityId + folder;
+    console.log(prefix);
+    const files = await list({
+        prefix: prefix,
+        options: { accessLevel: "private" },
+    });
 
     if (files.items.length == 0) return;
     files.items.forEach(async (file) => {
         const getUrlResult = await getUrl({
             key: file.key,
-            options: { expiresIn: 60, validateObjectExistence: true },
+            options: {
+                expiresIn: 60,
+                validateObjectExistence: true,
+                accessLevel: "private",
+            },
         });
 
         window.open(getUrlResult.url, "_blank");
@@ -140,7 +153,11 @@ export const handleViewRecord = async (folder: string) => {
 export const handleViewFile = async (key: string) => {
     const getUrlResult = await getUrl({
         key: key,
-        options: { expiresIn: 300, validateObjectExistence: true },
+        options: {
+            expiresIn: 300,
+            validateObjectExistence: true,
+            accessLevel: "private",
+        },
     });
 
     window.open(getUrlResult.url, "_blank");
@@ -156,7 +173,10 @@ export const deleteRecordFromDb = <T extends Entity>(
 };
 
 export const deleteFolderFromS3 = async (folderPath: string) => {
-    const files = await list({ prefix: folderPath });
+    const files = await list({
+        prefix: folderPath,
+        options: { accessLevel: "private" },
+    });
 
     if (files.items.length == 0) {
         return Promise.resolve(false);

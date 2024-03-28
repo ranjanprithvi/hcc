@@ -19,28 +19,22 @@ import { signOut } from "aws-amplify/auth";
 import colourPalette from "./utilities/colour-palette";
 import "./amplify";
 
-Amplify.configure(amplifyconfig);
-
-const amplifyTheme = {
-    name: "Custom",
-    tokens: {
-        components: {
-            card: {
-                backgroundColor: { value: "{colors.background.primary}" },
-                outlined: {
-                    borderColor: { value: "{colors.white}" },
-                },
-            },
-            heading: {
-                color: { value: "{colors.secondary[80]}" },
-            },
-            text: {
-                color: { value: "{colors.primary[80]}" },
+Amplify.configure(amplifyconfig, {
+    Storage: {
+        S3: {
+            prefixResolver: async ({ accessLevel, targetIdentityId }) => {
+                if (accessLevel === "guest") {
+                    return "public/";
+                } else if (accessLevel === "protected") {
+                    return `protected/`;
+                } else {
+                    return `private/`;
+                }
             },
         },
     },
-    // primaryColor: "hsl(303.92857142857144, 100%, 67.05882352941177%)",
-} as AmplifyTheme;
+});
+
 const router = createBrowserRouter([
     {
         path: "*",

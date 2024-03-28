@@ -26,6 +26,7 @@ import {
 import { useEffect, useState } from "react";
 import Modal from "../../common/Modal";
 import FilesList from "../FilesList";
+import useS3Files from "../../../hooks/useS3Files";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -61,27 +62,6 @@ const ExternalPrescriptionForm = () => {
     if (error) {
         return <div>{error}</div>;
     }
-
-    const [existingFiles, setExistingFiles] = useState<any[]>([]);
-
-    useEffect(() => {
-        const fetchFiles = async () => {
-            try {
-                const result = await list({
-                    prefix:
-                        getCurrentProfileId() +
-                        "/externalPrescriptions/" +
-                        id +
-                        "/",
-                });
-                // console.log((medicalRecord?.profile as Profile)?._id);
-                setExistingFiles(result.items);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchFiles();
-    }, [externalPrescription]);
 
     const resetObject = {
         profile:
@@ -131,6 +111,12 @@ const ExternalPrescriptionForm = () => {
         // },
     ];
 
+    const existingFiles = useS3Files(
+        getCurrentProfileId() + "/externalPrescriptions/" + id + "/",
+        [externalPrescription],
+        "private"
+    );
+
     if (id != "new") {
         fields.push({
             render: () => <FilesList files={existingFiles}></FilesList>,
@@ -156,6 +142,7 @@ const ExternalPrescriptionForm = () => {
             "/externalPrescriptions",
             toast,
             handleProgress,
+            "",
             () => {
                 navigate(-1);
             }

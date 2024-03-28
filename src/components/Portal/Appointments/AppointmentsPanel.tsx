@@ -30,6 +30,7 @@ import Loader from "../../common/Loader";
 import { httpService } from "../../../services/http-service";
 import Modal from "../../common/Modal";
 import { useState } from "react";
+import { fetchAuthSession } from "aws-amplify/auth";
 
 interface Props {
     appointments: Appointment[];
@@ -56,6 +57,10 @@ const AppointmentsPanel = ({
             return new Date(a.timeSlot) > new Date() && !a.cancelled;
         }
     );
+
+    fetchAuthSession().then((session) => {
+        console.log(session.identityId);
+    });
 
     function handleCancel(a: Appointment): void {
         const appointmentService = httpService("/appointments/cancel");

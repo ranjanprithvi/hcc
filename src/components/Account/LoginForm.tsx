@@ -1,7 +1,4 @@
 import {
-    Box,
-    Flex,
-    GridItem,
     HStack,
     Tab,
     TabList,
@@ -11,32 +8,19 @@ import {
     useToast,
     Text,
     Button,
-    Image,
 } from "@chakra-ui/react";
 import Form, { Field } from "../common/Form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import _, { replace, set } from "lodash";
-import { useContext, useState } from "react";
-import { LoginContext } from "../../contexts/loginContext";
+import _ from "lodash";
+import { useState } from "react";
 import { httpService } from "../../services/http-service";
-import {
-    getAccessLevel,
-    getUser,
-    setCurrentProfileId,
-    setToken,
-    setUser,
-} from "../../utilities/helper-service";
-import { roles } from "../../App";
+import { setAccessLevel } from "../../utilities/helper-service";
 import colourPalette from "../../utilities/colour-palette";
-import {
-    fetchAuthSession,
-    getCurrentUser,
-    signIn,
-    signOut,
-    signUp,
-} from "aws-amplify/auth";
+import { fetchAuthSession, signIn, signUp } from "aws-amplify/auth";
 import { useNavigate } from "react-router-dom";
+import useAccount from "../../hooks/useMyAccount";
+import { Account } from "../../models/account";
 
 // import useToast from "../hooks/generic/useToast";
 
@@ -112,15 +96,26 @@ const LoginForm = () => {
                 toast({
                     title: "Error",
                     description:
-                        "Please confirm your email address before signing in",
+                        "Please confirm your account by clicking on the link sent to your email address",
                     status: "error",
                     duration: 5000,
                     isClosable: true,
                 });
             }
-            console.log(result);
             if (result.isSignedIn) {
-                await setToken();
+                // await setToken();
+                const accountService = httpService("/accounts");
+                const { data } = await accountService.get<Account>("me")
+                    .request;
+                if (!data.identityId) {
+                    const identityId = (await fetchAuthSession()).identityId;
+                    console.log(identityId);
+                    await accountService.patch(
+                        { identityId: identityId },
+                        "updateIdentityId"
+                    );
+                }
+                await setAccessLevel();
                 window.location.replace("/portal/appointments");
             }
         } catch (err) {

@@ -6,8 +6,10 @@ import {
     Image,
     Text,
     useColorModeValue,
+    Button,
+    Flex,
 } from "@chakra-ui/react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from "/Logo.png";
 import { useContext } from "react";
 import { LoginContext } from "../../contexts/loginContext";
@@ -28,12 +30,19 @@ import {
     setCurrentProfileId,
 } from "../../utilities/helper-service";
 import useProfiles from "../../hooks/useProfiles";
+import Loader from "../common/Loader";
 
 export const PortalLanding = () => {
-    const { profiles } = useProfiles();
-    if (profiles.length > 0 && !getCurrentProfileId()) {
-        setCurrentProfileId(profiles[0]._id);
-    }
+    const { profiles, isLoading } = useProfiles();
+
+    const navigate = useNavigate();
+
+    if (!isLoading)
+        if (!getCurrentProfileId()) {
+            if (profiles.length > 0) {
+                setCurrentProfileId(profiles[0]._id);
+            }
+        }
 
     let userSidebarList = [
         { name: "Profiles", path: "/portal/profiles", icon: <BiUserCircle /> },
@@ -146,7 +155,29 @@ export const PortalLanding = () => {
                 background={"gray.50"}
                 overflow={"scroll"}
             >
-                <Outlet />
+                {isLoading ? (
+                    <Loader />
+                ) : getCurrentProfileId() ? (
+                    <Outlet />
+                ) : (
+                    <Flex
+                        width={"100%"}
+                        height={"100%"}
+                        justifyContent={"center"}
+                    >
+                        <VStack>
+                            <Text>There are no profiles in your account</Text>
+                            <Button
+                                variant={"link"}
+                                as={Link}
+                                to={"/portal/profiles/new"}
+                                colorScheme="pink"
+                            >
+                                Create a profile to get started
+                            </Button>
+                        </VStack>
+                    </Flex>
+                )}
             </GridItem>
         </Grid>
     );

@@ -32,6 +32,8 @@ import Modal from "../../common/Modal";
 import { useEffect, useState } from "react";
 import TruncatedText from "../../common/TruncatedText";
 import FilesList from "../FilesList";
+import useS3Files from "../../../hooks/useS3Files";
+import { getCurrentUser } from "aws-amplify/auth";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -66,24 +68,11 @@ const ExternalRecordForm = () => {
 
     const { externalRecord, error } = useExternalRecord(id);
 
-    const [existingFiles, setExistingFiles] = useState<
-        { key: string; size?: number }[]
-    >([]);
-
-    useEffect(() => {
-        const fetchFiles = async () => {
-            try {
-                const result = await list({
-                    prefix:
-                        getCurrentProfileId() + "/externalRecords/" + id + "/",
-                });
-                setExistingFiles(result.items);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchFiles();
-    }, []);
+    const existingFiles = useS3Files(
+        getCurrentProfileId() + "/externalRecords/" + id + "/",
+        [externalRecord],
+        "private"
+    );
 
     if (error) {
         return <div>{error}</div>;

@@ -36,14 +36,14 @@ const Routes = () => {
             </Route>
             <Route
                 path="/portal"
-                element={<ProtectedRoute user={<PortalLanding />} />}
+                element={<ProtectedRoute userRoute={<PortalLanding />} />}
             >
                 <Route
                     path="appointments"
                     element={
                         <ProtectedRoute
-                            hospital={<AppointmentsDashboard />}
-                            user={<UserAppointments />}
+                            hospitalRoute={<AppointmentsDashboard />}
+                            userRoute={<UserAppointments />}
                         ></ProtectedRoute>
                     }
                 />
@@ -51,7 +51,7 @@ const Routes = () => {
                     path="appointments/book/:profileId?"
                     element={
                         <ProtectedRoute
-                            user={<BookAppointmentSlot />}
+                            userRoute={<BookAppointmentSlot />}
                         ></ProtectedRoute>
                     }
                 />
@@ -59,7 +59,7 @@ const Routes = () => {
                     path="appointments/reschedule/:oldId?"
                     element={
                         <ProtectedRoute
-                            user={<BookAppointmentSlot />}
+                            userRoute={<BookAppointmentSlot />}
                         ></ProtectedRoute>
                     }
                 />
@@ -67,7 +67,7 @@ const Routes = () => {
                     path="appointments/assignToProfile/:id?"
                     element={
                         <ProtectedRoute
-                            user={<AssignProfileToSlot />}
+                            userRoute={<AssignProfileToSlot />}
                         ></ProtectedRoute>
                     }
                 />
@@ -75,30 +75,34 @@ const Routes = () => {
                     path="appointments/create"
                     element={
                         <ProtectedRoute
-                            hospital={<CreateSlots />}
+                            hospitalRoute={<CreateSlots />}
                         ></ProtectedRoute>
                     }
                 />
 
                 <Route
                     path="records"
-                    element={<ProtectedRoute user={<Records />} />}
+                    element={<ProtectedRoute userRoute={<Records />} />}
                 />
                 <Route
                     path="medicalRecords/:id/:profileId?"
-                    element={<ProtectedRoute user={<MedicalRecordForm />} />}
+                    element={
+                        <ProtectedRoute userRoute={<MedicalRecordForm />} />
+                    }
                 />
                 <Route
                     path="externalRecords/:id"
-                    element={<ProtectedRoute user={<ExternalRecordForm />} />}
+                    element={
+                        <ProtectedRoute userRoute={<ExternalRecordForm />} />
+                    }
                 />
 
                 <Route
                     path="profiles"
                     element={
                         <ProtectedRoute
-                            user={<Profiles />}
-                            hospital={<AllProfiles />}
+                            userRoute={<Profiles />}
+                            hospitalRoute={<AllProfiles />}
                         />
                     }
                 />
@@ -111,16 +115,20 @@ const Routes = () => {
 
                 <Route
                     path="prescriptions"
-                    element={<ProtectedRoute user={<Prescriptions />} />}
+                    element={<ProtectedRoute userRoute={<Prescriptions />} />}
                 />
                 <Route
                     path="prescriptions/:id/:profileId?"
-                    element={<ProtectedRoute user={<PrescriptionForm />} />}
+                    element={
+                        <ProtectedRoute userRoute={<PrescriptionForm />} />
+                    }
                 />
                 <Route
                     path="externalPrescriptions/:id"
                     element={
-                        <ProtectedRoute user={<ExternalPrescriptionForm />} />
+                        <ProtectedRoute
+                            userRoute={<ExternalPrescriptionForm />}
+                        />
                     }
                 />
             </Route>

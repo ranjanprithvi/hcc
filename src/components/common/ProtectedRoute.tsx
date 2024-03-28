@@ -1,37 +1,35 @@
-import { ReactNode, useContext, useEffect, useState } from "react";
-import { Navigate, Route } from "react-router-dom";
-import { LoginContext } from "../../contexts/loginContext";
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import { roles } from "../../App";
-import { getToken } from "../../utilities/helper-service";
 import { getAccessLevel } from "../../utilities/helper-service";
+import { getCurrentUser } from "aws-amplify/auth";
 
 interface Props {
-    admin?: JSX.Element;
-    hospital?: JSX.Element;
-    user?: JSX.Element;
+    adminRoute?: JSX.Element;
+    hospitalRoute?: JSX.Element;
+    userRoute?: JSX.Element;
 }
 
-const ProtectedRoute = ({ admin, hospital, user }: Props) => {
+const ProtectedRoute = ({ adminRoute, hospitalRoute, userRoute }: Props) => {
     // const { isLoggedIn, accessLevel } = useContext(LoginContext);
-    const [isLoggedIn, setLoggedIn] = useState<boolean>(
-        getToken() ? true : false
-    );
+    const [isLoggedIn, setLoggedIn] = useState<boolean>(true);
     const accessLevel = getAccessLevel();
 
-    // useEffect(() => {
-    //     getToken().then((token) => {
-    //         setLoggedIn(!token ? false : true);
-    //     });
-    // }, []);
+    useEffect(() => {
+        getCurrentUser()
+            .then(() => setLoggedIn(true))
+            .catch(() => setLoggedIn(false));
+    }, []);
+
     if (!isLoggedIn) return <Navigate to="/auth/login" replace />;
 
     switch (accessLevel) {
         case roles.admin:
-            if (admin) return admin;
+            if (adminRoute) return adminRoute;
         case roles.hospital:
-            if (hospital) return hospital;
+            if (hospitalRoute) return hospitalRoute;
         default:
-            return user || null;
+            return userRoute || null;
     }
 };
 

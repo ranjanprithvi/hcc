@@ -1,8 +1,7 @@
-import { ReactNode, useContext, useEffect, useState } from "react";
-import { Navigate, Route } from "react-router-dom";
-import { LoginContext } from "../../contexts/loginContext";
+import { useEffect, useState } from "react";
 import { roles } from "../../App";
-import { getAccessLevel, getToken } from "../../utilities/helper-service";
+import { getAccessLevel } from "../../utilities/helper-service";
+import { getCurrentUser } from "aws-amplify/auth";
 
 interface Props {
     admin?: JSX.Element;
@@ -19,16 +18,14 @@ const ProtectedComponent = ({
 }: Props) => {
     // const { isLoggedIn, accessLevel } = useContext(LoginContext);
 
-    const [isLoggedIn, setLoggedIn] = useState<boolean>(
-        getToken() ? true : false
-    );
+    const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
     const accessLevel = getAccessLevel();
 
-    // useEffect(() => {
-    //     getToken().then((token) => {
-    //         setLoggedIn(!token ? false : true);
-    //     });
-    // }, []);
+    useEffect(() => {
+        getCurrentUser()
+            .then(() => setLoggedIn(true))
+            .catch(() => setLoggedIn(false));
+    }, []);
 
     if (!isLoggedIn) return defaultComponent || null;
 

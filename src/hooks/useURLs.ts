@@ -8,7 +8,7 @@ function useURLs(path: string) {
 
     useEffect(() => {
         setLoading(true);
-        list({ prefix: path })
+        list({ prefix: path, options: { accessLevel: "private" } })
             .then((files) => {
                 Promise.all(
                     files.items.map((file) =>
@@ -17,6 +17,7 @@ function useURLs(path: string) {
                             options: {
                                 expiresIn: 600,
                                 validateObjectExistence: true,
+                                accessLevel: "private",
                             },
                         })
                     )
