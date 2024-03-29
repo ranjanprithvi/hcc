@@ -8,7 +8,8 @@ import { httpService } from "../../../services/http-service";
 import moment from "moment";
 import useProfile from "../../../hooks/useProfile";
 import { Profile } from "../../../models/profile";
-import { setCurrentProfileId } from "../../../utilities/helper-service";
+import { useContext } from "react";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 const phoneRegex = new RegExp(/^[+]?[0-9]{9,13}$/);
 
@@ -56,6 +57,8 @@ const ProfileForm = () => {
     const { id } = useParams();
     if (!id) return null;
 
+    const { setProfileId } = useContext(ProfileContext);
+
     const resolver = zodResolver(schema);
 
     const { profile, error } = useProfile(id);
@@ -83,7 +86,7 @@ const ProfileForm = () => {
 
         promise
             .then((res) => {
-                setCurrentProfileId(res.data._id);
+                setProfileId(res.data._id);
                 window.location.href = `/portal/profiles`;
             })
             .catch((err) => {

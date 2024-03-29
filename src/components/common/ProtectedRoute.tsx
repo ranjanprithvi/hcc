@@ -11,7 +11,6 @@ interface Props {
 }
 
 const ProtectedRoute = ({ adminRoute, hospitalRoute, userRoute }: Props) => {
-    // const { isLoggedIn, accessLevel } = useContext(LoginContext);
     const [isLoggedIn, setLoggedIn] = useState<boolean>(true);
     const accessLevel = getAccessLevel();
 

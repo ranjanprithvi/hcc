@@ -13,21 +13,17 @@ import _ from "lodash";
 import Form, { Field } from "../../common/Form";
 import useExternalPrescription from "../../../hooks/useExternalPrescription";
 import { useNavigate, useParams } from "react-router-dom";
-import { ExternalPrescription } from "../../../models/externalPrescription";
 import moment from "moment";
-import { TransferProgressEvent, list } from "aws-amplify/storage";
-import { Profile } from "../../../models/profile";
-import { getCurrentProfileId } from "../../../utilities/helper-service";
+import { TransferProgressEvent } from "aws-amplify/storage";
 import useSpecializations from "../../../hooks/useSpecializations";
 import {
     handleUpload,
-    uploadFilesToS3,
 } from "../../../utilities/record-manager-service";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Modal from "../../common/Modal";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
-import { Account } from "../../../models/account";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -54,8 +50,10 @@ const ExternalPrescriptionForm = () => {
     };
 
     const resolver = zodResolver(schema);
-    const { id, profileId } = useParams();
+    const { id } = useParams();
     if (!id) return null;
+
+    const { profileId, identityId } = useContext(ProfileContext);
     const { specializations } = useSpecializations();
 
     const { externalPrescription, error } = useExternalPrescription(id);
@@ -65,10 +63,7 @@ const ExternalPrescriptionForm = () => {
     }
 
     const resetObject = {
-        profile:
-            (externalPrescription?.profile as Profile)?._id ||
-            getCurrentProfileId() ||
-            "",
+        profile: profileId || "",
         doctor: externalPrescription.doctor,
         specialization: externalPrescription.specialization?._id,
         hospital: externalPrescription.hospital,
@@ -113,13 +108,7 @@ const ExternalPrescriptionForm = () => {
     ];
 
     const existingFiles = useS3Files(
-        ((externalPrescription.profile as Profile).account as Account)
-            .identityId +
-            "/" +
-            getCurrentProfileId() +
-            "/externalPrescriptions/" +
-            id +
-            "/",
+        identityId + "/" + profileId + "/externalPrescriptions/" + id + "/",
         [externalPrescription],
         "private"
     );

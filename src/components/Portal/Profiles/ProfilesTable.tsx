@@ -9,7 +9,7 @@ import {
     Tr,
 } from "@chakra-ui/react";
 import moment from "moment";
-import React from "react";
+import React, { useContext } from "react";
 import { FaPen } from "react-icons/fa";
 import { LuUser } from "react-icons/lu";
 import { Profile } from "../../../models/profile";
@@ -17,15 +17,17 @@ import { Link } from "react-router-dom";
 import useProfiles from "../../../hooks/useProfiles";
 import Loader from "../../common/Loader";
 import { GoLink } from "react-icons/go";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 interface Props {
     searchTerm: string;
 }
 
 const ProfilesTable = ({ searchTerm }: Props) => {
+    const { profileId } = useContext(ProfileContext);
     const { profiles, error, isLoading } = useProfiles(
         {
-            profileId: localStorage.getItem("currentProfileId") || "",
+            profileId: profileId || "",
             search: searchTerm,
         },
         [searchTerm]

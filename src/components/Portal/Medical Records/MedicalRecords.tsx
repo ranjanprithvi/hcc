@@ -1,10 +1,11 @@
+import { useContext } from "react";
 import useExternalRecords from "../../../hooks/useExternalRecords";
 import useMedicalRecords from "../../../hooks/useMedicalRecords";
 import { ExternalRecord } from "../../../models/externalRecord";
 import { MedicalRecord } from "../../../models/medicalRecord";
-import { getCurrentProfileId } from "../../../utilities/helper-service";
 import ExternalRecordsPanel from "./ExternalRecordsPanel";
 import MedicalRecordsPanel from "./MedicalRecordsPanel";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 const mockRecords: MedicalRecord[] = [
     {
@@ -188,19 +189,20 @@ const mockExternalRecords: ExternalRecord[] = [
 ];
 
 const Records = () => {
+    const { profileId } = useContext(ProfileContext);
     const {
         medicalRecords,
         error: mrError,
         isLoading: mrLoading,
     } = useMedicalRecords({
-        profile: getCurrentProfileId() || "",
+        profile: profileId || "",
     });
     const {
         externalRecords,
         error: erError,
         isLoading: erLoading,
     } = useExternalRecords({
-        profile: getCurrentProfileId() || "",
+        profile: profileId || "",
     });
     return (
         <>

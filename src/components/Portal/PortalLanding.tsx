@@ -6,48 +6,36 @@ import {
     Image,
     Text,
     useColorModeValue,
-    Button,
-    Flex,
 } from "@chakra-ui/react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from "/Logo.png";
-import { useContext } from "react";
-import { LoginContext } from "../../contexts/loginContext";
 import PortalNavBar from "./PortalNavBar";
 import SideBar from "../common/SideBar";
 
-import {
-    BiCalendar,
-    BiFolder,
-    BiFolderOpen,
-    BiNote,
-    BiUserCircle,
-} from "react-icons/bi";
+import { BiCalendar, BiFolder, BiNote, BiUserCircle } from "react-icons/bi";
 import { Box } from "@chakra-ui/react";
 import { getValueByRole } from "../../utilities/getValueByRole";
-import {
-    getCurrentProfileId,
-    setCurrentProfileId,
-} from "../../utilities/helper-service";
 import useProfiles from "../../hooks/useProfiles";
-import Loader from "../common/Loader";
+import { useContext } from "react";
+import { ProfileContext } from "../../contexts/profileContext";
 
 export const PortalLanding = () => {
     const { profiles, isLoading } = useProfiles();
+    const { profileId, setProfileId } = useContext(ProfileContext);
 
     const navigate = useNavigate();
 
     if (!isLoading)
-        if (!getCurrentProfileId()) {
+        if (!profileId) {
             if (profiles.length > 0) {
-                setCurrentProfileId(profiles[0]._id);
+                setProfileId(profiles[0]._id);
             }
         }
 
     let userSidebarList = [
         { name: "Profiles", path: "/portal/profiles", icon: <BiUserCircle /> },
     ];
-    if (getCurrentProfileId()) {
+    if (profileId) {
         userSidebarList = [
             {
                 name: "Appointments",

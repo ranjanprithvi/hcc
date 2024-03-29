@@ -46,28 +46,22 @@ import {
 } from "react-icons/fa";
 import { record } from "zod";
 import PrescriptionModal from "../PrescriptionModal";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import GalleryModal from "../GalleryModal";
 import { Account } from "../../../models/account";
 import { Profile } from "../../../models/profile";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 interface Props {
     prescriptions: Prescription[];
-    profileId?: string;
-    identityId: string;
     error: string;
     isLoading: boolean;
 }
 
-const PrescriptionsPanel = ({
-    prescriptions,
-    profileId,
-    identityId,
-    error,
-    isLoading,
-}: Props) => {
+const PrescriptionsPanel = ({ prescriptions, error, isLoading }: Props) => {
     const toast = useToast();
 
+    const {identityId} = useContext(ProfileContext);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [selectedPrescription, setSelectedPrescription] = useState({
         header: "",
@@ -103,7 +97,7 @@ const PrescriptionsPanel = ({
                             hospital={
                                 <Button
                                     as={Link}
-                                    to={`/portal/prescriptions/new/${profileId}/${identityId}`}
+                                    to={`/portal/prescriptions/new`}
                                     size="sm"
                                     colorScheme="pink"
                                     variant={"outline"}
@@ -210,7 +204,7 @@ const PrescriptionsPanel = ({
                                                                         as={
                                                                             Link
                                                                         }
-                                                                        to={`/portal/prescriptions/${p._id}/${identityId}`}
+                                                                        to={`/portal/prescriptions/${p._id}`}
                                                                         size={
                                                                             "xs"
                                                                         }

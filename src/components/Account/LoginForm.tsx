@@ -65,9 +65,7 @@ interface LoginResponse {
 
 const LoginForm = () => {
     const navigate = useNavigate();
-    // const { showError } = useToast();
     const toast = useToast();
-    // const { setLoggedIn, setAccessLevel } = useContext(LoginContext);
 
     const [tabIndex, setTabIndex] = useState(0);
 

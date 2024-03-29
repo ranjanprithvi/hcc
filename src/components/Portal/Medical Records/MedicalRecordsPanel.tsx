@@ -35,25 +35,18 @@ import Loader from "../../common/Loader";
 import { FaDownload, FaEye, FaPen, FaTrashAlt } from "react-icons/fa";
 import { error } from "console";
 import GalleryModal from "../GalleryModal";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Profile } from "../../../models/profile";
 import { Account } from "../../../models/account";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 interface Props {
     medicalRecords: MedicalRecord[];
-    profileId?: string;
-    identityId: string;
     error: string;
     isLoading: boolean;
 }
 
-const MedicalRecords = ({
-    medicalRecords,
-    profileId,
-    identityId,
-    error,
-    isLoading,
-}: Props) => {
+const MedicalRecords = ({ medicalRecords, error, isLoading }: Props) => {
     const toast = useToast();
 
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -63,6 +56,7 @@ const MedicalRecords = ({
         leftPanel: <></>,
     });
 
+    const { profileId, identityId } = useContext(ProfileContext);
     return (
         <>
             {isOpen && (
@@ -90,7 +84,7 @@ const MedicalRecords = ({
                             hospital={
                                 <Button
                                     as={Link}
-                                    to={`/portal/medicalRecords/new/${profileId}/${identityId}`}
+                                    to={`/portal/medicalRecords/new`}
                                     size="sm"
                                     colorScheme="pink"
                                     variant={"outline"}
@@ -249,7 +243,7 @@ const MedicalRecords = ({
                                                                     }
                                                                     aria-label="Edit Record"
                                                                     as={Link}
-                                                                    to={`/portal/medicalRecords/${record._id}/${profileId}/${identityId}`}
+                                                                    to={`/portal/medicalRecords/${record._id}`}
                                                                     size={"xs"}
                                                                     colorScheme="pink"
                                                                     variant={

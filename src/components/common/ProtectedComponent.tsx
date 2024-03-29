@@ -16,8 +16,6 @@ const ProtectedComponent = ({
     user,
     defaultComponent,
 }: Props) => {
-    // const { isLoggedIn, accessLevel } = useContext(LoginContext);
-
     const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
     const accessLevel = getAccessLevel();
 

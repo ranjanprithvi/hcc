@@ -18,14 +18,13 @@ import {
     Text,
 } from "@chakra-ui/react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { useContext, useRef } from "react";
+import { useRef } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import logo from "/Logo.png";
 import AccountDropdown from "../Account/AccountDropdown";
 import ProtectedComponent from "../common/ProtectedComponent";
 import { getValueByRole } from "../../utilities/getValueByRole";
 import colourPalette from "../../utilities/colour-palette";
-import { LoginContext } from "../../contexts/loginContext";
 
 interface NavItem {
     label: string;
@@ -51,8 +50,6 @@ const NavBar = () => {
             colour: colourPalette.secondary,
         },
     ];
-
-    const { props } = useContext(LoginContext);
 
     return (
         <>

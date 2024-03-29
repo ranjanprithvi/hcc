@@ -48,7 +48,7 @@ const Routes = () => {
                     }
                 />
                 <Route
-                    path="appointments/book/:profileId?"
+                    path="appointments/book"
                     element={
                         <ProtectedRoute
                             userRoute={<BookAppointmentSlot />}
@@ -85,7 +85,7 @@ const Routes = () => {
                     element={<ProtectedRoute userRoute={<Records />} />}
                 />
                 <Route
-                    path="medicalRecords/:id/:profileId?/:identityId?"
+                    path="medicalRecords/:id/"
                     element={
                         <ProtectedRoute userRoute={<MedicalRecordForm />} />
                     }
@@ -118,7 +118,7 @@ const Routes = () => {
                     element={<ProtectedRoute userRoute={<Prescriptions />} />}
                 />
                 <Route
-                    path="prescriptions/:id/:profileId?/:identityId?"
+                    path="prescriptions/:id"
                     element={
                         <ProtectedRoute userRoute={<PrescriptionForm />} />
                     }

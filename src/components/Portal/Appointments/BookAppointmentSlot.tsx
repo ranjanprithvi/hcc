@@ -20,7 +20,7 @@ import {
 } from "../../../models/appointment";
 import moment from "moment";
 import { BiPlus } from "react-icons/bi";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { BsCalendar } from "react-icons/bs";
@@ -31,7 +31,7 @@ import { httpService } from "../../../services/http-service";
 import { useNavigate, useParams } from "react-router-dom";
 import colourPalette from "../../../utilities/colour-palette";
 import Loader from "../../common/Loader";
-import { getCurrentProfileId } from "../../../utilities/helper-service";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 interface Props {
     appointments?: Appointment[];
@@ -63,8 +63,9 @@ const mockAppointments: Appointment[] = [
 
 const BookAppointmentSlot = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { profileId: profileIdParam, oldId } = useParams();
-    const profileId = profileIdParam || getCurrentProfileId() || "";
+    const { oldId } = useParams();
+
+    const { profileId } = useContext(ProfileContext);
 
     const [date, setDate] = useState(new Date());
 

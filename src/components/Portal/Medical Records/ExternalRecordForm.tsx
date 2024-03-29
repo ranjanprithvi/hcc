@@ -6,11 +6,6 @@ import {
     useDisclosure,
     useToast,
     Text,
-    List,
-    ListItem,
-    Tooltip,
-    Flex,
-    UnorderedList,
 } from "@chakra-ui/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,23 +13,17 @@ import _ from "lodash";
 import Form, { Field } from "../../common/Form";
 import useExternalRecord from "../../../hooks/useExternalRecord";
 import { useNavigate, useParams } from "react-router-dom";
-import { ExternalRecord } from "../../../models/externalRecord";
 import moment from "moment";
-import { TransferProgressEvent, list } from "aws-amplify/storage";
-import { Profile } from "../../../models/profile";
-import { getCurrentProfileId } from "../../../utilities/helper-service";
+import { TransferProgressEvent } from "aws-amplify/storage";
 import useSpecializations from "../../../hooks/useSpecializations";
 import {
     handleUpload,
-    uploadFilesToS3,
 } from "../../../utilities/record-manager-service";
 import Modal from "../../common/Modal";
-import { useEffect, useState } from "react";
-import TruncatedText from "../../common/TruncatedText";
+import { useContext, useState } from "react";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
-import { getCurrentUser } from "aws-amplify/auth";
-import { Account } from "../../../models/account";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -63,19 +52,15 @@ const ExternalRecordForm = () => {
     };
 
     const resolver = zodResolver(schema);
-    const { id, profileId } = useParams();
+    const { id } = useParams();
+    const { identityId, profileId } = useContext(ProfileContext);
     if (!id) return null;
     const { specializations } = useSpecializations();
 
     const { externalRecord, error } = useExternalRecord(id);
 
     const existingFiles = useS3Files(
-        ((externalRecord.profile as Profile).account as Account).identityId +
-            "/" +
-            getCurrentProfileId() +
-            "/externalRecords/" +
-            id +
-            "/",
+        identityId + "/" + profileId + "/externalRecords/" + id + "/",
         [externalRecord],
         "private"
     );
@@ -85,10 +70,7 @@ const ExternalRecordForm = () => {
     }
 
     const resetObject = {
-        profile:
-            (externalRecord?.profile as Profile)?._id ||
-            getCurrentProfileId() ||
-            "",
+        profile: profileId || "",
         doctor: externalRecord.doctor,
         specialization: externalRecord.specialization?._id,
         hospital: externalRecord.hospital,

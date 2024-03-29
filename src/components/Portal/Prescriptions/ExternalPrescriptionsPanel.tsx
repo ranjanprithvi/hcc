@@ -43,24 +43,25 @@ import {
 } from "../../../utilities/record-manager-service";
 import Loader from "../../common/Loader";
 import GalleryModal from "../GalleryModal";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Account } from "../../../models/account";
 import { Profile } from "../../../models/profile";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 interface Props {
     externalPrescriptions: ExternalPrescription[];
-    identityId: string;
     error: string;
     isLoading: boolean;
 }
 
 const ExternalPrescriptionsPanel = ({
     externalPrescriptions,
-    identityId,
     error,
     isLoading,
 }: Props) => {
     const toast = useToast();
+
+    const { identityId } = useContext(ProfileContext);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [selectedPrescription, setSelectedPrescription] = useState({
@@ -160,13 +161,7 @@ const ExternalPrescriptionsPanel = ({
                                                                 setSelectedPrescription(
                                                                     {
                                                                         path:
-                                                                            (
-                                                                                (
-                                                                                    p.profile as Profile
-                                                                                )
-                                                                                    .account as Account
-                                                                            )
-                                                                                .identityId +
+                                                                            identityId +
                                                                             "/" +
                                                                             p.profile +
                                                                             "/externalPrescriptions/" +

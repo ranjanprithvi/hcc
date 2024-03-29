@@ -21,12 +21,13 @@ import { TransferProgressEvent, list } from "aws-amplify/storage";
 import { Profile } from "../../../models/profile";
 import { handleUpload } from "../../../utilities/record-manager-service";
 import Modal from "../../common/Modal";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
 import { Account } from "../../../models/account";
 import { MedicalRecord } from "../../../models/medicalRecord";
 import Loader from "../../common/Loader";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -53,7 +54,8 @@ const MedicalRecordForm = () => {
     };
 
     const resolver = zodResolver(schema);
-    const { id, profileId, identityId } = useParams();
+    const { id } = useParams();
+    const { profileId, identityId } = useContext(ProfileContext);
     if (!id) return null;
 
     const { medicalRecord, error, isLoading } = useMedicalRecord(id);
@@ -62,17 +64,12 @@ const MedicalRecordForm = () => {
         return <div>{error}</div>;
     }
     const existingFiles = useS3Files(
-        identityId +
-            "/" +
-            (medicalRecord?.profile as Profile)?._id +
-            "/medicalRecords/" +
-            id +
-            "/",
+        identityId + "/" + profileId + "/medicalRecords/" + id + "/",
         [medicalRecord]
     );
 
     const resetObject = {
-        profile: (medicalRecord?.profile as Profile)?._id || profileId || "",
+        profile: profileId || "",
         doctor: doctorId,
         recordName: medicalRecord?.recordName,
         recordType: medicalRecord?.recordType,

@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { TbLogout } from "react-icons/tb";
 import { BsChevronDown } from "react-icons/bs";
 import { BiSolidUserCircle } from "react-icons/bi";
@@ -12,23 +11,19 @@ import {
     MenuDivider,
     MenuGroup,
 } from "@chakra-ui/react";
-import { NavLink } from "react-router-dom";
 import Modal from "../common/Modal";
 import useProfiles from "../../hooks/useProfiles";
 import { RiUser3Fill } from "react-icons/ri";
 import useDoctors from "../../hooks/useDoctors";
-import {
-    getCurrentDoctorId,
-    getCurrentProfileId,
-    handleLogout,
-    setCurrentProfileId,
-} from "../../utilities/helper-service";
+import { handleLogout } from "../../utilities/helper-service";
 import ProtectedComponent from "../common/ProtectedComponent";
 import colourPalette from "../../utilities/colour-palette";
-import { LoginContext } from "../../contexts/loginContext";
+import { useContext } from "react";
+import { ProfileContext } from "../../contexts/profileContext";
 
 const ProfilesMenuGroup = () => {
     const { profiles, error, isLoading } = useProfiles();
+    const { profileId, setProfileId } = useContext(ProfileContext);
 
     return (
         <>
@@ -36,18 +31,18 @@ const ProfilesMenuGroup = () => {
                 {profiles.map((profile) => (
                     <MenuItem
                         color={
-                            profile._id == getCurrentProfileId()
+                            profile._id == profileId
                                 ? colourPalette.primary
                                 : "gray.800"
                         }
                         backgroundColor={
-                            profile._id == getCurrentProfileId()
+                            profile._id == profileId
                                 ? colourPalette.primaryBg
                                 : ""
                         }
                         icon={<RiUser3Fill />}
                         onClick={() => {
-                            setCurrentProfileId(profile._id);
+                            setProfileId(profile._id);
                             window.location.reload();
                         }}
                     >
@@ -69,11 +64,7 @@ const DoctorsMenuGroup = () => {
             <MenuGroup title="Doctors">
                 {doctors.map((d) => (
                     <MenuItem
-                        color={
-                            d._id == getCurrentDoctorId()
-                                ? colourPalette.primary
-                                : "gray.800"
-                        }
+                        color={d._id == "" ? colourPalette.primary : "gray.800"}
                         icon={<RiUser3Fill />}
                     >
                         {d.name}
@@ -88,7 +79,6 @@ const DoctorsMenuGroup = () => {
 
 const AccountDropdown = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { props } = useContext(LoginContext);
 
     return (
         <>

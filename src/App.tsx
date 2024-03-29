@@ -1,12 +1,7 @@
-import { useEffect, useState } from "react";
-import { LoginContext } from "./contexts/loginContext";
+import { useState } from "react";
 import { useBreakpointValue } from "@chakra-ui/react";
 import Routes from "./Routes";
-import { getAccessLevel } from "./utilities/helper-service";
-import {
-    useAuthenticator,
-    type WithAuthenticatorProps,
-} from "@aws-amplify/ui-react";
+import { ProfileContext } from "./contexts/profileContext";
 
 export const roles = {
     user: 1,
@@ -17,8 +12,8 @@ export const roles = {
 export const doctorId = "65c8d613c5a2abf941ae6c57";
 
 function App() {
-    const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
-    const [accessLevel, setAccessLevel] = useState(getAccessLevel());
+    const [profileId, setProfileId] = useState<string>("");
+    const [identityId, setIdentityId] = useState<string>("");
 
     const dataView = useBreakpointValue(
         {
@@ -35,16 +30,16 @@ function App() {
     // const {  } = useAuthenticator();
 
     return (
-        <LoginContext.Provider
+        <ProfileContext.Provider
             value={{
-                isLoggedIn,
-                setLoggedIn: setLoggedIn,
-                accessLevel,
-                setAccessLevel,
+                profileId: profileId,
+                identityId: identityId,
+                setProfileId: setProfileId,
+                setIdentityId: setIdentityId,
             }}
         >
             <Routes />
-        </LoginContext.Provider>
+        </ProfileContext.Provider>
     );
 }
 

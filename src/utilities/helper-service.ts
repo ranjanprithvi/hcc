@@ -1,6 +1,8 @@
 import { fetchAuthSession, signOut } from "aws-amplify/auth";
 import { jwtDecode } from "jwt-decode";
 import { roles } from "../App";
+import { useContext } from "react";
+import { ProfileContext } from "../contexts/profileContext";
 
 type User = {
     _id: string;
@@ -63,43 +65,13 @@ export const getAccessLevel = () => {
     );
 };
 
-export const getCurrentProfileId = () => {
-    return localStorage.getItem("currentProfileId");
-};
-
-export const setCurrentProfileId = (id: string) => {
-    localStorage.setItem("currentProfileId", id);
-};
-
-export const removeCurrentProfileId = () => {
-    localStorage.removeItem("currentProfileId");
-};
-
-export const getCurrentDoctorId = () => {
-    return localStorage.getItem("currentDoctorId");
-};
-
-export const setCurrentDoctorId = (id: string) => {
-    localStorage.setItem("currentDoctorId", id);
-};
-
-export const removeCurrentDoctorId = () => {
-    localStorage.removeItem("currentDoctorId");
-};
-
-// export const getGalleryPath = () => {
-//     return localStorage.getItem("galleryPath");
-// };
-
-// export const setGalleryPath = (path: string) => {
-//     localStorage.setItem("galleryPath", path);
-// };
-
 export const handleLogout = () => {
     // removeToken();
     // removeUser();
-    removeCurrentProfileId();
-    removeCurrentDoctorId();
+    const { setProfileId, setIdentityId } = useContext(ProfileContext);
+    setProfileId("");
+    setIdentityId("");
+
     signOut()
         .then(() => {
             window.location.assign("/");

@@ -23,10 +23,11 @@ import {
     uploadFilesToS3,
 } from "../../../utilities/record-manager-service";
 import Modal from "../../common/Modal";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
 import { Account } from "../../../models/account";
+import { ProfileContext } from "../../../contexts/profileContext";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -61,17 +62,15 @@ const PrescriptionForm = () => {
     };
 
     const resolver = zodResolver(schema);
-    const { id, profileId, identityId } = useParams();
+    const { id } = useParams();
     if (!id) return null;
+
+    const { identityId, profileId } = useContext(ProfileContext);
 
     const { prescription, error } = usePrescription(id);
 
     const existingFiles = useS3Files(
-        identityId +
-            "/" +
-            (prescription?.profile as Profile)?._id +
-            "/Prescriptions/" +
-            id,
+        identityId + "/" + profileId + "/Prescriptions/" + id,
         [prescription]
     );
 
@@ -80,7 +79,7 @@ const PrescriptionForm = () => {
     }
 
     const resetObject = {
-        profile: (prescription?.profile as Profile)?._id || profileId || "",
+        profile: profileId || "",
         doctor: doctorId,
         dateOnDocument: moment(prescription?.dateOnDocument).format(
             "YYYY-MM-DD"

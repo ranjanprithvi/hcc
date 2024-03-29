@@ -11,6 +11,8 @@ import ExternalRecordsPanel from "../Medical Records/ExternalRecordsPanel";
 import { ExternalRecord } from "../../../models/externalRecord";
 import MedicalRecordsPanel from "../Medical Records/MedicalRecordsPanel";
 import { MedicalRecord } from "../../../models/medicalRecord";
+import { ProfileContext } from "../../../contexts/profileContext";
+import { useContext, useEffect } from "react";
 
 export const ProfileOverview = () => {
     const { id } = useParams();
@@ -25,31 +27,32 @@ export const ProfileOverview = () => {
         isLoading,
     } = useProfileOverview(id || "");
 
+    const { setIdentityId, setProfileId } = useContext(ProfileContext);
+
+    useEffect(() => {
+        setIdentityId(identityId);
+        setProfileId(id || "");
+    }, [identityId]);
+
     return (
         <VStack alignItems={"stretch"}>
             <AppointmentsPanel
                 appointments={appointments as Appointment[]}
-                profileId={id}
                 error={error}
                 isLoading={isLoading}
             ></AppointmentsPanel>
             <MedicalRecordsPanel
                 medicalRecords={medicalRecords as MedicalRecord[]}
-                profileId={id}
-                identityId={identityId}
                 error={error}
                 isLoading={isLoading}
             ></MedicalRecordsPanel>
             <ExternalRecordsPanel
                 externalRecords={externalRecords as ExternalRecord[]}
-                identityId={identityId}
                 error={error}
                 isLoading={isLoading}
             ></ExternalRecordsPanel>
             <PrescriptionsPanel
                 prescriptions={prescriptions as Prescription[]}
-                profileId={id}
-                identityId={identityId}
                 error={error}
                 isLoading={isLoading}
             ></PrescriptionsPanel>
@@ -57,7 +60,6 @@ export const ProfileOverview = () => {
                 externalPrescriptions={
                     externalPrescriptions as ExternalPrescription[]
                 }
-                identityId={identityId}
                 error={error}
                 isLoading={isLoading}
             ></ExternalPrescriptionsPanel>
