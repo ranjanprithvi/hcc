@@ -48,10 +48,13 @@ import { record } from "zod";
 import PrescriptionModal from "../PrescriptionModal";
 import { useState } from "react";
 import GalleryModal from "../GalleryModal";
+import { Account } from "../../../models/account";
+import { Profile } from "../../../models/profile";
 
 interface Props {
     prescriptions: Prescription[];
     profileId?: string;
+    identityId: string;
     error: string;
     isLoading: boolean;
 }
@@ -59,6 +62,7 @@ interface Props {
 const PrescriptionsPanel = ({
     prescriptions,
     profileId,
+    identityId,
     error,
     isLoading,
 }: Props) => {
@@ -99,7 +103,7 @@ const PrescriptionsPanel = ({
                             hospital={
                                 <Button
                                     as={Link}
-                                    to={`/portal/prescriptions/new/${profileId}`}
+                                    to={`/portal/prescriptions/new/${profileId}/${identityId}`}
                                     size="sm"
                                     colorScheme="pink"
                                     variant={"outline"}
@@ -167,6 +171,8 @@ const PrescriptionsPanel = ({
                                                                 setSelectedPrescription(
                                                                     {
                                                                         path:
+                                                                            identityId +
+                                                                            "/" +
                                                                             p.profile +
                                                                             "/prescriptions/" +
                                                                             p._id,
@@ -204,7 +210,7 @@ const PrescriptionsPanel = ({
                                                                         as={
                                                                             Link
                                                                         }
-                                                                        to={`/portal/prescriptions/${p._id}`}
+                                                                        to={`/portal/prescriptions/${p._id}/${identityId}`}
                                                                         size={
                                                                             "xs"
                                                                         }
@@ -234,6 +240,7 @@ const PrescriptionsPanel = ({
                                                                             handleDelete(
                                                                                 p,
                                                                                 "/prescriptions",
+                                                                                identityId,
                                                                                 toast,
                                                                                 () =>
                                                                                     window.location.reload()

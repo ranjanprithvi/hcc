@@ -43,7 +43,6 @@ class HttpService {
     }
 
     patch<T1, T2>(entity: T1, id: string, prefix: string = "") {
-        console.log(entity);
         return apiClient.patch<T2>(`${this.endpoint}${prefix}/${id}`, entity);
     }
 }

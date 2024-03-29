@@ -34,6 +34,7 @@ import TruncatedText from "../../common/TruncatedText";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
 import { getCurrentUser } from "aws-amplify/auth";
+import { Account } from "../../../models/account";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -69,7 +70,12 @@ const ExternalRecordForm = () => {
     const { externalRecord, error } = useExternalRecord(id);
 
     const existingFiles = useS3Files(
-        getCurrentProfileId() + "/externalRecords/" + id + "/",
+        ((externalRecord.profile as Profile).account as Account).identityId +
+            "/" +
+            getCurrentProfileId() +
+            "/externalRecords/" +
+            id +
+            "/",
         [externalRecord],
         "private"
     );
@@ -157,6 +163,7 @@ const ExternalRecordForm = () => {
             "/externalRecords",
             toast,
             handleProgress,
+            "",
             () => {
                 navigate(-1);
             }

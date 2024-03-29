@@ -13,9 +13,10 @@ export default function useS3Files(
             try {
                 const result = await list({
                     prefix: prefix,
-                    options: { accessLevel: accessLevel || "guest" },
+                    options: { accessLevel: accessLevel || "private" },
                 });
-                // console.log((medicalRecord?.profile as Profile)?._id);
+                console.log(prefix);
+                console.log(result);
                 setFiles(result.items);
             } catch (error) {
                 console.log(error);

@@ -1,3 +1,4 @@
+import { Account } from "./../models/account";
 import { Profile } from "./../models/profile";
 import {
     TransferProgressEvent,
@@ -64,7 +65,80 @@ export const uploadFilesToS3 = async (
     return Promise.all(promises);
 };
 
-export const handleUpload = <T extends DataEntity>(
+// export const handleUpload = <T extends DataEntity>(
+//     id: string,
+//     data: T,
+//     endpoint: string,
+//     toast: any,
+//     handleProgress: (event: TransferProgressEvent) => void,
+//     identityId?: string,
+//     callBack?: () => void
+// ) => {
+//     pushRecordToDb(id, _.omit(data, "files"), endpoint)
+//         .then((res) => {
+//             toast({
+//                 title: `${res.data.recordName || "Prescription"} saved`,
+//                 status: "success",
+//                 duration: 3000,
+//                 position: "bottom-right",
+//             });
+//             if (data.files && data.files.length > 0) {
+//                 const files = data.files;
+
+//                 fetchAuthSession().then((session) => {
+//                     if (session.identityId) {
+//                         uploadFilesToS3(
+//                             files,
+//                             session.identityId.toString() +
+//                                 "/" +
+//                                 res.data.profile +
+//                                 endpoint +
+//                                 "/" +
+//                                 res.data._id,
+//                             handleProgress
+//                         )
+//                             .then((res) => {
+//                                 toast({
+//                                     title: "Files uploaded to storage",
+//                                     status: "success",
+//                                     duration: 3000,
+//                                     position: "bottom-right",
+//                                 });
+//                                 setTimeout(() => {
+//                                     callBack && callBack();
+//                                 }, 1000);
+//                             })
+//                             .catch((error) => {
+//                                 toast({
+//                                     title: "Error while uploading files",
+//                                     description: error.message,
+//                                     status: "error",
+//                                     duration: 5000,
+//                                     isClosable: true,
+//                                     position: "bottom-right",
+//                                 });
+//                             });
+//                     }
+//                 });
+//             } else {
+//                 setTimeout(() => {
+//                     callBack && callBack();
+//                 }, 1000);
+//             }
+//         })
+//         .catch((error) => {
+//             toast({
+//                 title: "Error while creating record",
+//                 description: error.message,
+//                 status: "error",
+//                 duration: 5000,
+//                 isClosable: true,
+//                 position: "bottom-right",
+//             });
+//         });
+// };
+
+export const handleUpload = async <T extends DataEntity>(
     id: string,
     data: T,
     endpoint: string,
@@ -73,63 +147,49 @@ export const handleUpload = <T extends DataEntity>(
     identityId?: string,
     callBack?: () => void
 ) => {
-    pushRecordToDb(id, _.omit(data, "files"), endpoint)
-        .then((res) => {
+    const res = await pushRecordToDb(id, _.omit(data, "files"), endpoint);
+    toast({
+        title: `${res.data.recordName || "Prescription"} saved`,
+        status: "success",
+        duration: 3000,
+        position: "bottom-right",
+    });
+    if (data.files && data.files.length > 0) {
+        const files = data.files;
+
+        if (!identityId) identityId = (await fetchAuthSession()).identityId;
+
+        if (identityId) {
+            await uploadFilesToS3(
+                files,
+                identityId.toString() +
+                    "/" +
+                    res.data.profile +
+                    endpoint +
+                    "/" +
+                    res.data._id,
+                handleProgress
+            );
             toast({
-                title: `${res.data.recordName || "Prescription"} saved`,
+                title: "Files uploaded to storage",
                 status: "success",
                 duration: 3000,
                 position: "bottom-right",
             });
-            if (data.files && data.files.length > 0) {
-                uploadFilesToS3(
-                    data.files,
-                    res.data.profile + endpoint + "/" + res.data._id,
-                    handleProgress
-                )
-                    .then((res) => {
-                        toast({
-                            title: "Files uploaded to storage",
-                            status: "success",
-                            duration: 3000,
-                            position: "bottom-right",
-                        });
-                        setTimeout(() => {
-                            callBack && callBack();
-                        }, 1000);
-                    })
-                    .catch((error) => {
-                        toast({
-                            title: "Error while uploading files",
-                            description: error.message,
-                            status: "error",
-                            duration: 5000,
-                            isClosable: true,
-                            position: "bottom-right",
-                        });
-                    });
-            } else {
-                setTimeout(() => {
-                    callBack && callBack();
-                }, 1000);
-            }
-        })
-        .catch((error) => {
-            toast({
-                title: "Error while creating record",
-                description: error.message,
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-                position: "bottom-right",
-            });
-        });
+            setTimeout(() => {
+                callBack && callBack();
+            }, 1000);
+        }
+    } else {
+        setTimeout(() => {
+            callBack && callBack();
+        }, 1000);
+    }
 };
 
 //Download
 export const handleViewRecord = async (folder: string) => {
     const prefix = (await fetchAuthSession()).identityId + folder;
-    console.log(prefix);
     const files = await list({
         prefix: prefix,
         options: { accessLevel: "private" },
@@ -193,10 +253,13 @@ export const deleteFileFromS3 = async (key: string) => {
 export const handleDelete = <T extends Entity>(
     record: T,
     endPoint: string,
+    identityId: string,
     toast: any,
     callBack?: () => void
 ) => {
-    deleteFolderFromS3(record.profile + endPoint + "/" + record._id + "/")
+    deleteFolderFromS3(
+        identityId + "/" + record.profile + endPoint + "/" + record._id + "/"
+    )
         .then((res) => {
             if (res != false) {
                 toast({

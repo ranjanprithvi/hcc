@@ -44,15 +44,19 @@ import {
 import Loader from "../../common/Loader";
 import GalleryModal from "../GalleryModal";
 import { useState } from "react";
+import { Account } from "../../../models/account";
+import { Profile } from "../../../models/profile";
 
 interface Props {
     externalPrescriptions: ExternalPrescription[];
+    identityId: string;
     error: string;
     isLoading: boolean;
 }
 
 const ExternalPrescriptionsPanel = ({
     externalPrescriptions,
+    identityId,
     error,
     isLoading,
 }: Props) => {
@@ -156,6 +160,14 @@ const ExternalPrescriptionsPanel = ({
                                                                 setSelectedPrescription(
                                                                     {
                                                                         path:
+                                                                            (
+                                                                                (
+                                                                                    p.profile as Profile
+                                                                                )
+                                                                                    .account as Account
+                                                                            )
+                                                                                .identityId +
+                                                                            "/" +
                                                                             p.profile +
                                                                             "/externalPrescriptions/" +
                                                                             p._id,
@@ -284,6 +296,7 @@ const ExternalPrescriptionsPanel = ({
                                                                         handleDelete(
                                                                             p,
                                                                             "/externalPrescriptions",
+                                                                            identityId,
                                                                             toast,
                                                                             () =>
                                                                                 window.location.reload()

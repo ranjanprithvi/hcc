@@ -42,7 +42,6 @@ export const removeUser = () => {
 export const setAccessLevel = async () => {
     const { tokens } = await fetchAuthSession();
 
-    console.log(tokens?.accessToken);
     const groups = (tokens?.accessToken?.payload["cognito:groups"] ||
         []) as string[];
     const level = groups.includes("Admin")

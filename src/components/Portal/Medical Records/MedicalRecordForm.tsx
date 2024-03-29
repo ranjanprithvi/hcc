@@ -24,6 +24,9 @@ import Modal from "../../common/Modal";
 import { useEffect, useState } from "react";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
+import { Account } from "../../../models/account";
+import { MedicalRecord } from "../../../models/medicalRecord";
+import Loader from "../../common/Loader";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -50,19 +53,22 @@ const MedicalRecordForm = () => {
     };
 
     const resolver = zodResolver(schema);
-    const { id, profileId } = useParams();
+    const { id, profileId, identityId } = useParams();
     if (!id) return null;
 
-    const { medicalRecord, error } = useMedicalRecord(id);
+    const { medicalRecord, error, isLoading } = useMedicalRecord(id);
 
     if (error) {
         return <div>{error}</div>;
     }
-
     const existingFiles = useS3Files(
-        (medicalRecord.profile as Profile)._id + "/medicalRecords/" + id + "/",
-        [medicalRecord],
-        "guest"
+        identityId +
+            "/" +
+            (medicalRecord?.profile as Profile)?._id +
+            "/medicalRecords/" +
+            id +
+            "/",
+        [medicalRecord]
     );
 
     const resetObject = {
@@ -120,13 +126,16 @@ const MedicalRecordForm = () => {
             "/medicalRecords",
             toast,
             handleProgress,
+            identityId,
             () => {
                 navigate(-1);
             }
         );
     };
 
-    return (
+    return isLoading ? (
+        <Loader></Loader>
+    ) : (
         <GridItem colSpan={2} marginX={5} marginY="auto">
             <Modal
                 header="Uploading Files..."

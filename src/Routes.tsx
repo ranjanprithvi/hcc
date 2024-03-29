@@ -85,7 +85,7 @@ const Routes = () => {
                     element={<ProtectedRoute userRoute={<Records />} />}
                 />
                 <Route
-                    path="medicalRecords/:id/:profileId?"
+                    path="medicalRecords/:id/:profileId?/:identityId?"
                     element={
                         <ProtectedRoute userRoute={<MedicalRecordForm />} />
                     }
@@ -118,7 +118,7 @@ const Routes = () => {
                     element={<ProtectedRoute userRoute={<Prescriptions />} />}
                 />
                 <Route
-                    path="prescriptions/:id/:profileId?"
+                    path="prescriptions/:id/:profileId?/:identityId?"
                     element={
                         <ProtectedRoute userRoute={<PrescriptionForm />} />
                     }

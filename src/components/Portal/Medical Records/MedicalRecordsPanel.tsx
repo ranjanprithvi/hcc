@@ -36,10 +36,13 @@ import { FaDownload, FaEye, FaPen, FaTrashAlt } from "react-icons/fa";
 import { error } from "console";
 import GalleryModal from "../GalleryModal";
 import { useState } from "react";
+import { Profile } from "../../../models/profile";
+import { Account } from "../../../models/account";
 
 interface Props {
     medicalRecords: MedicalRecord[];
     profileId?: string;
+    identityId: string;
     error: string;
     isLoading: boolean;
 }
@@ -47,51 +50,11 @@ interface Props {
 const MedicalRecords = ({
     medicalRecords,
     profileId,
+    identityId,
     error,
     isLoading,
 }: Props) => {
     const toast = useToast();
-
-    // const handleDelete = (record: MedicalRecord) => {
-    //     deleteFolderFromS3(record.profile + "/MedicalRecords/" + record._id)
-    //         .then(() => {
-    //             toast({
-    //                 title: `${
-    //                     record.recordName || "Record"
-    //                 } deleted from storage`,
-    //                 status: "success",
-    //                 duration: 3000,
-    //             });
-    //             deleteRecordFromDb(record, "/medicalRecords")
-    //                 .then((res) => {
-    //                     toast({
-    //                         title: `${
-    //                             record.recordName || "Record"
-    //                         } deleted from database`,
-    //                         status: "success",
-    //                         duration: 3000,
-    //                     });
-    //                 })
-    //                 .catch((error) => {
-    //                     toast({
-    //                         title: "Error while deleting record",
-    //                         description: error.message,
-    //                         status: "error",
-    //                         duration: 5000,
-    //                         isClosable: true,
-    //                     });
-    //                 });
-    //         })
-    //         .catch((error) => {
-    //             toast({
-    //                 title: "Error while deleting folder",
-    //                 description: error.message,
-    //                 status: "error",
-    //                 duration: 5000,
-    //                 isClosable: true,
-    //             });
-    //         });
-    // };
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [selectedRecord, setSelectedRecord] = useState({
@@ -127,7 +90,7 @@ const MedicalRecords = ({
                             hospital={
                                 <Button
                                     as={Link}
-                                    to={`/portal/medicalRecords/new/${profileId}`}
+                                    to={`/portal/medicalRecords/new/${profileId}/${identityId}`}
                                     size="sm"
                                     colorScheme="pink"
                                     variant={"outline"}
@@ -190,6 +153,8 @@ const MedicalRecords = ({
                                                                 setSelectedRecord(
                                                                     {
                                                                         path:
+                                                                            identityId +
+                                                                            "/" +
                                                                             record.profile +
                                                                             "/medicalRecords/" +
                                                                             record._id,
@@ -284,7 +249,7 @@ const MedicalRecords = ({
                                                                     }
                                                                     aria-label="Edit Record"
                                                                     as={Link}
-                                                                    to={`/portal/medicalRecords/${record._id}`}
+                                                                    to={`/portal/medicalRecords/${record._id}/${profileId}/${identityId}`}
                                                                     size={"xs"}
                                                                     colorScheme="pink"
                                                                     variant={
@@ -315,6 +280,7 @@ const MedicalRecords = ({
                                                                         handleDelete(
                                                                             record,
                                                                             "/medicalRecords",
+                                                                            identityId,
                                                                             toast,
                                                                             () =>
                                                                                 window.location.reload()

@@ -27,6 +27,7 @@ import { useEffect, useState } from "react";
 import Modal from "../../common/Modal";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
+import { Account } from "../../../models/account";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -112,7 +113,13 @@ const ExternalPrescriptionForm = () => {
     ];
 
     const existingFiles = useS3Files(
-        getCurrentProfileId() + "/externalPrescriptions/" + id + "/",
+        ((externalPrescription.profile as Profile).account as Account)
+            .identityId +
+            "/" +
+            getCurrentProfileId() +
+            "/externalPrescriptions/" +
+            id +
+            "/",
         [externalPrescription],
         "private"
     );

@@ -15,6 +15,7 @@ import { MedicalRecord } from "../../../models/medicalRecord";
 export const ProfileOverview = () => {
     const { id } = useParams();
     const {
+        identityId,
         appointments,
         medicalRecords,
         externalRecords,
@@ -35,17 +36,20 @@ export const ProfileOverview = () => {
             <MedicalRecordsPanel
                 medicalRecords={medicalRecords as MedicalRecord[]}
                 profileId={id}
+                identityId={identityId}
                 error={error}
                 isLoading={isLoading}
             ></MedicalRecordsPanel>
             <ExternalRecordsPanel
                 externalRecords={externalRecords as ExternalRecord[]}
+                identityId={identityId}
                 error={error}
                 isLoading={isLoading}
             ></ExternalRecordsPanel>
             <PrescriptionsPanel
                 prescriptions={prescriptions as Prescription[]}
                 profileId={id}
+                identityId={identityId}
                 error={error}
                 isLoading={isLoading}
             ></PrescriptionsPanel>
@@ -53,6 +57,7 @@ export const ProfileOverview = () => {
                 externalPrescriptions={
                     externalPrescriptions as ExternalPrescription[]
                 }
+                identityId={identityId}
                 error={error}
                 isLoading={isLoading}
             ></ExternalPrescriptionsPanel>

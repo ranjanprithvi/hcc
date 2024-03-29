@@ -36,14 +36,22 @@ import {
 import Loader from "../../common/Loader";
 import { useState } from "react";
 import GalleryModal from "../GalleryModal";
+import { Account } from "../../../models/account";
+import { Profile } from "../../../models/profile";
 
 interface Props {
     externalRecords: ExternalRecord[];
+    identityId: string;
     error: string;
     isLoading: boolean;
 }
 
-const ExternalRecordsPanel = ({ externalRecords, error, isLoading }: Props) => {
+const ExternalRecordsPanel = ({
+    externalRecords,
+    identityId,
+    error,
+    isLoading,
+}: Props) => {
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [selectedRecord, setSelectedRecord] = useState({
@@ -149,6 +157,14 @@ const ExternalRecordsPanel = ({ externalRecords, error, isLoading }: Props) => {
                                                                 setSelectedRecord(
                                                                     {
                                                                         path:
+                                                                            (
+                                                                                (
+                                                                                    record.profile as Profile
+                                                                                )
+                                                                                    .account as Account
+                                                                            )
+                                                                                .identityId +
+                                                                            "/" +
                                                                             record.profile +
                                                                             "/externalRecords/" +
                                                                             record._id,
@@ -297,6 +313,7 @@ const ExternalRecordsPanel = ({ externalRecords, error, isLoading }: Props) => {
                                                                         handleDelete(
                                                                             record,
                                                                             "/externalRecords",
+                                                                            identityId,
                                                                             toast,
                                                                             () =>
                                                                                 window.location.reload()

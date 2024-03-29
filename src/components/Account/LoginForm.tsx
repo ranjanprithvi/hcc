@@ -109,7 +109,6 @@ const LoginForm = () => {
                     .request;
                 if (!data.identityId) {
                     const identityId = (await fetchAuthSession()).identityId;
-                    console.log(identityId);
                     await accountService.patch(
                         { identityId: identityId },
                         "updateIdentityId"

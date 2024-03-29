@@ -26,6 +26,7 @@ import Modal from "../../common/Modal";
 import { useEffect, useState } from "react";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
+import { Account } from "../../../models/account";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -60,13 +61,17 @@ const PrescriptionForm = () => {
     };
 
     const resolver = zodResolver(schema);
-    const { id, profileId } = useParams();
+    const { id, profileId, identityId } = useParams();
     if (!id) return null;
 
     const { prescription, error } = usePrescription(id);
 
     const existingFiles = useS3Files(
-        (prescription?.profile as Profile)?._id + "/Prescriptions/" + id,
+        identityId +
+            "/" +
+            (prescription?.profile as Profile)?._id +
+            "/Prescriptions/" +
+            id,
         [prescription]
     );
 
@@ -129,7 +134,7 @@ const PrescriptionForm = () => {
             "/prescriptions",
             toast,
             handleProgress,
-            "",
+            identityId,
             () => {
                 navigate(-1);
             }

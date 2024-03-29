@@ -155,29 +155,7 @@ export const PortalLanding = () => {
                 background={"gray.50"}
                 overflow={"scroll"}
             >
-                {isLoading ? (
-                    <Loader />
-                ) : getCurrentProfileId() ? (
-                    <Outlet />
-                ) : (
-                    <Flex
-                        width={"100%"}
-                        height={"100%"}
-                        justifyContent={"center"}
-                    >
-                        <VStack>
-                            <Text>There are no profiles in your account</Text>
-                            <Button
-                                variant={"link"}
-                                as={Link}
-                                to={"/portal/profiles/new"}
-                                colorScheme="pink"
-                            >
-                                Create a profile to get started
-                            </Button>
-                        </VStack>
-                    </Flex>
-                )}
+                <Outlet />
             </GridItem>
         </Grid>
     );

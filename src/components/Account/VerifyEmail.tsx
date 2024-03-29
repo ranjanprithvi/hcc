@@ -6,7 +6,6 @@ import {
 } from "aws-amplify/auth";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { setToken } from "../../utilities/helper-service";
 import { Box } from "@chakra-ui/react";
 
 const VerifyEmail = () => {
@@ -18,9 +17,7 @@ const VerifyEmail = () => {
     const data = queryParams.get("data");
     const confirmationCode = queryParams.get("code");
     // const { data, confirmationCode } = useParams();
-    console.log(data);
     useEffect(() => {
-        console.log(data);
         const dataObj = JSON.parse(atob(data || "")) as {
             userName: string;
         };

@@ -6,7 +6,6 @@ import {
     Box,
     Text,
     GridItem,
-    Flex,
     VStack,
     Tooltip,
     IconButton,
@@ -19,7 +18,6 @@ import {
     BiCalendarX,
     BiCalendarPlus,
     BiCalendarEvent,
-    BiCalendarEdit,
 } from "react-icons/bi";
 import { IoMdCalendar } from "react-icons/io";
 import { Link } from "react-router-dom";
@@ -30,7 +28,6 @@ import Loader from "../../common/Loader";
 import { httpService } from "../../../services/http-service";
 import Modal from "../../common/Modal";
 import { useState } from "react";
-import { fetchAuthSession } from "aws-amplify/auth";
 
 interface Props {
     appointments: Appointment[];
@@ -58,9 +55,9 @@ const AppointmentsPanel = ({
         }
     );
 
-    fetchAuthSession().then((session) => {
-        console.log(session.identityId);
-    });
+    // fetchAuthSession().then((session) => {
+    //     console.log(session.identityId);
+    // });
 
     function handleCancel(a: Appointment): void {
         const appointmentService = httpService("/appointments/cancel");
