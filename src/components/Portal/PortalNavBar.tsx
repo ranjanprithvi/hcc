@@ -17,7 +17,7 @@ import { useRef } from "react";
 import Modal from "../common/Modal";
 import AccountDropdown from "../Account/AccountDropdown";
 import ProtectedComponent from "../common/ProtectedComponent";
-import { handleLogout } from "../../utilities/helper-service";
+// import { handleLogout } from "../../utilities/helper-service";
 import colourPalette from "../../utilities/colour-palette";
 
 interface NavItem {
@@ -47,7 +47,7 @@ const PortalNavBar = ({ heading }: Props) => {
             paddingX={"20px"}
             borderBottom={"1px solid #cecece"}
         >
-            <Modal
+            {/* <Modal
                 header="Logout"
                 body="Are you sure you want to logout?"
                 onClose={onClose}
@@ -65,7 +65,7 @@ const PortalNavBar = ({ heading }: Props) => {
                         <Button onClick={onClose}>Cancel</Button>
                     </>
                 )}
-            />
+            /> */}
             <Drawer
                 isOpen={isDrawerOpen}
                 placement="top"

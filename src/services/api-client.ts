@@ -13,6 +13,9 @@ const client = axios.create({
 client.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
     const { tokens } = await fetchAuthSession();
     config.headers["x-auth-token"] = tokens?.accessToken.toString() || "";
+    // config.headers["Content-Type"] = "application/json";
+    config.headers["Access-Control-Allow-Origin"] = "*";
+
     return config;
 });
 

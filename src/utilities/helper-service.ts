@@ -65,18 +65,18 @@ export const getAccessLevel = () => {
     );
 };
 
-export const handleLogout = () => {
-    // removeToken();
-    // removeUser();
-    const { setProfileId, setIdentityId } = useContext(ProfileContext);
-    setProfileId("");
-    setIdentityId("");
+// export const handleLogout = () => {
+//     // removeToken();
+//     // removeUser();
+//     const { setProfileId, setIdentityId } = useContext(ProfileContext);
+//     setProfileId("");
+//     setIdentityId("");
 
-    signOut()
-        .then(() => {
-            window.location.assign("/");
-        })
-        .catch((e) => {
-            console.error(e);
-        });
-};
+//     signOut()
+//         .then(() => {
+//             window.location.assign("/");
+//         })
+//         .catch((e) => {
+//             console.error(e);
+//         });
+// };

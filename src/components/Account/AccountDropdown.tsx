@@ -15,11 +15,12 @@ import Modal from "../common/Modal";
 import useProfiles from "../../hooks/useProfiles";
 import { RiUser3Fill } from "react-icons/ri";
 import useDoctors from "../../hooks/useDoctors";
-import { handleLogout } from "../../utilities/helper-service";
+// import { handleLogout } from "../../utilities/helper-service";
 import ProtectedComponent from "../common/ProtectedComponent";
 import colourPalette from "../../utilities/colour-palette";
 import { useContext } from "react";
 import { ProfileContext } from "../../contexts/profileContext";
+import { signOut } from "aws-amplify/auth";
 
 const ProfilesMenuGroup = () => {
     const { profiles, error, isLoading } = useProfiles();
@@ -79,6 +80,7 @@ const DoctorsMenuGroup = () => {
 
 const AccountDropdown = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { setProfileId, setIdentityId } = useContext(ProfileContext);
 
     return (
         <>
@@ -92,7 +94,17 @@ const AccountDropdown = () => {
                         <Button
                             colorScheme="pink"
                             mr={3}
-                            onClick={handleLogout}
+                            onClick={() => {
+                                signOut()
+                                    .then(() => {
+                                        window.location.assign("/");
+                                    })
+                                    .catch((err) => {
+                                        console.log(err);
+                                    });
+                                setProfileId("");
+                                setIdentityId("");
+                            }}
                         >
                             Yes
                         </Button>
