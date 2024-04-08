@@ -1,13 +1,13 @@
 import { Profile } from "./../models/profile";
 import { createContext } from "react";
 
-interface IProfileContext {
-    profileId: string;
+interface IAccountContext {
+    // profileId: string;
     identityId: string;
-    setProfileId: React.Dispatch<React.SetStateAction<string>>;
+    // setProfileId: React.Dispatch<React.SetStateAction<string>>;
     setIdentityId: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const ProfileContext = createContext<IProfileContext>(
-    {} as IProfileContext
+export const AccountContext = createContext<IAccountContext>(
+    {} as IAccountContext
 );

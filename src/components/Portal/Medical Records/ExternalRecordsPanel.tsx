@@ -38,7 +38,7 @@ import { useContext, useState } from "react";
 import GalleryModal from "../GalleryModal";
 import { Account } from "../../../models/account";
 import { Profile } from "../../../models/profile";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
 
 interface Props {
     externalRecords: ExternalRecord[];
@@ -55,7 +55,7 @@ const ExternalRecordsPanel = ({ externalRecords, error, isLoading }: Props) => {
         leftPanel: <></>,
     });
 
-    const { identityId } = useContext(ProfileContext);
+    const { identityId } = useContext(AccountContext);
 
     return (
         <>
@@ -156,7 +156,13 @@ const ExternalRecordsPanel = ({ externalRecords, error, isLoading }: Props) => {
                                                                         path:
                                                                             identityId +
                                                                             "/" +
-                                                                            record.profile +
+                                                                            (typeof record.profile ==
+                                                                            "string"
+                                                                                ? record.profile
+                                                                                : (
+                                                                                      record.profile as Profile
+                                                                                  )
+                                                                                      ._id) +
                                                                             "/externalRecords/" +
                                                                             record._id,
                                                                         header:

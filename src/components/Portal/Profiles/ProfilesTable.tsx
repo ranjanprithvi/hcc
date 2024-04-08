@@ -17,17 +17,18 @@ import { Link } from "react-router-dom";
 import useProfiles from "../../../hooks/useProfiles";
 import Loader from "../../common/Loader";
 import { GoLink } from "react-icons/go";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
+import { getProfileId } from "../../../utilities/helper-service";
 
 interface Props {
     searchTerm: string;
 }
 
 const ProfilesTable = ({ searchTerm }: Props) => {
-    const { profileId } = useContext(ProfileContext);
+    // const { profileId } = useContext(AccountContext);
     const { profiles, error, isLoading } = useProfiles(
         {
-            profileId: profileId || "",
+            profileId: getProfileId(),
             search: searchTerm,
         },
         [searchTerm]

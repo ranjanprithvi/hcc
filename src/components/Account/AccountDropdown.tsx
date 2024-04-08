@@ -19,12 +19,13 @@ import useDoctors from "../../hooks/useDoctors";
 import ProtectedComponent from "../common/ProtectedComponent";
 import colourPalette from "../../utilities/colour-palette";
 import { useContext } from "react";
-import { ProfileContext } from "../../contexts/profileContext";
+import { AccountContext } from "../../contexts/profileContext";
 import { signOut } from "aws-amplify/auth";
+import { getProfileId, setProfileId } from "../../utilities/helper-service";
 
 const ProfilesMenuGroup = () => {
     const { profiles, error, isLoading } = useProfiles();
-    const { profileId, setProfileId } = useContext(ProfileContext);
+    // const { profileId, setProfileId } = useContext(AccountContext);
 
     return (
         <>
@@ -32,12 +33,12 @@ const ProfilesMenuGroup = () => {
                 {profiles.map((profile) => (
                     <MenuItem
                         color={
-                            profile._id == profileId
+                            profile._id == getProfileId()
                                 ? colourPalette.primary
                                 : "gray.800"
                         }
                         backgroundColor={
-                            profile._id == profileId
+                            profile._id == getProfileId()
                                 ? colourPalette.primaryBg
                                 : ""
                         }
@@ -80,7 +81,7 @@ const DoctorsMenuGroup = () => {
 
 const AccountDropdown = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { setProfileId, setIdentityId } = useContext(ProfileContext);
+    const { setIdentityId } = useContext(AccountContext);
 
     return (
         <>

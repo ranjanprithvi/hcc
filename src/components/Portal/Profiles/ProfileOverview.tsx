@@ -11,8 +11,9 @@ import ExternalRecordsPanel from "../Medical Records/ExternalRecordsPanel";
 import { ExternalRecord } from "../../../models/externalRecord";
 import MedicalRecordsPanel from "../Medical Records/MedicalRecordsPanel";
 import { MedicalRecord } from "../../../models/medicalRecord";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
 import { useContext, useEffect } from "react";
+import { setProfileId } from "../../../utilities/helper-service";
 
 export const ProfileOverview = () => {
     const { id } = useParams();
@@ -27,7 +28,7 @@ export const ProfileOverview = () => {
         isLoading,
     } = useProfileOverview(id || "");
 
-    const { setIdentityId, setProfileId } = useContext(ProfileContext);
+    const { setIdentityId } = useContext(AccountContext);
 
     useEffect(() => {
         setIdentityId(identityId);

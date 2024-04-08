@@ -16,14 +16,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import { TransferProgressEvent } from "aws-amplify/storage";
 import useSpecializations from "../../../hooks/useSpecializations";
-import {
-    handleUpload,
-} from "../../../utilities/record-manager-service";
+import { handleUpload } from "../../../utilities/record-manager-service";
 import Modal from "../../common/Modal";
 import { useContext, useState } from "react";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
+import { getProfileId } from "../../../utilities/helper-service";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -53,14 +52,16 @@ const ExternalRecordForm = () => {
 
     const resolver = zodResolver(schema);
     const { id } = useParams();
-    const { identityId, profileId } = useContext(ProfileContext);
+    const { identityId } = useContext(AccountContext);
     if (!id) return null;
     const { specializations } = useSpecializations();
 
     const { externalRecord, error } = useExternalRecord(id);
 
+    
+
     const existingFiles = useS3Files(
-        identityId + "/" + profileId + "/externalRecords/" + id + "/",
+        identityId + "/" + getProfileId() + "/externalRecords/" + id + "/",
         [externalRecord],
         "private"
     );
@@ -70,7 +71,7 @@ const ExternalRecordForm = () => {
     }
 
     const resetObject = {
-        profile: profileId || "",
+        profile: getProfileId(),
         doctor: externalRecord.doctor,
         specialization: externalRecord.specialization?._id,
         hospital: externalRecord.hospital,

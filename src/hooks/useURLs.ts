@@ -6,6 +6,8 @@ function useURLs(path: string) {
     const [error, setError] = useState<string>("");
     const [isLoading, setLoading] = useState<boolean>(false);
 
+    console.log(path);
+
     useEffect(() => {
         setLoading(true);
         list({ prefix: path, options: { accessLevel: "private" } })

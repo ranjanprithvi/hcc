@@ -17,16 +17,17 @@ import { Box } from "@chakra-ui/react";
 import { getValueByRole } from "../../utilities/getValueByRole";
 import useProfiles from "../../hooks/useProfiles";
 import { useContext } from "react";
-import { ProfileContext } from "../../contexts/profileContext";
+import { AccountContext } from "../../contexts/profileContext";
+import { getProfileId, setProfileId } from "../../utilities/helper-service";
 
 export const PortalLanding = () => {
     const { profiles, isLoading } = useProfiles();
-    const { profileId, setProfileId } = useContext(ProfileContext);
+    // const { profileId, setProfileId } = useContext(AccountContext);
 
     const navigate = useNavigate();
 
     if (!isLoading)
-        if (!profileId) {
+        if (!getProfileId()) {
             if (profiles.length > 0) {
                 setProfileId(profiles[0]._id);
             }
@@ -35,7 +36,7 @@ export const PortalLanding = () => {
     let userSidebarList = [
         { name: "Profiles", path: "/portal/profiles", icon: <BiUserCircle /> },
     ];
-    if (profileId) {
+    if (getProfileId()) {
         userSidebarList = [
             {
                 name: "Appointments",

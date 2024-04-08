@@ -4,7 +4,8 @@ import AppointmentsPanel from "./AppointmentsPanel";
 import { VStack, Flex, Button, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
+import { getProfileId } from "../../../utilities/helper-service";
 
 const mockAppointments: Appointment[] = [
     {
@@ -62,12 +63,12 @@ const mockAppointments: Appointment[] = [
 ];
 
 const UserAppointments = () => {
-    const { profileId } = useContext(ProfileContext);
+    // const { profileId } = useContext(AccountContext);
     const { appointments, error, isLoading } = useMyAppointments({
-        profileId: profileId || "",
+        profileId: getProfileId() || "",
     });
 
-    return !profileId ? (
+    return !getProfileId() ? (
         <Flex width={"100%"} height={"100%"} justifyContent={"center"}>
             <VStack>
                 <Text>There are no profiles in your account</Text>

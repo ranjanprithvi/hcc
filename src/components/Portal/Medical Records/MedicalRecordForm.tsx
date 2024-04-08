@@ -27,7 +27,8 @@ import useS3Files from "../../../hooks/useS3Files";
 import { Account } from "../../../models/account";
 import { MedicalRecord } from "../../../models/medicalRecord";
 import Loader from "../../common/Loader";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
+import { getProfileId } from "../../../utilities/helper-service";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -55,7 +56,7 @@ const MedicalRecordForm = () => {
 
     const resolver = zodResolver(schema);
     const { id } = useParams();
-    const { profileId, identityId } = useContext(ProfileContext);
+    const { identityId } = useContext(AccountContext);
     if (!id) return null;
 
     const { medicalRecord, error, isLoading } = useMedicalRecord(id);
@@ -64,12 +65,12 @@ const MedicalRecordForm = () => {
         return <div>{error}</div>;
     }
     const existingFiles = useS3Files(
-        identityId + "/" + profileId + "/medicalRecords/" + id + "/",
+        identityId + "/" + getProfileId() + "/medicalRecords/" + id + "/",
         [medicalRecord]
     );
 
     const resetObject = {
-        profile: profileId || "",
+        profile: getProfileId(),
         doctor: doctorId,
         recordName: medicalRecord?.recordName,
         recordType: medicalRecord?.recordType,

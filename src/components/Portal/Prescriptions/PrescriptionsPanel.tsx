@@ -50,7 +50,7 @@ import { useContext, useState } from "react";
 import GalleryModal from "../GalleryModal";
 import { Account } from "../../../models/account";
 import { Profile } from "../../../models/profile";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
 
 interface Props {
     prescriptions: Prescription[];
@@ -61,7 +61,7 @@ interface Props {
 const PrescriptionsPanel = ({ prescriptions, error, isLoading }: Props) => {
     const toast = useToast();
 
-    const {identityId} = useContext(ProfileContext);
+    const { identityId } = useContext(AccountContext);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [selectedPrescription, setSelectedPrescription] = useState({
         header: "",
@@ -167,7 +167,13 @@ const PrescriptionsPanel = ({ prescriptions, error, isLoading }: Props) => {
                                                                         path:
                                                                             identityId +
                                                                             "/" +
-                                                                            p.profile +
+                                                                            (typeof p.profile ==
+                                                                            "string"
+                                                                                ? p.profile
+                                                                                : (
+                                                                                      p.profile as Profile
+                                                                                  )
+                                                                                      ._id) +
                                                                             "/prescriptions/" +
                                                                             p._id,
                                                                         header:

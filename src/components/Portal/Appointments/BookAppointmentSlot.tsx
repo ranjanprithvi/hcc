@@ -31,7 +31,8 @@ import { httpService } from "../../../services/http-service";
 import { useNavigate, useParams } from "react-router-dom";
 import colourPalette from "../../../utilities/colour-palette";
 import Loader from "../../common/Loader";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
+import { getProfileId } from "../../../utilities/helper-service";
 
 interface Props {
     appointments?: Appointment[];
@@ -65,7 +66,7 @@ const BookAppointmentSlot = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { oldId } = useParams();
 
-    const { profileId } = useContext(ProfileContext);
+    // const { profileId } = useContext(AccountContext);
 
     const [date, setDate] = useState(new Date());
 
@@ -85,7 +86,7 @@ const BookAppointmentSlot = () => {
                 Appointment
             >(
                 {
-                    profileId: profileId,
+                    profileId: getProfileId(),
                 },
                 id
             );

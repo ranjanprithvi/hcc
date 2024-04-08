@@ -5,7 +5,8 @@ import { ExternalRecord } from "../../../models/externalRecord";
 import { MedicalRecord } from "../../../models/medicalRecord";
 import ExternalRecordsPanel from "./ExternalRecordsPanel";
 import MedicalRecordsPanel from "./MedicalRecordsPanel";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
+import { getProfileId } from "../../../utilities/helper-service";
 
 const mockRecords: MedicalRecord[] = [
     {
@@ -189,20 +190,20 @@ const mockExternalRecords: ExternalRecord[] = [
 ];
 
 const Records = () => {
-    const { profileId } = useContext(ProfileContext);
+    // const { profileId } = useContext(AccountContext);
     const {
         medicalRecords,
         error: mrError,
         isLoading: mrLoading,
     } = useMedicalRecords({
-        profile: profileId || "",
+        profile: getProfileId(),
     });
     const {
         externalRecords,
         error: erError,
         isLoading: erLoading,
     } = useExternalRecords({
-        profile: profileId || "",
+        profile: getProfileId(),
     });
     return (
         <>

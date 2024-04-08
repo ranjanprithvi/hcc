@@ -46,7 +46,7 @@ import GalleryModal from "../GalleryModal";
 import { useContext, useState } from "react";
 import { Account } from "../../../models/account";
 import { Profile } from "../../../models/profile";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
 
 interface Props {
     externalPrescriptions: ExternalPrescription[];
@@ -61,7 +61,7 @@ const ExternalPrescriptionsPanel = ({
 }: Props) => {
     const toast = useToast();
 
-    const { identityId } = useContext(ProfileContext);
+    const { identityId } = useContext(AccountContext);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [selectedPrescription, setSelectedPrescription] = useState({
@@ -163,7 +163,13 @@ const ExternalPrescriptionsPanel = ({
                                                                         path:
                                                                             identityId +
                                                                             "/" +
-                                                                            p.profile +
+                                                                            (typeof p.profile ==
+                                                                            "string"
+                                                                                ? p.profile
+                                                                                : (
+                                                                                      p.profile as Profile
+                                                                                  )
+                                                                                      ._id) +
                                                                             "/externalPrescriptions/" +
                                                                             p._id,
                                                                         header:

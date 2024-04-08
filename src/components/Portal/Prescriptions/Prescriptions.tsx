@@ -6,7 +6,8 @@ import { ExternalPrescription } from "../../../models/externalPrescription";
 import useExternalPrescriptions from "../../../hooks/useExternalPrescriptions";
 import usePrescriptions from "../../../hooks/usePrescriptions";
 import { useContext } from "react";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
+import { getProfileId } from "../../../utilities/helper-service";
 
 // const mockPrescriptions: Prescription[] = [
 //     {
@@ -101,20 +102,20 @@ const mockExternalPrescriptions: ExternalPrescription[] = [
     },
 ];
 const Prescriptions = () => {
-    const { profileId } = useContext(ProfileContext);
+    // const { profileId } = useContext(AccountContext);
     const {
         prescriptions,
         isLoading: prescriptionsLoading,
         error: prescriptionsError,
     } = usePrescriptions({
-        profile: profileId || "",
+        profile: getProfileId() || "",
     });
     const {
         externalPrescriptions,
         isLoading: externalPrescriptionsLoading,
         error: externalPrescriptionsError,
     } = useExternalPrescriptions({
-        profile: profileId || "",
+        profile: getProfileId() || "",
     });
     return (
         <>

@@ -9,7 +9,8 @@ import moment from "moment";
 import useProfile from "../../../hooks/useProfile";
 import { Profile } from "../../../models/profile";
 import { useContext } from "react";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
+import { setProfileId } from "../../../utilities/helper-service";
 
 const phoneRegex = new RegExp(/^[+]?[0-9]{9,13}$/);
 
@@ -57,7 +58,7 @@ const ProfileForm = () => {
     const { id } = useParams();
     if (!id) return null;
 
-    const { setProfileId } = useContext(ProfileContext);
+    // const { setProfileId } = useContext(AccountContext);
 
     const resolver = zodResolver(schema);
 

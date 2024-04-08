@@ -27,7 +27,8 @@ import { useContext, useEffect, useState } from "react";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
 import { Account } from "../../../models/account";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
+import { getProfileId } from "../../../utilities/helper-service";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -65,12 +66,12 @@ const PrescriptionForm = () => {
     const { id } = useParams();
     if (!id) return null;
 
-    const { identityId, profileId } = useContext(ProfileContext);
+    const { identityId } = useContext(AccountContext);
 
     const { prescription, error } = usePrescription(id);
 
     const existingFiles = useS3Files(
-        identityId + "/" + profileId + "/Prescriptions/" + id,
+        identityId + "/" + getProfileId() + "/Prescriptions/" + id,
         [prescription]
     );
 
@@ -79,7 +80,7 @@ const PrescriptionForm = () => {
     }
 
     const resetObject = {
-        profile: profileId || "",
+        profile: getProfileId(),
         doctor: doctorId,
         dateOnDocument: moment(prescription?.dateOnDocument).format(
             "YYYY-MM-DD"

@@ -2,7 +2,7 @@ import { fetchAuthSession, signOut } from "aws-amplify/auth";
 import { jwtDecode } from "jwt-decode";
 import { roles } from "../App";
 import { useContext } from "react";
-import { ProfileContext } from "../contexts/profileContext";
+import { AccountContext } from "../contexts/profileContext";
 
 type User = {
     _id: string;
@@ -63,6 +63,14 @@ export const getAccessLevel = () => {
     return Number.parseInt(
         JSON.parse(localStorage.getItem("accessLevel") || "0")
     );
+};
+
+export const getProfileId = () => {
+    return localStorage.getItem("profileId") || "";
+};
+
+export const setProfileId = (id: string) => {
+    localStorage.setItem("profileId", id);
 };
 
 // export const handleLogout = () => {

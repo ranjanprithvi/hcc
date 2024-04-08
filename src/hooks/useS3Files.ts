@@ -6,6 +6,7 @@ export default function useS3Files(
     deps?: any[],
     accessLevel?: "guest" | "protected" | "private"
 ) {
+    console.log(prefix);
     const [files, setFiles] = useState<any[]>([]);
 
     useEffect(() => {

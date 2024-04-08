@@ -16,14 +16,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import { TransferProgressEvent } from "aws-amplify/storage";
 import useSpecializations from "../../../hooks/useSpecializations";
-import {
-    handleUpload,
-} from "../../../utilities/record-manager-service";
+import { handleUpload } from "../../../utilities/record-manager-service";
 import { useContext, useState } from "react";
 import Modal from "../../common/Modal";
 import FilesList from "../FilesList";
 import useS3Files from "../../../hooks/useS3Files";
-import { ProfileContext } from "../../../contexts/profileContext";
+import { AccountContext } from "../../../contexts/profileContext";
+import { getProfileId } from "../../../utilities/helper-service";
 
 const schema = z.object({
     files: z.union([z.instanceof(FileList), z.literal("")]),
@@ -53,7 +52,7 @@ const ExternalPrescriptionForm = () => {
     const { id } = useParams();
     if (!id) return null;
 
-    const { profileId, identityId } = useContext(ProfileContext);
+    const { identityId } = useContext(AccountContext);
     const { specializations } = useSpecializations();
 
     const { externalPrescription, error } = useExternalPrescription(id);
@@ -63,7 +62,7 @@ const ExternalPrescriptionForm = () => {
     }
 
     const resetObject = {
-        profile: profileId || "",
+        profile: getProfileId(),
         doctor: externalPrescription.doctor,
         specialization: externalPrescription.specialization?._id,
         hospital: externalPrescription.hospital,
@@ -108,7 +107,12 @@ const ExternalPrescriptionForm = () => {
     ];
 
     const existingFiles = useS3Files(
-        identityId + "/" + profileId + "/externalPrescriptions/" + id + "/",
+        identityId +
+            "/" +
+            getProfileId() +
+            "/externalPrescriptions/" +
+            id +
+            "/",
         [externalPrescription],
         "private"
     );

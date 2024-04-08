@@ -158,6 +158,7 @@ export const handleUpload = async <T extends DataEntity>(
         const files = data.files;
 
         if (!identityId) identityId = (await fetchAuthSession()).identityId;
+        console.log(identityId);
 
         if (identityId) {
             await uploadFilesToS3(
